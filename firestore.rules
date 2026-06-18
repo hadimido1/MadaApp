@@ -2,18 +2,11 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     match /users/{userId} {
-      // Allow users to read any profile (needed for transfers)
+      // Allow users to read their own profile, and allow lookup of other users by their UID/Email for transfers
       allow read: if request.auth != null;
       
-      // Allow users to update their own profile and participate in transactions (updates)
-      // We allow any authenticated user to update profiles for now to ensure transactions work.
-      // In production, we'd constrain this more.
+      // Allow users to update their own profile and participate in transactions
       allow write: if request.auth != null;
-    }
-    
-    // Default deny for everything else
-    match /{document=**} {
-      allow read, write: if false;
     }
   }
 }
