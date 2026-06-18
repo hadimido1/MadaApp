@@ -10,6 +10,7 @@ import { auth, db, signOutUser } from './firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import { doc, getDoc, setDoc, onSnapshot, collection, getDocs, updateDoc, query, where } from 'firebase/firestore';
 import { motion, AnimatePresence } from 'motion/react';
+import { handleFirestoreError, OperationType } from './lib/firestore-errors';
 
 export default function App() {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
@@ -40,7 +41,11 @@ export default function App() {
           if (userSnap.exists()) {
             const data = userSnap.data();
             if (!data.photoURL && u.photoURL) {
-              await updateDoc(userDocRef, { photoURL: u.photoURL });
+              try {
+                await updateDoc(userDocRef, { photoURL: u.photoURL });
+              } catch (err) {
+                handleFirestoreError(err, OperationType.UPDATE, `users/${u.uid}`);
+              }
             }
             setCurrentUser({ id: u.uid, photoURL: u.photoURL || data.photoURL, ...data } as User);
             setLoading(false);
@@ -51,6 +56,7 @@ export default function App() {
           }
         }, (err) => {
           console.error("Snapshot error:", err);
+          handleFirestoreError(err, OperationType.GET, `users/${u.uid}`);
           setLoading(false);
         });
 
@@ -63,7 +69,7 @@ export default function App() {
     });
 
     return () => unsubscribe();
-  }, [view]);
+  }, []); // Remove [view] dependency to avoid re-subscribing on view change
 
   const handleProfileComplete = async (profileData: any) => {
     if (!firebaseUser) return;
@@ -73,11 +79,12 @@ export default function App() {
         email: firebaseUser.email,
         photoURL: firebaseUser.photoURL || '',
       };
-      await setDoc(doc(db, 'users', firebaseUser.uid), userData);
+      const userRef = doc(db, 'users', firebaseUser.uid);
+      await setDoc(userRef, userData);
       setCurrentUser({ id: firebaseUser.uid, ...userData } as User);
       setView('dashboard');
     } catch (err) {
-      console.error(err);
+      handleFirestoreError(err, OperationType.WRITE, `users/${firebaseUser.uid}`);
     }
   };
 

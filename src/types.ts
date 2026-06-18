@@ -21,11 +21,13 @@ export interface User {
   pin?: string;
   role: 'admin' | 'user';
   balance: number;
+  currency?: string;
   card: {
     number: string;
     expiry: string;
     cvv: string;
     holderName: string;
+    type?: string;
   };
   notifications?: AppNotification[];
 }

@@ -8,6 +8,7 @@ import { doc, updateDoc, arrayUnion } from 'firebase/firestore';
 import { db } from '../firebase';
 import logo from '../assets/images/regenerated_image_1781780076153.png';
 import { motion, AnimatePresence } from 'motion/react';
+import { handleFirestoreError, OperationType } from '../lib/firestore-errors';
 
 import { Scanner } from '@yudiel/react-qr-scanner';
 import { QRCode } from 'react-qrcode-logo';
@@ -76,7 +77,7 @@ export function Dashboard({ user, onNavigate, onUserUpdate, theme }: { user: Use
           await updateDoc(doc(db, 'users', user.id), { notifications: updatedNotifications });
           onUserUpdate({ ...user, notifications: updatedNotifications });
         } catch (e) {
-          console.error(e);
+          handleFirestoreError(e, OperationType.UPDATE, `users/${user.id}`);
         }
       }, 3000);
       return () => clearTimeout(timer);
@@ -90,7 +91,7 @@ export function Dashboard({ user, onNavigate, onUserUpdate, theme }: { user: Use
       await updateDoc(doc(db, 'users', user.id), { notifications: updatedNotifications });
       onUserUpdate({ ...user, notifications: updatedNotifications });
     } catch (e) {
-      console.error(e);
+      handleFirestoreError(e, OperationType.UPDATE, `users/${user.id}`);
     }
   };
 
@@ -166,7 +167,14 @@ export function Dashboard({ user, onNavigate, onUserUpdate, theme }: { user: Use
       if (targetId.includes('@')) {
         const usersRef = collection(db, 'users');
         const q = query(usersRef, where('email', '==', targetId));
-        const querySnapshot = await getDocs(q);
+        let querySnapshot;
+        try {
+          querySnapshot = await getDocs(q);
+        } catch (err) {
+          handleFirestoreError(err, OperationType.LIST, 'users');
+          return;
+        }
+        
         if (!querySnapshot.empty) {
           targetId = querySnapshot.docs[0].id;
           recipientEmail = querySnapshot.docs[0].data().email;
@@ -178,7 +186,14 @@ export function Dashboard({ user, onNavigate, onUserUpdate, theme }: { user: Use
         }
       } else {
         recipientRef = doc(db, 'users', targetId);
-        const rDoc = await getDoc(recipientRef);
+        let rDoc;
+        try {
+          rDoc = await getDoc(recipientRef);
+        } catch (err) {
+          handleFirestoreError(err, OperationType.GET, `users/${targetId}`);
+          return;
+        }
+        
         if (rDoc.exists()) {
           const rData = rDoc.data() as any;
           recipientEmail = rData?.email || "";
@@ -205,33 +220,38 @@ export function Dashboard({ user, onNavigate, onUserUpdate, theme }: { user: Use
         read: false
       };
 
-      await runTransaction(db, async (transaction) => {
-        const senderDoc = await transaction.get(doc(db, 'users', user.id));
-        const recipientDoc = await transaction.get(recipientRef);
+      try {
+        await runTransaction(db, async (transaction) => {
+          const senderDoc = await transaction.get(doc(db, 'users', user.id));
+          const recipientDoc = await transaction.get(recipientRef);
 
-        const senderData = senderDoc.data() as any;
-        const recipientData = recipientDoc.data() as any;
+          const senderData = senderDoc.data() as any;
+          const recipientData = recipientDoc.data() as any;
 
-        if (!senderDoc.exists() || !senderData) throw new Error("Sender account not found.");
-        if (!recipientDoc.exists() || !recipientData) throw new Error("Recipient account not found.");
+          if (!senderDoc.exists() || !senderData) throw new Error("Sender account not found.");
+          if (!recipientDoc.exists() || !recipientData) throw new Error("Recipient account not found.");
 
-        const senderBal = senderData.balance || 0;
-        if (senderBal < totalDeduction) throw new Error("Insufficient funds.");
+          const senderBal = senderData.balance || 0;
+          if (senderBal < totalDeduction) throw new Error("Insufficient funds.");
 
-        const recipientBal = recipientData.balance || 0;
-        
-        senderNotification.senderId = recipientData.name || recipientData.email || targetId;
+          const recipientBal = recipientData.balance || 0;
+          
+          senderNotification.senderId = recipientData.name || recipientData.email || targetId;
 
-        transaction.update(doc(db, 'users', user.id), { 
-           balance: senderBal - totalDeduction,
-           notifications: arrayUnion(senderNotification)
+          transaction.update(doc(db, 'users', user.id), { 
+             balance: senderBal - totalDeduction,
+             notifications: arrayUnion(senderNotification)
+          });
+
+          transaction.update(recipientRef, { 
+             balance: recipientBal + amountNum,
+             notifications: arrayUnion(recipientNotification)
+          });
         });
-
-        transaction.update(recipientRef, { 
-           balance: recipientBal + amountNum,
-           notifications: arrayUnion(recipientNotification)
-        });
-      });
+      } catch (err) {
+        handleFirestoreError(err, OperationType.WRITE, `transaction:users/${user.id},users/${targetId}`);
+        return;
+      }
       
       // Success triggers
       playSound('transaction');

@@ -4,6 +4,7 @@ import { User, ViewState } from '../types';
 import { doc, updateDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 import { getTranslation } from '../i18n';
+import { handleFirestoreError, OperationType } from '../lib/firestore-errors';
 
 interface SettingsProps {
   user: User;
@@ -53,7 +54,7 @@ export function Settings({ user, onLogout, onNavigate, onUserUpdate, theme, setT
       onUserUpdate({ ...user, name: editName, age: editAge, country: editCountry, pin: editPin });
       setActiveModal(null);
     } catch (e) {
-      console.error(e);
+      handleFirestoreError(e, OperationType.UPDATE, `users/${user.id}`);
     } finally {
       setIsSaving(false);
     }

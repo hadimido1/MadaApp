@@ -5,6 +5,7 @@ import { db } from '../firebase';
 import { collection, getDocs } from 'firebase/firestore';
 import { getTranslation } from '../i18n';
 import logo from '../assets/images/regenerated_image_1781780076153.png';
+import { handleFirestoreError, OperationType } from '../lib/firestore-errors';
 
 export function AdminPanel() {
   const [users, setUsers] = useState<User[]>([]);
@@ -23,7 +24,7 @@ export function AdminPanel() {
         });
         setUsers(usersList);
       } catch (e) {
-        console.error("Error fetching users", e);
+        handleFirestoreError(e, OperationType.LIST, 'users');
       } finally {
         setLoading(false);
       }
