@@ -34,7 +34,7 @@ export function VisaCard({ user, theme }: VisaCardProps) {
   const rotateY = useSpring(useTransform(x, [-0.5, 0.5], [-15, 15]), springConfig);
 
   const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (!cardRef.current || isFlipped) return;
+    if (!cardRef.current) return;
     const rect = cardRef.current.getBoundingClientRect();
     const width = rect.width;
     const height = rect.height;
@@ -42,7 +42,9 @@ export function VisaCard({ user, theme }: VisaCardProps) {
     const mouseX = e.clientX - rect.left;
     const mouseY = e.clientY - rect.top;
     
-    x.set(mouseX / width - 0.5);
+    // Adjust x set based on flip state to keep the tilt intuitive
+    const factor = isFlipped ? -1 : 1;
+    x.set((mouseX / width - 0.5) * factor);
     y.set(mouseY / height - 0.5);
   };
 
@@ -79,7 +81,7 @@ export function VisaCard({ user, theme }: VisaCardProps) {
       {/* Flip Button Above Card */}
       <button 
         onClick={(e) => { e.stopPropagation(); setIsFlipped(!isFlipped); }}
-        className="flex items-center gap-2 px-6 py-2.5 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 transition-all active:scale-95 text-white font-bold backdrop-blur-md light-mode-btn"
+        className="flex items-center gap-2 px-6 py-2.5 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 transition-all active:scale-95 text-white font-bold backdrop-blur-md light-mode-btn flip-btn"
       >
         <RotateCcw className={`w-4 h-4 transition-transform duration-500 ${isFlipped ? 'rotate-180' : ''} light-mode-text`} />
         <span className="light-mode-text">{isFlipped ? (lang === 'ar' ? 'عرض الوجه' : 'View Front') : (lang === 'ar' ? 'عرض الظهر' : 'View Back')}</span>
@@ -112,7 +114,7 @@ export function VisaCard({ user, theme }: VisaCardProps) {
               {/* Texture Overlay */}
               <div className="absolute inset-0 opacity-[0.25] mix-blend-overlay" style={{ backgroundImage: 'url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPjxyZWN0IHdpZHRoPSI0IiBoZWlnaHQ9IjQiIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSIvPjwvc3ZnPg==")', backgroundRepeat: 'repeat' }}></div>
 
-              <div className="absolute inset-0 p-6 sm:p-8 flex flex-col justify-between z-10" style={{ transform: "translateZ(30px)" }}>
+              <div className="absolute inset-0 p-5 sm:p-8 flex flex-col justify-between z-10" style={{ transform: "translateZ(30px)" }}>
                 
                 {/* Header: Chip & Visa Logo */}
                 <div className="flex justify-between items-start" dir="ltr">
@@ -149,7 +151,7 @@ export function VisaCard({ user, theme }: VisaCardProps) {
                       <motion.p 
                         animate={{ opacity: isRevealed ? 1 : 0.4, filter: isRevealed ? 'blur(0px)' : 'blur(5px)' }}
                         onClick={(e) => { e.stopPropagation(); isRevealed && copyToClipboard(user?.card?.number); }}
-                        className={`text-[16px] min-[320px]:text-[18px] min-[375px]:text-[22px] sm:text-[28px] font-mono tracking-wide sm:tracking-widest flex justify-between text-white drop-shadow-[1px_1px_2px_rgba(0,0,0,0.8)] ${isRevealed ? 'cursor-pointer hover:opacity-80 active:opacity-60 transition-opacity' : ''}`}
+                        className={`text-[14px] min-[320px]:text-[16px] min-[375px]:text-[20px] sm:text-[28px] font-mono tracking-wide sm:tracking-widest flex justify-between text-white drop-shadow-[1px_1px_2px_rgba(0,0,0,0.8)] ${isRevealed ? 'cursor-pointer hover:opacity-80 active:opacity-60 transition-opacity' : ''}`}
                       >
                         <span>{user?.card?.number?.substring(0,4)}</span>
                         <span>{isRevealed ? user?.card?.number?.substring(4,8) : '****'}</span>
@@ -171,21 +173,21 @@ export function VisaCard({ user, theme }: VisaCardProps) {
 
                 {/* Footer Metadata */}
                 <div className="flex justify-between items-end mt-4 text-white" dir="ltr">
-                  <div className="flex gap-6">
+                  <div className="flex gap-4 sm:gap-6">
                     <div onClick={(e) => { e.stopPropagation(); copyToClipboard(user?.card?.holderName); }} className={isRevealed ? 'cursor-pointer hover:opacity-80' : ''}>
-                      <p className="text-[10px] text-gray-400 uppercase mb-1 tracking-widest opacity-80 font-medium">{t.cardHolder}</p>
-                      <p className="text-sm font-black uppercase tracking-widest drop-shadow-md">{user?.card?.holderName}</p>
+                      <p className="text-[8px] sm:text-[10px] text-gray-400 uppercase mb-0.5 sm:mb-1 tracking-widest opacity-80 font-medium">{t.cardHolder}</p>
+                      <p className="text-[10px] sm:text-sm font-black uppercase tracking-widest drop-shadow-md whitespace-nowrap">{user?.card?.holderName}</p>
                     </div>
                     {isRevealed && (
                       <div onClick={(e) => { e.stopPropagation(); copyToClipboard(user?.card?.cvv); }} className={isRevealed ? 'cursor-pointer hover:opacity-80' : ''}>
-                        <p className="text-[10px] text-gray-400 uppercase mb-1 tracking-widest opacity-80 font-medium">{t.cvv}</p>
-                        <p className="text-sm font-black drop-shadow-md">{user?.card?.cvv}</p>
+                        <p className="text-[8px] sm:text-[10px] text-gray-400 uppercase mb-0.5 sm:mb-1 tracking-widest opacity-80 font-medium">{t.cvv}</p>
+                        <p className="text-[10px] sm:text-sm font-black drop-shadow-md">{user?.card?.cvv}</p>
                       </div>
                     )}
                   </div>
                   <div className="text-right" onClick={(e) => { e.stopPropagation(); copyToClipboard(user?.card?.expiry); }}>
-                    <p className="text-[10px] text-gray-400 uppercase mb-1 tracking-widest opacity-80 font-medium">{t.expires}</p>
-                    <p className={`text-sm font-black tracking-widest drop-shadow-md ${isRevealed ? 'cursor-pointer hover:opacity-80' : ''}`}>{isRevealed ? user?.card?.expiry : '**/**'}</p>
+                    <p className="text-[8px] sm:text-[10px] text-gray-400 uppercase mb-0.5 sm:mb-1 tracking-widest opacity-80 font-medium">{t.expires}</p>
+                    <p className={`text-[10px] sm:text-sm font-black tracking-widest drop-shadow-md ${isRevealed ? 'cursor-pointer hover:opacity-80' : ''}`}>{isRevealed ? user?.card?.expiry : '**/**'}</p>
                   </div>
                 </div>
               </div>

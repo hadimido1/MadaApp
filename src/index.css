@@ -79,6 +79,15 @@ input, textarea {
   color: #000 !important;
 }
 
+.light-mode .flip-btn {
+  background-color: #000 !important;
+  color: #fff !important;
+}
+
+.light-mode .flip-btn .light-mode-text {
+  color: #fff !important;
+}
+
 .light-mode .light-mode-logo {
   filter: invert(1) brightness(0);
 }
