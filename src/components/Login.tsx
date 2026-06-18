@@ -67,7 +67,7 @@ export function Login({ onLoginSuccess }: { onLoginSuccess: (user: any) => void 
     <div className="min-h-screen w-full bg-black flex items-center justify-center p-6 relative overflow-hidden light-mode-bg" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
       <div className="w-full max-w-[320px] relative z-10 flex flex-col items-center">
         <div className="w-24 h-24 mb-6 flex items-center justify-center transition-all hover:scale-110 duration-500">
-          <img src={logo} alt="Mada Icon" className="w-full h-full object-contain" />
+          <img src={logo} alt="Mada Icon" className="w-full h-full object-contain light-mode-logo" />
         </div>
         
         <h1 className="text-4xl font-black text-white tracking-tighter mb-1 italic light-mode-text">Mada</h1>
@@ -109,7 +109,7 @@ export function Login({ onLoginSuccess }: { onLoginSuccess: (user: any) => void 
         <button 
           onClick={handleGoogleLogin}
           disabled={loading}
-          className="w-full bg-white text-black font-black py-4.5 rounded-[24px] shadow-[0_20px_40px_rgba(255,255,255,0.1)] transition-all active:scale-[0.98] text-base flex items-center justify-center gap-3 disabled:opacity-70 group hover:shadow-[0_25px_50px_rgba(255,255,255,0.15)]"
+          className="w-full bg-white text-black font-black py-4.5 rounded-[24px] border border-transparent shadow-[0_20px_40px_rgba(255,255,255,0.1)] transition-all active:scale-[0.98] text-base flex items-center justify-center gap-3 disabled:opacity-70 group hover:shadow-[0_25px_50px_rgba(255,255,255,0.15)] light-mode-card"
         >
           {loading ? (
             <div className="w-5 h-5 border-2 border-black/20 border-t-black rounded-full animate-spin"></div>
