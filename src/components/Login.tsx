@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { User, Trash2 } from 'lucide-react';
 import { signInWithGoogle } from '../firebase';
+import { getTranslation } from '../i18n';
 import logo from '../assets/images/regenerated_image_1781780076153.png';
 
 export function Login({ onLoginSuccess }: { onLoginSuccess: (user: any) => void }) {
+  const lang = localStorage.getItem('app_lang') as 'ar' | 'en' || 'en';
+  const t = getTranslation(lang);
+  
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [recentUsers, setRecentUsers] = useState<any[]>([]);
@@ -47,7 +51,7 @@ export function Login({ onLoginSuccess }: { onLoginSuccess: (user: any) => void 
       saveToRecent(user);
       onLoginSuccess(user);
     } catch (err) {
-      setError('حدث خطأ أثناء تسجيل الدخول. يرجى المحاولة مرة أخرى.');
+      setError(t.loginError);
       setLoading(false);
     }
   };
@@ -60,7 +64,7 @@ export function Login({ onLoginSuccess }: { onLoginSuccess: (user: any) => void 
   };
 
   return (
-    <div className="min-h-screen w-full bg-black flex items-center justify-center p-6 relative overflow-hidden" dir="rtl">
+    <div className="min-h-screen w-full bg-black flex items-center justify-center p-6 relative overflow-hidden" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
       <div className="w-full max-w-[320px] relative z-10 flex flex-col items-center">
         <div className="w-24 h-24 mb-6 flex items-center justify-center transition-all hover:scale-110 duration-500">
           <img src={logo} alt="Mada Icon" className="w-full h-full object-contain" />
@@ -71,7 +75,7 @@ export function Login({ onLoginSuccess }: { onLoginSuccess: (user: any) => void 
 
         {recentUsers.length > 0 && (
           <div className="w-full mb-10">
-            <p className="text-white text-[10px] font-black mb-4 opacity-40 uppercase tracking-[0.2em] text-center">التبديل السريع</p>
+            <p className="text-white text-[10px] font-black mb-4 opacity-40 uppercase tracking-[0.2em] text-center">{t.quickSwitch}</p>
             <div className="flex flex-col gap-3">
               {recentUsers.map((u, i) => (
                 <div 
@@ -79,20 +83,20 @@ export function Login({ onLoginSuccess }: { onLoginSuccess: (user: any) => void 
                   onClick={() => handleGoogleLogin()}
                   className="flex items-center justify-between p-4 rounded-[28px] bg-white/[0.03] border border-white/5 hover:bg-white/10 hover:border-white/20 transition-all cursor-pointer group relative overflow-hidden"
                 >
-                  <div className="absolute inset-0 bg-gradient-to-l from-blue-500/0 to-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                  <div className="flex items-center gap-4 relative z-10">
+                  <div className={`absolute inset-0 bg-gradient-to-${lang === 'ar' ? 'l' : 'r'} from-blue-500/0 to-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity`}></div>
+                  <div className={`flex items-center gap-4 relative z-10 ${lang === 'ar' ? 'flex-row' : 'flex-row-reverse'}`}>
                     <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center overflow-hidden shadow-xl group-hover:scale-105 transition-transform">
                       {u.photoURL ? <img src={u.photoURL} className="w-full h-full object-cover" /> : <User className="w-6 h-6 text-blue-400" />}
                     </div>
-                    <div className="flex flex-col text-right">
-                      <span className="text-white text-sm font-black group-hover:text-blue-400 transition-colors">{u.name || 'مستخدم Mada'}</span>
+                    <div className={`flex flex-col ${lang === 'ar' ? 'text-right' : 'text-left'}`}>
+                      <span className="text-white text-sm font-black group-hover:text-blue-400 transition-colors">{u.name || (lang === 'ar' ? 'مستخدم Mada' : 'Mada User')}</span>
                       <span className="text-gray-500 text-[9px] font-mono opacity-60">{u.email}</span>
                     </div>
                   </div>
                   <button 
                     onClick={(e) => removeRecent(e, i)}
                     className="p-2.5 text-gray-700 hover:text-red-500 transition-all rounded-full hover:bg-white/5 relative z-20"
-                    title="إزالة"
+                    title={t.remove}
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
@@ -117,7 +121,7 @@ export function Login({ onLoginSuccess }: { onLoginSuccess: (user: any) => void 
                 <path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
                 <path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
               </svg>
-              <span className="tracking-tight">المتابعة باستخدام Google</span>
+              <span className="tracking-tight">{t.loginWithGoogle}</span>
             </>
           )}
         </button>

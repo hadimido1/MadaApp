@@ -7,15 +7,40 @@ import { toPng } from 'html-to-image';
 import { doc, updateDoc, arrayUnion } from 'firebase/firestore';
 import { db } from '../firebase';
 import logo from '../assets/images/regenerated_image_1781780076153.png';
+import { motion, AnimatePresence } from 'motion/react';
 
 import { Scanner } from '@yudiel/react-qr-scanner';
 import { QRCode } from 'react-qrcode-logo';
 
 export function Dashboard({ user, onNavigate, onUserUpdate }: { user: User, onNavigate: (v: ViewState) => void, onUserUpdate: (u: User) => void }) {
-  const lang = localStorage.getItem('app_lang') as 'ar' | 'en' || 'ar';
+  const lang = localStorage.getItem('app_lang') as 'ar' | 'en' || 'en';
   const t = getTranslation(lang);
 
   const [activeModal, setActiveModal] = useState<'receive' | 'transfer' | 'notifications' | null>(null);
+  const [showNotification, setShowNotification] = useState(false);
+
+  // Audio utility
+  const playSound = (type: 'transaction' | 'notification') => {
+    const urls = {
+      notification: 'https://assets.mixkit.co/active_storage/sfx/2857/2857-preview.mp3',
+      transaction: 'https://assets.mixkit.co/active_storage/sfx/2358/2358-preview.mp3'
+    };
+    const audio = new Audio(urls[type]);
+    audio.volume = 0.4;
+    audio.play().catch(e => console.log("Audio play blocked", e));
+  };
+
+  useEffect(() => {
+    const hasNewNotification = user.notifications?.some(n => !n.read && n.type === 'transfer_received');
+    if (hasNewNotification) {
+      setShowNotification(true);
+      playSound('notification');
+      const timer = setTimeout(() => {
+        setShowNotification(false);
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [user.notifications]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [loading, setLoading] = useState(false);
   
@@ -97,13 +122,17 @@ export function Dashboard({ user, onNavigate, onUserUpdate }: { user: User, onNa
   const handleTransfer = async () => {
     if (!transferAmount || isNaN(Number(transferAmount)) || Number(transferAmount) <= 0 || !recipientId) return;
     
+    const amountNum = Number(transferAmount);
+    const commission = amountNum * 0.02; // 2% Commission
+    const totalDeduction = amountNum + commission;
+
     if (recipientId === user.id) {
        setTransferError('لا يمكنك تحويل الأموال لنفسك / Cannot transfer to yourself');
        return;
     }
 
-    if (Number(transferAmount) > (user.balance || 0)) {
-       setTransferError(t.insufficientFunds);
+    if (totalDeduction > (user.balance || 0)) {
+       setTransferError(`${t.insufficientFunds} (Total with 2% fee: $${totalDeduction.toFixed(2)})`);
        return;
     }
     
@@ -114,13 +143,7 @@ export function Dashboard({ user, onNavigate, onUserUpdate }: { user: User, onNa
       
       let targetId = recipientId.trim();
       let recipientRef;
-
-      // Prevent self-transfer
-      if (targetId === user.id || targetId === user.email) {
-        setTransferError("You cannot transfer money to yourself.");
-        setIsProcessing(false);
-        return;
-      }
+      let recipientEmail = "";
 
       if (targetId.includes('@')) {
         const usersRef = collection(db, 'users');
@@ -128,6 +151,7 @@ export function Dashboard({ user, onNavigate, onUserUpdate }: { user: User, onNa
         const querySnapshot = await getDocs(q);
         if (!querySnapshot.empty) {
           targetId = querySnapshot.docs[0].id;
+          recipientEmail = querySnapshot.docs[0].data().email;
           recipientRef = doc(db, 'users', targetId);
         } else {
           setTransferError(t.recipientNotFound);
@@ -136,20 +160,17 @@ export function Dashboard({ user, onNavigate, onUserUpdate }: { user: User, onNa
         }
       } else {
         recipientRef = doc(db, 'users', targetId);
+        const rDoc = await getDoc(recipientRef);
+        if (rDoc.exists()) {
+          const rData = rDoc.data() as any;
+          recipientEmail = rData?.email || "";
+        }
       }
-
-      if (targetId === user.id) {
-        setTransferError("You cannot transfer money to yourself.");
-        setIsProcessing(false);
-        return;
-      }
-      
-      const transferVal = Number(transferAmount);
       
       const recipientNotification: AppNotification = {
         id: Date.now().toString(),
         type: 'transfer_received',
-        amount: transferVal,
+        amount: amountNum,
         senderId: user.name || user.email || user.id,
         message: transferMessage,
         timestamp: Date.now(),
@@ -159,8 +180,8 @@ export function Dashboard({ user, onNavigate, onUserUpdate }: { user: User, onNa
       const senderNotification: AppNotification = {
         id: (Date.now() + 1).toString(),
         type: 'transfer_sent',
-        amount: transferVal,
-        senderId: targetId, // Will update with name if possible below
+        amount: amountNum,
+        senderId: targetId,
         message: transferMessage,
         timestamp: Date.now(),
         read: false
@@ -177,29 +198,47 @@ export function Dashboard({ user, onNavigate, onUserUpdate }: { user: User, onNa
         if (!recipientDoc.exists() || !recipientData) throw new Error("Recipient account not found.");
 
         const senderBal = senderData.balance || 0;
-        if (senderBal < transferVal) throw new Error("Insufficient funds.");
+        if (senderBal < totalDeduction) throw new Error("Insufficient funds.");
 
         const recipientBal = recipientData.balance || 0;
         
-        // Update senderId in notification to be more readable if found
         senderNotification.senderId = recipientData.name || recipientData.email || targetId;
 
         transaction.update(doc(db, 'users', user.id), { 
-           balance: senderBal - transferVal,
+           balance: senderBal - totalDeduction,
            notifications: arrayUnion(senderNotification)
         });
 
         transaction.update(recipientRef, { 
-           balance: recipientBal + transferVal,
+           balance: recipientBal + amountNum,
            notifications: arrayUnion(recipientNotification)
         });
       });
       
+      // Success triggers
+      playSound('transaction');
+
+      // Async email trigger
+      if (recipientEmail) {
+        fetch('/api/send-receipt', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            recipientEmail: recipientEmail,
+            senderName: user.name,
+            amount: amountNum,
+            commission: commission.toFixed(2),
+            transactionId: Math.random().toString(36).substr(2, 9).toUpperCase()
+          })
+        }).catch(err => console.error("Email fail:", err));
+      }
+
       onUserUpdate({ 
          ...user, 
-         balance: (user.balance || 0) - transferVal,
+         balance: (user.balance || 0) - totalDeduction,
          notifications: [...(user.notifications || []), senderNotification]
       });
+      
       setTransferAmount('');
       setRecipientId('');
       setTransferMessage('');
@@ -218,7 +257,38 @@ export function Dashboard({ user, onNavigate, onUserUpdate }: { user: User, onNa
         <div className="absolute top-[-10%] right-[-20%] w-[60%] h-[50%] bg-blue-600/10 rounded-full blur-[140px]"></div>
       </div>
 
-      <div className="relative z-10 w-full max-w-lg mx-auto px-5 pt-8 pb-6 flex flex-col items-center">
+      {/* Email-style notification alert */}
+      <AnimatePresence>
+        {showNotification && (
+          <motion.div 
+            initial={{ y: -100, opacity: 0 }}
+            animate={{ y: 20, opacity: 1 }}
+            exit={{ y: -100, opacity: 0 }}
+            drag="x"
+            dragConstraints={{ left: 0, right: 0 }}
+            onDragEnd={(_, info) => {
+              if (Math.abs(info.offset.x) > 100) {
+                setShowNotification(false);
+              }
+            }}
+            className="fixed top-0 left-4 right-4 z-[110] flex justify-center cursor-grab active:cursor-grabbing"
+          >
+            <div className="bg-white text-black p-4 rounded-2xl shadow-2xl flex items-center gap-4 border border-black/5 max-w-sm w-full mx-auto relative overflow-hidden group">
+              <div className="absolute inset-0 bg-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+              <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center shrink-0">
+                <Bell className="w-5 h-5 text-white" />
+              </div>
+              <div className="flex flex-col relative z-10">
+                <p className="text-[10px] font-black uppercase tracking-tighter text-blue-600">Secure Notification</p>
+                <p className="text-sm font-bold truncate">{(user.notifications?.filter(n => !n.read && n.type === 'transfer_received')[0] as any)?.senderId || 'Private User'} sent funds</p>
+              </div>
+              <div className="ml-auto w-1 h-8 bg-blue-200 rounded-full opacity-50"></div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <div className="relative z-10 w-full max-w-lg mx-auto px-5 pt-8 pb-40 flex flex-col items-center">
         {/* Header Dashboard Profile/Notifications */}
         <div className="flex justify-between items-center w-full mb-6">
           <div className="flex items-center gap-4">
@@ -283,7 +353,7 @@ export function Dashboard({ user, onNavigate, onUserUpdate }: { user: User, onNa
       {activeModal === 'transfer' && (
         <div className="fixed inset-0 z-50 flex flex-col items-center justify-end px-4 pb-8 sm:justify-center">
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setActiveModal(null)} />
-          <div className="bg-[#1a1a1a] border border-white/10 w-full max-w-sm rounded-[32px] p-6 relative z-10 flex flex-col gap-6 animate-in slide-in-from-bottom-10 fade-in duration-300 light-mode-bg shadow-2xl">
+          <div className="bg-[#1a1a1a] border border-white/10 w-full max-w-sm rounded-[32px] p-6 relative z-10 flex flex-col gap-6 animate-in slide-in-from-bottom-10 fade-in duration-300 light-mode-bg shadow-2xl max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center">
               <h2 className="text-xl font-black text-white light-mode-text">{t.transferMoney}</h2>
               <button onClick={() => setActiveModal(null)} className="p-2 bg-white/5 rounded-full text-white light-mode-text">
@@ -367,7 +437,7 @@ export function Dashboard({ user, onNavigate, onUserUpdate }: { user: User, onNa
       {activeModal === 'receive' && (
         <div className="fixed inset-0 z-50 flex flex-col items-center justify-end px-4 pb-8 sm:justify-center">
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setActiveModal(null)} />
-          <div className="bg-[#1a1a1a] border border-white/10 w-full max-w-sm rounded-[32px] p-6 relative z-10 flex flex-col gap-6 animate-in slide-in-from-bottom-10 fade-in duration-300 light-mode-bg shadow-2xl items-center">
+          <div className="bg-[#1a1a1a] border border-white/10 w-full max-w-sm rounded-[32px] p-6 relative z-10 flex flex-col gap-6 animate-in slide-in-from-bottom-10 fade-in duration-300 light-mode-bg shadow-2xl items-center max-h-[90vh] overflow-y-auto">
             <div className="w-full flex justify-between items-center mb-2">
                <h2 className="text-xl font-black text-white light-mode-text">{t.receiveMoney}</h2>
                <button onClick={() => setActiveModal(null)} className="p-2 bg-white/5 rounded-full text-white light-mode-text">
@@ -459,8 +529,8 @@ export function Dashboard({ user, onNavigate, onUserUpdate }: { user: User, onNa
           
           {user.notifications?.some(n => !n.read && n.type === 'transfer_received') && (
             <div className="absolute inset-0 pointer-events-none overflow-hidden z-0 flex justify-center">
-              {Array.from({length: 20}).map((_, i) => (
-                <div key={i} className="absolute text-green-400 font-bold text-4xl opacity-0 animate-float-up drop-shadow-[0_0_10px_rgba(74,222,128,0.8)]" style={{ left: `${Math.random() * 100}%`, animationDelay: `${Math.random() * 3}s` }}>
+              {Array.from({length: 15}).map((_, i) => (
+                <div key={i} className="absolute text-green-500/60 font-bold text-2xl opacity-0 animate-float-up" style={{ left: `${Math.random() * 100}%`, animationDelay: `${Math.random() * 2}s`, fontSize: `${Math.random() * 20 + 10}px` }}>
                   $
                 </div>
               ))}

@@ -16,41 +16,54 @@ export default function App() {
   const [firebaseUser, setFirebaseUser] = useState<any>(null);
   const [view, setView] = useState<ViewState>('login');
   const [loading, setLoading] = useState(true);
+  const [theme, setTheme] = useState<'dark' | 'light'>(localStorage.getItem('app_theme') as 'dark' | 'light' || 'dark');
 
-  const lang = localStorage.getItem('app_lang') || 'ar';
+  const lang = localStorage.getItem('app_lang') || 'en';
   const dir = lang === 'ar' ? 'rtl' : 'ltr';
 
   useEffect(() => {
-    const savedTheme = localStorage.getItem('app_theme');
-    if (savedTheme === 'light') {
+    if (theme === 'light') {
       document.documentElement.classList.add('light-mode');
+    } else {
+      document.documentElement.classList.remove('light-mode');
     }
+  }, [theme]);
 
-    const unsubscribe = onAuthStateChanged(auth, async (u) => {
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (u) => {
       setFirebaseUser(u);
       if (u) {
         const userDocRef = doc(db, 'users', u.uid);
-        const userSnap = await getDoc(userDocRef);
         
-        if (userSnap.exists()) {
-          const data = userSnap.data();
-          if (!data.photoURL && u.photoURL) {
-            await updateDoc(userDocRef, { photoURL: u.photoURL });
+        // Use onSnapshot for real-time updates (balance, notifications, etc.)
+        const unsubSnapshot = onSnapshot(userDocRef, async (userSnap) => {
+          if (userSnap.exists()) {
+            const data = userSnap.data();
+            if (!data.photoURL && u.photoURL) {
+              await updateDoc(userDocRef, { photoURL: u.photoURL });
+            }
+            setCurrentUser({ id: u.uid, photoURL: u.photoURL || data.photoURL, ...data } as User);
+            setLoading(false);
+            if (view === 'login') setView('dashboard');
+          } else {
+            setView('setup');
+            setLoading(false);
           }
-          setCurrentUser({ id: u.uid, photoURL: u.photoURL || data.photoURL, ...data } as User);
-          setView('dashboard');
-        } else {
-          setView('setup');
-        }
+        }, (err) => {
+          console.error("Snapshot error:", err);
+          setLoading(false);
+        });
+
+        return () => unsubSnapshot();
       } else {
         setCurrentUser(null);
         setView('login');
+        setLoading(false);
       }
-      setLoading(false);
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [view]);
 
   const handleProfileComplete = async (profileData: any) => {
     if (!firebaseUser) return;
@@ -92,7 +105,7 @@ export default function App() {
 
   return (
     <div className={`fixed inset-0 w-full h-full bg-black text-gray-100 font-sans flex flex-col selection:bg-blue-500/30 overflow-hidden ${lang === 'en' ? 'font-sans' : ''} light-mode-bg`} dir={dir}>
-      <main className="relative flex-1 w-full max-w-md mx-auto h-full flex flex-col bg-black shadow-2xl border-x border-white/10 overflow-hidden pb-20">
+      <main className="relative flex-1 w-full max-w-md mx-auto h-full flex flex-col bg-black shadow-2xl border-x border-white/10 overflow-hidden">
         <AnimatePresence mode="wait">
           {view === 'dashboard' && (
             <motion.div 
@@ -125,7 +138,14 @@ export default function App() {
               exit={{ opacity: 0, x: -20 }}
               className="flex-1 overflow-y-auto h-full"
             >
-              <Settings user={currentUser} onLogout={handleLogout} onNavigate={setView} onUserUpdate={setCurrentUser} />
+              <Settings 
+                user={currentUser} 
+                onLogout={handleLogout} 
+                onNavigate={setView} 
+                onUserUpdate={setCurrentUser}
+                theme={theme}
+                setTheme={setTheme}
+              />
             </motion.div>
           )}
         </AnimatePresence>

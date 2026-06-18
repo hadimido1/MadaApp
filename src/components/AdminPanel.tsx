@@ -10,7 +10,7 @@ export function AdminPanel() {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const lang = localStorage.getItem('app_lang') as 'ar' | 'en' || 'ar';
+  const lang = localStorage.getItem('app_lang') as 'ar' | 'en' || 'en';
   const t = getTranslation(lang);
 
   useEffect(() => {
@@ -32,7 +32,7 @@ export function AdminPanel() {
   }, []);
 
   return (
-    <div className="flex-1 flex flex-col relative w-full h-full overflow-y-auto z-10 px-4 pt-12 pb-24 touch-pan-y">
+    <div className="flex-1 flex flex-col relative w-full h-full overflow-y-auto z-10 px-4 pt-12 pb-32 touch-pan-y">
       <div className="relative z-10 w-full max-w-lg mx-auto flex flex-col items-center">
         <div className="w-20 h-20 flex items-center justify-center mb-6 transition-transform hover:scale-110">
           <img src={logo} alt="Mada Icon" className="w-full h-full object-contain" />

@@ -10,7 +10,7 @@ interface VisaCardProps {
 }
 
 export function VisaCard({ user }: VisaCardProps) {
-  const lang = localStorage.getItem('app_lang') as 'ar' | 'en' || 'ar';
+  const lang = localStorage.getItem('app_lang') as 'ar' | 'en' || 'en';
   const t = getTranslation(lang);
 
   const [isRevealed, setIsRevealed] = useState(false);
@@ -33,16 +33,15 @@ export function VisaCard({ user }: VisaCardProps) {
   const rotateY = useSpring(useTransform(x, [-0.5, 0.5], [-15, 15]), springConfig);
 
   const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (!cardRef.current) return;
+    if (!cardRef.current || isFlipped) return;
     const rect = cardRef.current.getBoundingClientRect();
     const width = rect.width;
     const height = rect.height;
+    
     const mouseX = e.clientX - rect.left;
     const mouseY = e.clientY - rect.top;
     
-    // Reverse hover effect when flipped so it feels natural
-    const xVal = mouseX / width - 0.5;
-    x.set(isFlipped ? -xVal : xVal);
+    x.set(mouseX / width - 0.5);
     y.set(mouseY / height - 0.5);
   };
 
@@ -55,12 +54,9 @@ export function VisaCard({ user }: VisaCardProps) {
     if (password === user.pin || (!user.pin && password === '1234')) {
       setIsRevealed(true);
       setError(false);
-    } else if (password) {
-      setIsRevealed(true);
-      setError(true);
-      setTimeout(() => setIsRevealed(false), 500);
     } else {
       setError(true);
+      setIsRevealed(false);
     }
   };
 
@@ -89,7 +85,7 @@ export function VisaCard({ user }: VisaCardProps) {
       </button>
 
       {/* 3D Realistic Card Stage */}
-      <div className="w-full aspect-[1.586] perspective-[2000px] z-10 mx-auto px-2">
+      <div className="w-full aspect-[1.586] perspective-[2000px] z-10 mx-auto px-2 touch-none">
         <motion.div 
           ref={cardRef}
           onPointerMove={handlePointerMove}
@@ -152,7 +148,7 @@ export function VisaCard({ user }: VisaCardProps) {
                       <motion.p 
                         animate={{ opacity: isRevealed ? 1 : 0.4, filter: isRevealed ? 'blur(0px)' : 'blur(5px)' }}
                         onClick={(e) => { e.stopPropagation(); isRevealed && copyToClipboard(user?.card?.number); }}
-                        className={`text-[24px] sm:text-[28px] font-mono tracking-widest flex justify-between text-white drop-shadow-[1px_1px_2px_rgba(0,0,0,0.8)] ${isRevealed ? 'cursor-pointer hover:opacity-80 active:opacity-60 transition-opacity' : ''}`}
+                        className={`text-[16px] min-[320px]:text-[18px] min-[375px]:text-[22px] sm:text-[28px] font-mono tracking-wide sm:tracking-widest flex justify-between text-white drop-shadow-[1px_1px_2px_rgba(0,0,0,0.8)] ${isRevealed ? 'cursor-pointer hover:opacity-80 active:opacity-60 transition-opacity' : ''}`}
                       >
                         <span>{user?.card?.number?.substring(0,4)}</span>
                         <span>{isRevealed ? user?.card?.number?.substring(4,8) : '****'}</span>

@@ -10,14 +10,15 @@ interface SettingsProps {
   onLogout: () => void;
   onNavigate: (v: ViewState) => void;
   onUserUpdate: (u: User) => void;
+  theme: 'dark' | 'light';
+  setTheme: (t: 'dark' | 'light') => void;
 }
 
-export function Settings({ user, onLogout, onNavigate, onUserUpdate }: SettingsProps) {
+export function Settings({ user, onLogout, onNavigate, onUserUpdate, theme, setTheme }: SettingsProps) {
   const [activeModal, setActiveModal] = useState<'privacy' | 'theme' | 'language' | 'accounts' | null>(null);
   const recentUsers = JSON.parse(localStorage.getItem('recent_users') || '[]');
   
-  const [theme, setTheme] = useState<'dark' | 'light'>(localStorage.getItem('app_theme') as 'dark' | 'light' || 'dark');
-  const [language, setLanguage] = useState<'ar' | 'en'>(localStorage.getItem('app_lang') as 'ar' | 'en' || 'ar');
+  const [language, setLanguage] = useState<'ar' | 'en'>(localStorage.getItem('app_lang') as 'ar' | 'en' || 'en');
   const t = getTranslation(language);
 
   // Edit states
@@ -30,11 +31,6 @@ export function Settings({ user, onLogout, onNavigate, onUserUpdate }: SettingsP
   const handleThemeChange = (newTheme: 'dark' | 'light') => {
     setTheme(newTheme);
     localStorage.setItem('app_theme', newTheme);
-    if (newTheme === 'light') {
-      document.documentElement.classList.add('light-mode');
-    } else {
-      document.documentElement.classList.remove('light-mode');
-    }
     setActiveModal(null);
   };
 
@@ -64,7 +60,7 @@ export function Settings({ user, onLogout, onNavigate, onUserUpdate }: SettingsP
   };
 
   return (
-    <div className="flex-1 flex flex-col w-full overflow-y-auto pt-safe pb-24 px-4 bg-black touch-pan-y relative light-mode-bg">
+    <div className="flex-1 flex flex-col w-full overflow-y-auto pt-safe pb-32 px-4 bg-black touch-pan-y relative light-mode-bg">
       <div className="relative z-10 w-full max-w-lg mx-auto pt-10">
         
         <h1 className="text-3xl font-black text-white mb-8 tracking-tight light-mode-text">{t.settings}</h1>
@@ -74,9 +70,9 @@ export function Settings({ user, onLogout, onNavigate, onUserUpdate }: SettingsP
           <div>
             <h2 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-3 px-2">{t.account}</h2>
             <div className="bg-white/[0.03] border border-white/10 rounded-[28px] overflow-hidden flex flex-col shadow-lg light-mode-card">
-              <div className="flex items-center justify-between p-5 border-b border-gray-500/10 active:bg-gray-500/10 transition-colors cursor-pointer group" onClick={() => setActiveModal('accounts' as any)}>
+              <div className="flex items-center justify-between p-5 border-b border-white/10 active:bg-blue-500/10 transition-colors cursor-pointer group" onClick={() => setActiveModal('accounts' as any)}>
                 <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-full bg-gray-500/10 flex items-center justify-center border border-gray-500/20 overflow-hidden">
+                  <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center border border-blue-500/20 overflow-hidden">
                     {user.photoURL ? (
                       <img src={user.photoURL} alt={user.name} referrerPolicy="no-referrer" className="w-full h-full object-cover" />
                     ) : (
@@ -93,61 +89,62 @@ export function Settings({ user, onLogout, onNavigate, onUserUpdate }: SettingsP
                   <ChevronLeft className={`w-4 h-4 transition-transform -rotate-90`} />
                 </div>
               </div>
-              <div className="flex items-center justify-between p-5 active:bg-gray-500/10 transition-colors">
+              <div className="flex items-center justify-between p-5 active:bg-blue-500/10 transition-colors">
                 <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-full bg-gray-500/10 flex items-center justify-center border border-gray-500/20">
-                    <Lock className="w-5 h-5 text-gray-400" />
+                  <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center border border-blue-500/20">
+                    <Lock className="w-5 h-5 text-blue-500" />
                   </div>
                   <div className="flex flex-col">
                     <span className="text-white font-bold text-sm light-mode-text">{t.security}</span>
                     <span className="text-gray-500 text-xs mt-0.5">{t.protected}</span>
                   </div>
                 </div>
-                <CheckCircle2 className="w-5 h-5 text-green-500" />
+                <CheckCircle2 className="w-5 h-5 text-blue-500" />
               </div>
             </div>
           </div>
 
           {/* App Settings */}
           <div>
-            <h2 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-3 px-2">{t.app}</h2>
+            <h2 className="text-xs font-bold text-blue-500/60 uppercase tracking-widest mb-3 px-2">{t.app}</h2>
             <div className="bg-white/[0.03] border border-white/10 rounded-[28px] overflow-hidden flex flex-col shadow-lg light-mode-card">
-              <button onClick={() => setActiveModal('privacy')} className="flex items-center justify-between p-5 border-b border-gray-500/10 active:bg-gray-500/10 transition-colors text-right w-full">
+              <button onClick={() => setActiveModal('privacy')} className="flex items-center justify-between p-5 border-b border-white/10 active:bg-blue-500/10 transition-colors text-right w-full">
                 <div className="flex items-center gap-4">
                   <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center border border-blue-500/20">
                     <Shield className="w-5 h-5 text-blue-500" />
                   </div>
-                  <div className="flex flex-col">
+                  <div className="flex flex-col text-left">
                     <span className="text-white font-bold text-sm light-mode-text">{t.privacy}</span>
+                    <span className="text-gray-500 text-[10px] uppercase tracking-tighter font-black">Security Vault</span>
                   </div>
                 </div>
-                <ChevronLeft className="w-5 h-5 text-gray-500" />
+                <ChevronLeft className={`w-5 h-5 text-gray-500 ${language === 'en' ? 'rotate-180' : ''}`} />
               </button>
               
-              <button onClick={() => setActiveModal('theme')} className="flex items-center justify-between p-5 border-b border-gray-500/10 active:bg-gray-500/10 transition-colors text-right w-full">
+              <button onClick={() => setActiveModal('theme')} className="flex items-center justify-between p-5 border-b border-white/10 active:bg-blue-500/10 transition-colors text-right w-full">
                 <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-full bg-purple-500/10 flex items-center justify-center border border-purple-500/20">
-                    <Palette className="w-5 h-5 text-purple-500" />
+                  <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center border border-blue-500/20">
+                    <Palette className="w-5 h-5 text-blue-500" />
                   </div>
-                  <div className="flex flex-col">
+                  <div className="flex flex-col text-left">
                     <span className="text-white font-bold text-sm light-mode-text">{t.theme}</span>
-                    <span className="text-gray-500 text-xs mt-0.5">{theme === 'dark' ? t.dark : t.light}</span>
+                    <span className="text-blue-500 text-[10px] font-black uppercase tracking-tighter">{theme === 'dark' ? t.dark : t.light}</span>
                   </div>
                 </div>
-                <ChevronLeft className="w-5 h-5 text-gray-500" />
+                <ChevronLeft className={`w-5 h-5 text-gray-500 ${language === 'en' ? 'rotate-180' : ''}`} />
               </button>
               
-              <button onClick={() => setActiveModal('language')} className="flex items-center justify-between p-5 active:bg-gray-500/10 transition-colors text-right w-full">
+              <button onClick={() => setActiveModal('language')} className="flex items-center justify-between p-5 active:bg-blue-500/10 transition-colors text-right w-full">
                 <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-full bg-green-500/10 flex items-center justify-center border border-green-500/20">
-                    <Globe className="w-5 h-5 text-green-500" />
+                  <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center border border-blue-500/20">
+                    <Globe className="w-5 h-5 text-blue-500" />
                   </div>
-                  <div className="flex flex-col">
+                  <div className="flex flex-col text-left">
                     <span className="text-white font-bold text-sm light-mode-text">{t.language}</span>
-                    <span className="text-gray-500 text-xs mt-0.5">{language === 'ar' ? 'العربية' : 'English'}</span>
+                    <span className="text-gray-500 text-[10px] uppercase font-black">{language === 'ar' ? 'العربية' : 'English'}</span>
                   </div>
                 </div>
-                <ChevronLeft className="w-5 h-5 text-gray-500" />
+                <ChevronLeft className={`w-5 h-5 text-gray-500 ${language === 'en' ? 'rotate-180' : ''}`} />
               </button>
             </div>
           </div>
@@ -156,10 +153,10 @@ export function Settings({ user, onLogout, onNavigate, onUserUpdate }: SettingsP
           <div className="mt-4">
             <button 
               onClick={onLogout}
-              className="w-full bg-red-500/10 border border-red-500/20 rounded-[24px] p-5 flex items-center justify-center gap-3 active:scale-[0.98] transition-transform"
+              className="w-full bg-red-600 hover:bg-red-700 text-white rounded-[24px] p-5 flex items-center justify-center gap-3 active:scale-[0.98] transition-transform shadow-lg shadow-red-600/20"
             >
-              <LogOut className="w-5 h-5 text-red-500" />
-              <span className="text-red-500 font-bold text-sm">{t.logoutFull}</span>
+              <LogOut className="w-5 h-5 text-white" />
+              <span className="text-white font-black text-sm uppercase tracking-widest">{t.logoutFull}</span>
             </button>
           </div>
         </div>
@@ -273,25 +270,25 @@ export function Settings({ user, onLogout, onNavigate, onUserUpdate }: SettingsP
             {activeModal === 'theme' && (
               <div className="flex flex-col gap-6 mt-2">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-purple-500/10 flex items-center justify-center border border-purple-500/20">
-                    <Palette className="w-5 h-5 text-purple-500" />
+                  <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center border border-blue-500/20">
+                    <Palette className="w-5 h-5 text-blue-500" />
                   </div>
                   <h2 className="text-lg font-black text-white light-mode-text">{t.theme}</h2>
                 </div>
                 <div className="flex flex-col gap-3">
-                  <button onClick={() => handleThemeChange('dark')} className={`flex items-center justify-between p-4 rounded-2xl border ${theme === 'dark' ? 'border-purple-500 bg-purple-500/10' : 'border-white/5 bg-white/5'} transition-colors`}>
+                  <button onClick={() => handleThemeChange('dark')} className={`flex items-center justify-between p-4 rounded-2xl border ${theme === 'dark' ? 'border-blue-500 bg-blue-500/10' : 'border-white/5 bg-white/5'} transition-colors`}>
                      <div className="flex items-center gap-3">
-                       <Moon className={`w-5 h-5 ${theme === 'dark' ? 'text-purple-400' : 'text-gray-400'}`} />
-                       <span className={`font-bold text-sm ${theme === 'dark' ? 'text-purple-400' : 'text-white light-mode-text'}`}>{t.dark}</span>
+                       <Moon className={`w-5 h-5 ${theme === 'dark' ? 'text-blue-400' : 'text-gray-400'}`} />
+                       <span className={`font-bold text-sm ${theme === 'dark' ? 'text-blue-400' : 'text-white light-mode-text'}`}>{t.dark}</span>
                      </div>
-                     {theme === 'dark' && <div className="w-3 h-3 rounded-full bg-purple-500 shadow-[0_0_10px_#a855f7]" />}
+                     {theme === 'dark' && <div className="w-3 h-3 rounded-full bg-blue-500 shadow-[0_0_10px_#3b82f6]" />}
                   </button>
-                  <button onClick={() => handleThemeChange('light')} className={`flex items-center justify-between p-4 rounded-2xl border ${theme === 'light' ? 'border-purple-500 bg-purple-500/10' : 'border-white/5 bg-white/5'} transition-colors`}>
+                  <button onClick={() => handleThemeChange('light')} className={`flex items-center justify-between p-4 rounded-2xl border ${theme === 'light' ? 'border-blue-500 bg-blue-500/10' : 'border-white/5 bg-white/5'} transition-colors`}>
                      <div className="flex items-center gap-3">
-                       <Sun className={`w-5 h-5 ${theme === 'light' ? 'text-purple-400' : 'text-gray-400'}`} />
-                       <span className={`font-bold text-sm ${theme === 'light' ? 'text-purple-400' : 'text-white light-mode-text'}`}>{t.light}</span>
+                       <Sun className={`w-5 h-5 ${theme === 'light' ? 'text-blue-400' : 'text-gray-400'}`} />
+                       <span className={`font-bold text-sm ${theme === 'light' ? 'text-blue-400' : 'text-white light-mode-text'}`}>{t.light}</span>
                      </div>
-                     {theme === 'light' && <div className="w-3 h-3 rounded-full bg-purple-500 shadow-[0_0_10px_#a855f7]" />}
+                     {theme === 'light' && <div className="w-3 h-3 rounded-full bg-blue-500 shadow-[0_0_10px_#3b82f6]" />}
                   </button>
                 </div>
               </div>
@@ -300,19 +297,19 @@ export function Settings({ user, onLogout, onNavigate, onUserUpdate }: SettingsP
             {activeModal === 'language' && (
               <div className="flex flex-col gap-6 mt-2">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-green-500/10 flex items-center justify-center border border-green-500/20">
-                    <Globe className="w-5 h-5 text-green-500" />
+                  <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center border border-blue-500/20">
+                    <Globe className="w-5 h-5 text-blue-500" />
                   </div>
                   <h2 className="text-lg font-black text-white light-mode-text">{t.language}</h2>
                 </div>
                 <div className="flex flex-col gap-3">
-                  <button onClick={() => handleLanguageChange('ar')} className={`flex items-center justify-between p-4 rounded-2xl border ${language === 'ar' ? 'border-green-500 bg-green-500/10' : 'border-white/5 bg-white/5'} transition-colors`}>
-                     <span className={`font-bold text-sm ${language === 'ar' ? 'text-green-400' : 'text-white light-mode-text'}`}>العربية</span>
-                     {language === 'ar' && <div className="w-3 h-3 rounded-full bg-green-500 shadow-[0_0_10px_#22c55e]" />}
+                  <button onClick={() => handleLanguageChange('ar')} className={`flex items-center justify-between p-4 rounded-2xl border ${language === 'ar' ? 'border-blue-500 bg-blue-500/10' : 'border-white/5 bg-white/5'} transition-colors`}>
+                     <span className={`font-bold text-sm ${language === 'ar' ? 'text-blue-400' : 'text-white light-mode-text'}`}>العربية</span>
+                     {language === 'ar' && <div className="w-3 h-3 rounded-full bg-blue-500 shadow-[0_0_10px_#3b82f6]" />}
                   </button>
-                  <button onClick={() => handleLanguageChange('en')} className={`flex items-center justify-between p-4 rounded-2xl border ${language === 'en' ? 'border-green-500 bg-green-500/10' : 'border-white/5 bg-white/5'} transition-colors`}>
-                     <span className={`font-bold text-sm ${language === 'en' ? 'text-green-400' : 'text-white light-mode-text'}`}>English</span>
-                     {language === 'en' && <div className="w-3 h-3 rounded-full bg-green-500 shadow-[0_0_10px_#22c55e]" />}
+                  <button onClick={() => handleLanguageChange('en')} className={`flex items-center justify-between p-4 rounded-2xl border ${language === 'en' ? 'border-blue-500 bg-blue-500/10' : 'border-white/5 bg-white/5'} transition-colors`}>
+                     <span className={`font-bold text-sm ${language === 'en' ? 'text-blue-400' : 'text-white light-mode-text'}`}>English</span>
+                     {language === 'en' && <div className="w-3 h-3 rounded-full bg-blue-500 shadow-[0_0_10px_#3b82f6]" />}
                   </button>
                 </div>
               </div>

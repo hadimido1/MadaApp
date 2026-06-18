@@ -81,6 +81,21 @@ export const translations = {
     depositTitle: "إيداع نقدي",
     reply: "رد",
     addAccount: "إضافة حساب",
+    loginWithGoogle: "تسجيل الدخول بواسطة جوجل",
+    quickSwitch: "التبديل السريع",
+    remove: "إزالة",
+    madaUser: "مستخدم Mada",
+    setupTitle: "إعداد الملف الشخصي",
+    setupDesc: "أهلاً بك في Mada. يرجى إكمال بياناتك للمتابعة.",
+    ageLabel: "العمر",
+    countryLabel: "البلد",
+    pinLabel: "رمز PIN للبطاقة (4 أرقام)",
+    createAccount: "إنشاء الحساب",
+    namePlaceholder: "الاسم الكامل",
+    agePlaceholder: "مثال: 25",
+    countryPlaceholder: "مثال: الإمارات",
+    pinPlaceholder: "1234",
+    loginError: "حدث خطأ أثناء تسجيل الدخول. يرجى المحاولة مرة أخرى.",
   },
   en: {
     dashboard: "Dashboard",
@@ -164,9 +179,24 @@ export const translations = {
     depositTitle: "Cash Deposit",
     reply: "Reply",
     addAccount: "Add Account",
+    loginWithGoogle: "Login with Google",
+    quickSwitch: "Quick Switch",
+    remove: "Remove",
+    madaUser: "Mada User",
+    setupTitle: "Setup Profile",
+    setupDesc: "Welcome to Mada. Please complete your details to continue.",
+    ageLabel: "Age",
+    countryLabel: "Country",
+    pinLabel: "Card PIN (4 digits)",
+    createAccount: "Create Account",
+    namePlaceholder: "Full Name",
+    agePlaceholder: "e.g. 25",
+    countryPlaceholder: "e.g. UAE",
+    pinPlaceholder: "1234",
+    loginError: "An error occurred during login. Please try again.",
   }
 };
 
 export function getTranslation(lang: 'ar' | 'en') {
-  return translations[lang] || translations['ar'];
+  return translations[lang] || translations['en'];
 }
