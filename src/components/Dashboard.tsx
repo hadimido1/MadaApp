@@ -12,22 +12,35 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Scanner } from '@yudiel/react-qr-scanner';
 import { QRCode } from 'react-qrcode-logo';
 
-export function Dashboard({ user, onNavigate, onUserUpdate }: { user: User, onNavigate: (v: ViewState) => void, onUserUpdate: (u: User) => void }) {
+export function Dashboard({ user, onNavigate, onUserUpdate, theme }: { user: User, onNavigate: (v: ViewState) => void, onUserUpdate: (u: User) => void, theme: 'dark' | 'light' }) {
   const lang = localStorage.getItem('app_lang') as 'ar' | 'en' || 'en';
   const t = getTranslation(lang);
 
   const [activeModal, setActiveModal] = useState<'receive' | 'transfer' | 'notifications' | null>(null);
   const [showNotification, setShowNotification] = useState(false);
 
-  // Audio utility
-  const playSound = (type: 'transaction' | 'notification') => {
-    const urls = {
-      notification: 'https://assets.mixkit.co/active_storage/sfx/2857/2857-preview.mp3',
-      transaction: 'https://assets.mixkit.co/active_storage/sfx/2358/2358-preview.mp3'
+  // Audio utility with preloading
+  const audioRefs = useRef<{ [key: string]: HTMLAudioElement }>({});
+
+  useEffect(() => {
+    // Preload sounds
+    audioRefs.current = {
+      notification: new Audio('https://assets.mixkit.co/active_storage/sfx/2857/2857-preview.mp3'),
+      transaction: new Audio('https://assets.mixkit.co/active_storage/sfx/2358/2358-preview.mp3')
     };
-    const audio = new Audio(urls[type]);
-    audio.volume = 0.4;
-    audio.play().catch(e => console.log("Audio play blocked", e));
+    Object.values(audioRefs.current).forEach((a) => {
+      const audio = a as HTMLAudioElement;
+      audio.load();
+      audio.volume = 0.4;
+    });
+  }, []);
+
+  const playSound = (type: 'transaction' | 'notification') => {
+    const audio = audioRefs.current[type];
+    if (audio) {
+      audio.currentTime = 0;
+      audio.play().catch(e => console.log("Audio play blocked", e));
+    }
   };
 
   useEffect(() => {
@@ -123,6 +136,11 @@ export function Dashboard({ user, onNavigate, onUserUpdate }: { user: User, onNa
     if (!transferAmount || isNaN(Number(transferAmount)) || Number(transferAmount) <= 0 || !recipientId) return;
     
     const amountNum = Number(transferAmount);
+    if (amountNum < 2) {
+      setTransferError(lang === 'ar' ? 'الحد الأدنى للتحويل هو 2$' : 'Minimum transfer amount is $2');
+      return;
+    }
+    
     const commission = amountNum * 0.02; // 2% Commission
     const totalDeduction = amountNum + commission;
 
@@ -293,26 +311,26 @@ export function Dashboard({ user, onNavigate, onUserUpdate }: { user: User, onNa
         <div className="flex justify-between items-center w-full mb-6">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 flex items-center justify-center transition-all hover:scale-110">
-              <img src={logo} alt="Mada Logo" className="w-full h-full object-contain" />
+              <img src={logo} alt="Mada Logo" className="w-full h-full object-contain light-mode-logo" />
             </div>
             <div className="flex flex-col">
-               <h1 className="text-2xl font-black text-white italic tracking-tighter leading-none">Mada</h1>
+               <h1 className="text-2xl font-black text-white italic tracking-tighter leading-none light-mode-text">Mada</h1>
                <p className="text-[9px] text-blue-400 font-bold uppercase tracking-[0.3em] mt-1 opacity-60 leading-none">Status: Secure</p>
             </div>
           </div>
           
-          <button onClick={() => setActiveModal('notifications')} className={`relative p-2.5 bg-white/5 rounded-full border border-white/10 ${unreadCount > 0 ? 'animate-bell-wiggle' : ''}`}>
-             <Bell className="w-5 h-5 text-white" />
+          <button onClick={() => setActiveModal('notifications')} className={`relative p-2.5 bg-white/5 rounded-full border border-white/10 ${unreadCount > 0 ? 'animate-bell-wiggle' : ''} light-mode-btn`}>
+             <Bell className="w-5 h-5 text-white light-mode-text" />
              {unreadCount > 0 && <span className="absolute top-0 right-0 w-3 h-3 bg-red-500 rounded-full border-2 border-black animate-pulse"></span>}
           </button>
         </div>
 
         {/* Balance Section - Integrated & Slimmer */}
-        <div className="w-full bg-white/[0.03] border border-white/10 rounded-[28px] p-6 shadow-xl mb-8 flex items-center justify-between relative overflow-hidden group">
+        <div className="w-full bg-white/[0.03] border border-white/10 rounded-[28px] p-6 shadow-xl mb-8 flex items-center justify-between relative overflow-hidden group light-mode-card">
           <div className="absolute inset-0 bg-blue-600/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
           <div className="flex flex-col relative z-10">
             <p className="text-gray-500 text-[10px] font-black uppercase tracking-[0.2em] mb-1">{t.balance}</p>
-            <div className="text-3xl font-black text-white tracking-tighter flex items-baseline gap-1 font-mono">
+            <div className="text-3xl font-black text-white tracking-tighter flex items-baseline gap-1 font-mono light-mode-text">
                <span className="text-sm text-blue-400">$</span>
                {(user.balance || 0).toFixed(2)}
             </div>
@@ -325,26 +343,26 @@ export function Dashboard({ user, onNavigate, onUserUpdate }: { user: User, onNa
         </div>
 
         {/* 3D Visa Card Component */}
-        <div className="w-full scale-95 sm:scale-100 transition-transform">
-           <VisaCard user={user} />
+        <div className="w-full scale-90 sm:scale-100 transition-transform origin-center">
+           <VisaCard user={user} theme={theme} />
         </div>
         
         {/* Quick Actions - Clean Grid */}
         <div className="w-full mt-10 mb-6 px-2">
           <div className="grid grid-cols-4 gap-4">
-            {[
-              { icon: ArrowUpRight, label: t.transfer, action: () => setActiveModal('transfer') },
-              { icon: ArrowDownRight, label: t.receive, action: () => setActiveModal('receive') },
-              { icon: QrCode, label: "Scan", action: () => { setActiveModal('transfer'); setIsScanning(true); } },
-              { icon: Settings2, label: t.settings, action: () => onNavigate('settings') },
-            ].map((btn, i) => (
-               <button key={i} onClick={btn.action} className="flex flex-col items-center gap-2 group">
-                 <div className="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center transition-all group-hover:bg-blue-600/20 group-hover:border-blue-500/30 group-active:scale-90">
-                   <btn.icon className="w-5 h-5 text-white" />
-                 </div>
-                 <span className="text-[10px] font-bold text-gray-400 group-hover:text-white transition-colors">{btn.label}</span>
-              </button>
-            ))}
+              {[
+               { icon: ArrowUpRight, label: t.transfer, action: () => setActiveModal('transfer') },
+               { icon: ArrowDownRight, label: t.receive, action: () => setActiveModal('receive') },
+               { icon: QrCode, label: "Scan", action: () => { setActiveModal('transfer'); setIsScanning(true); } },
+               { icon: Settings2, label: t.settings, action: () => onNavigate('settings') },
+             ].map((btn, i) => (
+                <button key={i} onClick={btn.action} className="flex flex-col items-center gap-2 group">
+                  <div className="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center transition-all group-hover:bg-blue-600/20 group-hover:border-blue-500/30 group-active:scale-90 light-mode-btn">
+                    <btn.icon className="w-5 h-5 text-white light-mode-text" />
+                  </div>
+                  <span className="text-[10px] font-bold text-gray-400 group-hover:text-white transition-colors light-mode-text">{btn.label}</span>
+               </button>
+             ))}
           </div>
         </div>
       </div>
@@ -372,7 +390,7 @@ export function Dashboard({ user, onNavigate, onUserUpdate }: { user: User, onNa
                     placeholder="User ID / Email" 
                   />
                   <button onClick={() => setIsScanning(true)} className="bg-white/10 p-4 rounded-2xl border border-white/10 active:scale-95 transition-transform light-mode-btn">
-                    <QrCode className="w-5 h-5 text-white" />
+                    <QrCode className="w-5 h-5 text-white light-mode-text" />
                   </button>
                 </div>
               </div>
@@ -446,7 +464,7 @@ export function Dashboard({ user, onNavigate, onUserUpdate }: { user: User, onNa
             </div>
 
             <div className="bg-white p-5 rounded-[40px] mb-2 shadow-[0_0_50px_rgba(255,255,255,0.1)]">
-              <QRCode value={user.id} size={180} qrStyle="dots" eyeRadius={10} fgColor="#000000" />
+              <QRCode value={user.id} size={180} qrStyle="dots" eyeRadius={10} fgColor={theme === 'light' ? "#000000" : "#000000"} />
             </div>
 
             <div className="w-full flex flex-col gap-3 bg-white/5 p-5 rounded-2xl border border-white/5 text-center">
@@ -497,7 +515,7 @@ export function Dashboard({ user, onNavigate, onUserUpdate }: { user: User, onNa
                   </div>
 
                   <div className="bg-white p-8 rounded-[60px] shadow-2xl z-10">
-                     <QRCode value={user.id} size={240} qrStyle="dots" eyeRadius={15} fgColor="#000000" />
+                     <QRCode value={user.id} size={240} qrStyle="dots" eyeRadius={15} fgColor={theme === 'light' ? "#000000" : "#000000"} />
                   </div>
 
                   <div className="w-full bg-white/5 p-8 rounded-[40px] border border-white/10 z-10 flex flex-col items-center text-center">
@@ -529,8 +547,8 @@ export function Dashboard({ user, onNavigate, onUserUpdate }: { user: User, onNa
           
           {user.notifications?.some(n => !n.read && n.type === 'transfer_received') && (
             <div className="absolute inset-0 pointer-events-none overflow-hidden z-0 flex justify-center">
-              {Array.from({length: 15}).map((_, i) => (
-                <div key={i} className="absolute text-green-500/60 font-bold text-2xl opacity-0 animate-float-up" style={{ left: `${Math.random() * 100}%`, animationDelay: `${Math.random() * 2}s`, fontSize: `${Math.random() * 20 + 10}px` }}>
+              {Array.from({length: 12}).map((_, i) => (
+                <div key={i} className="absolute text-green-500/30 font-bold opacity-0 animate-float-up" style={{ left: `${Math.random() * 100}%`, animationDelay: `${Math.random() * 2}s`, fontSize: `${Math.random() * 15 + 10}px` }}>
                   $
                 </div>
               ))}

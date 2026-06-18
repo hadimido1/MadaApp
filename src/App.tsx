@@ -16,7 +16,7 @@ export default function App() {
   const [firebaseUser, setFirebaseUser] = useState<any>(null);
   const [view, setView] = useState<ViewState>('login');
   const [loading, setLoading] = useState(true);
-  const [theme, setTheme] = useState<'dark' | 'light'>(localStorage.getItem('app_theme') as 'dark' | 'light' || 'dark');
+  const [theme, setTheme] = useState<'dark' | 'light'>(localStorage.getItem('app_theme') as 'dark' | 'light' || 'light');
 
   const lang = localStorage.getItem('app_lang') || 'en';
   const dir = lang === 'ar' ? 'rtl' : 'ltr';
@@ -105,7 +105,7 @@ export default function App() {
 
   return (
     <div className={`fixed inset-0 w-full h-full bg-black text-gray-100 font-sans flex flex-col selection:bg-blue-500/30 overflow-hidden ${lang === 'en' ? 'font-sans' : ''} light-mode-bg`} dir={dir}>
-      <main className="relative flex-1 w-full max-w-md mx-auto h-full flex flex-col bg-black shadow-2xl border-x border-white/10 overflow-hidden">
+      <main className="relative flex-1 w-full max-w-md mx-auto h-full flex flex-col bg-black shadow-2xl border-x border-white/10 overflow-hidden light-mode-bg">
         <AnimatePresence mode="wait">
           {view === 'dashboard' && (
             <motion.div 
@@ -116,7 +116,7 @@ export default function App() {
               transition={{ type: 'spring', damping: 25, stiffness: 200 }}
               className="flex-1 overflow-y-auto h-full"
             >
-              <Dashboard user={currentUser} onNavigate={setView} onUserUpdate={setCurrentUser} />
+              <Dashboard user={currentUser} onNavigate={setView} onUserUpdate={setCurrentUser} theme={theme} />
             </motion.div>
           )}
           {view === 'admin' && (

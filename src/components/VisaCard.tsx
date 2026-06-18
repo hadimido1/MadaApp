@@ -7,9 +7,10 @@ import logo from '../assets/images/regenerated_image_1781780076153.png';
 
 interface VisaCardProps {
   user: User;
+  theme: 'dark' | 'light';
 }
 
-export function VisaCard({ user }: VisaCardProps) {
+export function VisaCard({ user, theme }: VisaCardProps) {
   const lang = localStorage.getItem('app_lang') as 'ar' | 'en' || 'en';
   const t = getTranslation(lang);
 
@@ -78,14 +79,14 @@ export function VisaCard({ user }: VisaCardProps) {
       {/* Flip Button Above Card */}
       <button 
         onClick={(e) => { e.stopPropagation(); setIsFlipped(!isFlipped); }}
-        className="flex items-center gap-2 px-6 py-2.5 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 transition-all active:scale-95 text-white font-bold backdrop-blur-md"
+        className="flex items-center gap-2 px-6 py-2.5 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 transition-all active:scale-95 text-white font-bold backdrop-blur-md light-mode-btn"
       >
-        <RotateCcw className={`w-4 h-4 transition-transform duration-500 ${isFlipped ? 'rotate-180' : ''}`} />
-        <span>{isFlipped ? (lang === 'ar' ? 'عرض الوجه' : 'View Front') : (lang === 'ar' ? 'عرض الظهر' : 'View Back')}</span>
+        <RotateCcw className={`w-4 h-4 transition-transform duration-500 ${isFlipped ? 'rotate-180' : ''} light-mode-text`} />
+        <span className="light-mode-text">{isFlipped ? (lang === 'ar' ? 'عرض الوجه' : 'View Front') : (lang === 'ar' ? 'عرض الظهر' : 'View Back')}</span>
       </button>
 
       {/* 3D Realistic Card Stage */}
-      <div className="w-full aspect-[1.586] perspective-[2000px] z-10 mx-auto px-2 touch-none">
+      <div className="w-full aspect-[1.586] perspective-[2000px] z-10 mx-auto px-0 touch-none overflow-visible">
         <motion.div 
           ref={cardRef}
           onPointerMove={handlePointerMove}
@@ -117,7 +118,7 @@ export function VisaCard({ user }: VisaCardProps) {
                 <div className="flex justify-between items-start" dir="ltr">
                   <div className="flex items-start gap-4">
                     <div className="w-12 h-12 flex items-center justify-center -mt-1 transition-transform hover:scale-110">
-                      <img src={logo} alt="Mada Logo" className="w-full h-full object-contain" />
+                      <img src={logo} alt="Mada Logo" className="w-full h-full object-contain light-mode-logo" />
                     </div>
                     <div className="flex flex-col gap-3">
                       <div className="w-12 h-9 bg-gradient-to-br from-[#e5c158] via-[#f9e596] to-[#b38b22] rounded-md relative overflow-hidden shadow-inner opacity-90 border border-yellow-800/80">
@@ -259,8 +260,8 @@ export function VisaCard({ user }: VisaCardProps) {
       {/* Flip Button & Action Enclave */}
       <div className="w-full px-4 z-10 pb-4">
         {!isRevealed ? (
-          <div className="bg-black border border-white/20 rounded-[28px] p-6 shadow-[0_10px_30px_rgba(255,255,255,0.05)] flex flex-col gap-4">
-            <h3 className="text-center text-sm font-bold text-gray-200">{t.verifyToUnlock}</h3>
+          <div className="bg-black border border-white/20 rounded-[28px] p-6 shadow-[0_10px_30px_rgba(255,255,255,0.05)] flex flex-col gap-4 light-mode-card">
+            <h3 className="text-center text-sm font-bold text-gray-200 light-mode-text">{t.verifyToUnlock}</h3>
             <div className="flex flex-col gap-3">
               <input 
                 type="password" 
@@ -268,12 +269,12 @@ export function VisaCard({ user }: VisaCardProps) {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleReveal()}
-                className="w-full bg-[#111] border border-white/10 rounded-2xl px-5 py-4 text-center text-white focus:outline-none focus:border-white/50 transition-colors placeholder:text-gray-600 font-mono text-lg tracking-widest"
+                className="w-full bg-[#111] border border-white/10 rounded-2xl px-5 py-4 text-center text-white focus:outline-none focus:border-white/50 transition-colors placeholder:text-gray-600 font-mono text-lg tracking-widest light-mode-bg light-mode-text"
               />
               <button 
                 onClick={handleReveal}
                 disabled={password.length < 4}
-                className="w-full bg-white text-black px-6 py-4 rounded-2xl font-black transition-all text-base disabled:opacity-40 disabled:cursor-not-allowed enabled:active:scale-[0.98]"
+                className="w-full bg-white text-black px-6 py-4 rounded-2xl font-black transition-all text-base disabled:opacity-40 disabled:cursor-not-allowed enabled:active:scale-[0.98] light-mode-btn"
               >
                 {t.authToView}
               </button>
@@ -281,11 +282,11 @@ export function VisaCard({ user }: VisaCardProps) {
             {error && <p className="text-red-400 text-xs font-bold text-center">{t.wrongPin}</p>}
           </div>
         ) : (
-          <div className="bg-[#111] border border-white/30 rounded-[28px] p-6 flex flex-col items-center gap-3 shadow-2xl">
-             <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center">
-               <Unlock className="w-6 h-6 text-white" />
+          <div className="bg-[#111] border border-white/30 rounded-[28px] p-6 flex flex-col items-center gap-3 shadow-2xl light-mode-card">
+             <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center light-mode-btn">
+               <Unlock className="w-6 h-6 text-white light-mode-text" />
              </div>
-             <p className="text-sm font-black text-white">{t.unlockData}</p>
+             <p className="text-sm font-black text-white light-mode-text">{t.unlockData}</p>
              <button 
                onClick={() => {
                  setIsRevealed(false);

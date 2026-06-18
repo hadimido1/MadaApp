@@ -64,32 +64,32 @@ export function Login({ onLoginSuccess }: { onLoginSuccess: (user: any) => void 
   };
 
   return (
-    <div className="min-h-screen w-full bg-black flex items-center justify-center p-6 relative overflow-hidden" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
+    <div className="min-h-screen w-full bg-black flex items-center justify-center p-6 relative overflow-hidden light-mode-bg" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
       <div className="w-full max-w-[320px] relative z-10 flex flex-col items-center">
         <div className="w-24 h-24 mb-6 flex items-center justify-center transition-all hover:scale-110 duration-500">
           <img src={logo} alt="Mada Icon" className="w-full h-full object-contain" />
         </div>
         
-        <h1 className="text-4xl font-black text-white tracking-tighter mb-1 italic">Mada</h1>
+        <h1 className="text-4xl font-black text-white tracking-tighter mb-1 italic light-mode-text">Mada</h1>
         <p className="text-gray-600 text-[10px] mb-12 text-center font-bold uppercase tracking-[0.4em]">Premium Financial enclave</p>
 
         {recentUsers.length > 0 && (
           <div className="w-full mb-10">
-            <p className="text-white text-[10px] font-black mb-4 opacity-40 uppercase tracking-[0.2em] text-center">{t.quickSwitch}</p>
+            <p className="text-white text-[10px] font-black mb-4 opacity-40 uppercase tracking-[0.2em] text-center light-mode-text">{t.quickSwitch}</p>
             <div className="flex flex-col gap-3">
               {recentUsers.map((u, i) => (
                 <div 
                   key={i} 
                   onClick={() => handleGoogleLogin()}
-                  className="flex items-center justify-between p-4 rounded-[28px] bg-white/[0.03] border border-white/5 hover:bg-white/10 hover:border-white/20 transition-all cursor-pointer group relative overflow-hidden"
+                  className="flex items-center justify-between p-4 rounded-[28px] bg-white/[0.03] border border-white/5 hover:bg-white/10 hover:border-white/20 transition-all cursor-pointer group relative overflow-hidden light-mode-card"
                 >
                   <div className={`absolute inset-0 bg-gradient-to-${lang === 'ar' ? 'l' : 'r'} from-blue-500/0 to-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity`}></div>
                   <div className={`flex items-center gap-4 relative z-10 ${lang === 'ar' ? 'flex-row' : 'flex-row-reverse'}`}>
-                    <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center overflow-hidden shadow-xl group-hover:scale-105 transition-transform">
+                    <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center overflow-hidden shadow-xl group-hover:scale-105 transition-transform light-mode-card">
                       {u.photoURL ? <img src={u.photoURL} className="w-full h-full object-cover" /> : <User className="w-6 h-6 text-blue-400" />}
                     </div>
                     <div className={`flex flex-col ${lang === 'ar' ? 'text-right' : 'text-left'}`}>
-                      <span className="text-white text-sm font-black group-hover:text-blue-400 transition-colors">{u.name || (lang === 'ar' ? 'مستخدم Mada' : 'Mada User')}</span>
+                      <span className="text-white text-sm font-black group-hover:text-blue-400 transition-colors light-mode-text">{u.name || (lang === 'ar' ? 'مستخدم Mada' : 'Mada User')}</span>
                       <span className="text-gray-500 text-[9px] font-mono opacity-60">{u.email}</span>
                     </div>
                   </div>

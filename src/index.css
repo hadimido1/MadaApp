@@ -78,3 +78,7 @@ input, textarea {
   background-color: rgba(0, 0, 0, 0.05) !important;
   color: #000 !important;
 }
+
+.light-mode .light-mode-logo {
+  filter: invert(1) brightness(0);
+}
