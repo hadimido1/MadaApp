@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { User, Trash2 } from 'lucide-react';
 import { signInWithGoogle } from '../firebase';
+import logo from '../assets/images/regenerated_image_1781780076153.png';
 
 export function Login({ onLoginSuccess }: { onLoginSuccess: (user: any) => void }) {
   const [loading, setLoading] = useState(false);
@@ -62,7 +63,7 @@ export function Login({ onLoginSuccess }: { onLoginSuccess: (user: any) => void 
     <div className="min-h-screen w-full bg-black flex items-center justify-center p-6 relative overflow-hidden" dir="rtl">
       <div className="w-full max-w-[320px] relative z-10 flex flex-col items-center">
         <div className="w-24 h-24 mb-6 flex items-center justify-center transition-all hover:scale-110 duration-500">
-          <img src="/src/assets/images/regenerated_image_1781780076153.png" alt="Mada Icon" className="w-full h-full object-contain" />
+          <img src={logo} alt="Mada Icon" className="w-full h-full object-contain" />
         </div>
         
         <h1 className="text-4xl font-black text-white tracking-tighter mb-1 italic">Mada</h1>

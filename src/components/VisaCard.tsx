@@ -3,6 +3,7 @@ import { Lock, Unlock, Wifi, Copy, RotateCcw } from 'lucide-react';
 import { motion, useMotionValue, useSpring, useTransform } from 'motion/react';
 import { User } from '../types';
 import { getTranslation } from '../i18n';
+import logo from '../assets/images/regenerated_image_1781780076153.png';
 
 interface VisaCardProps {
   user: User;
@@ -120,7 +121,7 @@ export function VisaCard({ user }: VisaCardProps) {
                 <div className="flex justify-between items-start" dir="ltr">
                   <div className="flex items-start gap-4">
                     <div className="w-12 h-12 flex items-center justify-center -mt-1 transition-transform hover:scale-110">
-                      <img src="/src/assets/images/regenerated_image_1781780076153.png" alt="Mada Logo" className="w-full h-full object-contain" />
+                      <img src={logo} alt="Mada Logo" className="w-full h-full object-contain" />
                     </div>
                     <div className="flex flex-col gap-3">
                       <div className="w-12 h-9 bg-gradient-to-br from-[#e5c158] via-[#f9e596] to-[#b38b22] rounded-md relative overflow-hidden shadow-inner opacity-90 border border-yellow-800/80">

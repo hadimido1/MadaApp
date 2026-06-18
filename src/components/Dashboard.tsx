@@ -6,6 +6,7 @@ import { useState, useEffect, useRef } from 'react';
 import { toPng } from 'html-to-image';
 import { doc, updateDoc, arrayUnion } from 'firebase/firestore';
 import { db } from '../firebase';
+import logo from '../assets/images/regenerated_image_1781780076153.png';
 
 import { Scanner } from '@yudiel/react-qr-scanner';
 import { QRCode } from 'react-qrcode-logo';
@@ -222,7 +223,7 @@ export function Dashboard({ user, onNavigate, onUserUpdate }: { user: User, onNa
         <div className="flex justify-between items-center w-full mb-6">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 flex items-center justify-center transition-all hover:scale-110">
-              <img src="/src/assets/images/regenerated_image_1781780076153.png" alt="Mada Logo" className="w-full h-full object-contain" />
+              <img src={logo} alt="Mada Logo" className="w-full h-full object-contain" />
             </div>
             <div className="flex flex-col">
                <h1 className="text-2xl font-black text-white italic tracking-tighter leading-none">Mada</h1>
@@ -419,7 +420,7 @@ export function Dashboard({ user, onNavigate, onUserUpdate }: { user: User, onNa
                   
                   <div className="flex flex-col items-center z-10">
                      <div className="w-16 h-16 mb-4">
-                        <img src="/src/assets/images/regenerated_image_1781780076153.png" className="w-full h-full object-contain" />
+                        <img src={logo} className="w-full h-full object-contain" />
                      </div>
                      <h1 className="text-3xl font-black text-white italic tracking-tighter">Mada</h1>
                      <p className="text-[8px] text-gray-500 font-bold uppercase tracking-[0.4em] mt-1">Premium Financial Enclave</p>

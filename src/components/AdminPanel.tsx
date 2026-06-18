@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { User } from '../types';
 import { Shield, Lock } from 'lucide-react';
 import { db } from '../firebase';
 import { collection, getDocs } from 'firebase/firestore';
 import { getTranslation } from '../i18n';
+import logo from '../assets/images/regenerated_image_1781780076153.png';
 
 export function AdminPanel() {
   const [users, setUsers] = useState<User[]>([]);
@@ -34,7 +35,7 @@ export function AdminPanel() {
     <div className="flex-1 flex flex-col relative w-full h-full overflow-y-auto z-10 px-4 pt-12 pb-24 touch-pan-y">
       <div className="relative z-10 w-full max-w-lg mx-auto flex flex-col items-center">
         <div className="w-20 h-20 flex items-center justify-center mb-6 transition-transform hover:scale-110">
-          <img src="/src/assets/images/regenerated_image_1781780076153.png" alt="Mada Icon" className="w-full h-full object-contain" />
+          <img src={logo} alt="Mada Icon" className="w-full h-full object-contain" />
         </div>
         <h1 className="text-3xl font-black text-white mb-2 text-center tracking-tight light-mode-text">{t.usersList}</h1>
         <p className="text-gray-400 text-sm text-center mb-10 max-w-[280px] leading-relaxed font-medium">

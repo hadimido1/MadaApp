@@ -1,5 +1,6 @@
 import { LayoutDashboard, Users, Shield, LogOut } from 'lucide-react';
 import { User, ViewState } from '../types';
+import logo from '../assets/images/regenerated_image_1781780076153.png';
 
 interface SidebarProps {
   user: User;
@@ -14,7 +15,7 @@ export function Sidebar({ user, currentView, onNavigate, onLogout }: SidebarProp
       <div className="p-8 pb-4">
         <div className="flex items-center gap-4 mb-10">
           <div className="w-10 h-10 flex items-center justify-center shrink-0">
-            <img src="/src/assets/images/regenerated_image_1781780076153.png" alt="Mada Logo" className="w-full h-full object-contain" />
+            <img src={logo} alt="Mada Logo" className="w-full h-full object-contain" />
           </div>
           <h2 className="text-xl font-black italic tracking-tighter text-white">Mada</h2>
         </div>

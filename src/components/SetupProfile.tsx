@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Shield } from 'lucide-react';
 import { generateUniqueVirtualCard } from '../utils';
+import logo from '../assets/images/regenerated_image_1781780076153.png';
 
 export function SetupProfile({ defaultName, onComplete }: { defaultName: string, onComplete: (profileData: any) => void }) {
   const [name, setName] = useState(defaultName || '');
@@ -32,7 +33,7 @@ export function SetupProfile({ defaultName, onComplete }: { defaultName: string,
     <div className="min-h-screen w-full bg-black flex items-center justify-center p-6 relative overflow-hidden" dir="rtl">
       <div className="w-full max-w-sm relative z-10 flex flex-col items-center">
         <div className="w-20 h-20 mb-6 flex items-center justify-center transition-all hover:scale-110 duration-500">
-          <img src="/src/assets/images/regenerated_image_1781780076153.png" alt="Mada Icon" className="w-full h-full object-contain" />
+          <img src={logo} alt="Mada Icon" className="w-full h-full object-contain" />
         </div>
         
         <h1 className="text-3xl font-black text-white tracking-tighter mb-1 italic">Mada</h1>
