@@ -1,0 +1,6 @@
+{
+  "name": "Mada - Financial Enclave",
+  "description": "Mada is a premium financial enclave featuring 3D card visualizations, quick account switching, and real-time notifications with professional branding.",
+  "requestFramePermissions": ["camera"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

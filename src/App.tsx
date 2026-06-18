@@ -1,0 +1,141 @@
+import { useState, useEffect } from 'react';
+import { ViewState, User } from './types';
+import { Login } from './components/Login';
+import { SetupProfile } from './components/SetupProfile';
+import { BottomNav } from './components/BottomNav';
+import { Dashboard } from './components/Dashboard';
+import { AdminPanel } from './components/AdminPanel';
+import { Settings } from './components/Settings';
+import { auth, db, signOutUser } from './firebase';
+import { onAuthStateChanged } from 'firebase/auth';
+import { doc, getDoc, setDoc, onSnapshot, collection, getDocs, updateDoc, query, where } from 'firebase/firestore';
+import { motion, AnimatePresence } from 'motion/react';
+
+export default function App() {
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [firebaseUser, setFirebaseUser] = useState<any>(null);
+  const [view, setView] = useState<ViewState>('login');
+  const [loading, setLoading] = useState(true);
+
+  const lang = localStorage.getItem('app_lang') || 'ar';
+  const dir = lang === 'ar' ? 'rtl' : 'ltr';
+
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('app_theme');
+    if (savedTheme === 'light') {
+      document.documentElement.classList.add('light-mode');
+    }
+
+    const unsubscribe = onAuthStateChanged(auth, async (u) => {
+      setFirebaseUser(u);
+      if (u) {
+        const userDocRef = doc(db, 'users', u.uid);
+        const userSnap = await getDoc(userDocRef);
+        
+        if (userSnap.exists()) {
+          const data = userSnap.data();
+          if (!data.photoURL && u.photoURL) {
+            await updateDoc(userDocRef, { photoURL: u.photoURL });
+          }
+          setCurrentUser({ id: u.uid, photoURL: u.photoURL || data.photoURL, ...data } as User);
+          setView('dashboard');
+        } else {
+          setView('setup');
+        }
+      } else {
+        setCurrentUser(null);
+        setView('login');
+      }
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  const handleProfileComplete = async (profileData: any) => {
+    if (!firebaseUser) return;
+    try {
+      const userData = {
+        ...profileData,
+        email: firebaseUser.email,
+        photoURL: firebaseUser.photoURL || '',
+      };
+      await setDoc(doc(db, 'users', firebaseUser.uid), userData);
+      setCurrentUser({ id: firebaseUser.uid, ...userData } as User);
+      setView('dashboard');
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleLogout = async () => {
+    await signOutUser();
+    setCurrentUser(null);
+    setView('login');
+  };
+
+  if (loading) {
+    return <div className="h-screen w-full bg-black flex items-center justify-center">
+      <div className="w-8 h-8 rounded-full border-2 border-white/20 border-t-white animate-spin"></div>
+    </div>;
+  }
+
+  if (!currentUser && view === 'login') {
+    return <Login onLoginSuccess={() => {}} />;
+  }
+
+  if (view === 'setup' && firebaseUser) {
+    return <SetupProfile defaultName={firebaseUser.displayName} onComplete={handleProfileComplete} />;
+  }
+
+  if (!currentUser) return null;
+
+  return (
+    <div className={`fixed inset-0 w-full h-full bg-black text-gray-100 font-sans flex flex-col selection:bg-blue-500/30 overflow-hidden ${lang === 'en' ? 'font-sans' : ''} light-mode-bg`} dir={dir}>
+      <main className="relative flex-1 w-full max-w-md mx-auto h-full flex flex-col bg-black shadow-2xl border-x border-white/10 overflow-hidden pb-20">
+        <AnimatePresence mode="wait">
+          {view === 'dashboard' && (
+            <motion.div 
+              key="dashboard"
+              initial={{ opacity: 0, scale: 0.98 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 1.02 }}
+              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+              className="flex-1 overflow-y-auto h-full"
+            >
+              <Dashboard user={currentUser} onNavigate={setView} onUserUpdate={setCurrentUser} />
+            </motion.div>
+          )}
+          {view === 'admin' && (
+            <motion.div 
+              key="admin"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              className="flex-1 overflow-y-auto h-full"
+            >
+              <AdminPanel />
+            </motion.div>
+          )}
+          {view === 'settings' && (
+            <motion.div 
+              key="settings"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              className="flex-1 overflow-y-auto h-full"
+            >
+              <Settings user={currentUser} onLogout={handleLogout} onNavigate={setView} onUserUpdate={setCurrentUser} />
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <BottomNav 
+          currentView={view} 
+          onNavigate={(v) => setView(v)} 
+          isAdmin={currentUser.role === 'admin'}
+        />
+      </main>
+    </div>
+  );
+}

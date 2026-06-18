@@ -1,0 +1,80 @@
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=JetBrains+Mono:wght@400;500;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Cairo", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+}
+
+body {
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior: none;
+  -webkit-user-select: none;
+  user-select: none;
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+}
+
+input, textarea {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+@keyframes floatUp {
+  0% { transform: translateY(100vh) scale(0.5) rotate(0deg); opacity: 0; }
+  20% { opacity: 1; }
+  80% { opacity: 1; }
+  100% { transform: translateY(-20vh) scale(1.5) rotate(360deg); opacity: 0; }
+}
+
+@keyframes bellWiggle {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-10deg); }
+  50% { transform: rotate(10deg); }
+  75% { transform: rotate(-5deg); }
+}
+
+.animate-float-up {
+  animation: floatUp 3s ease-in-out infinite;
+}
+
+.animate-bell-wiggle {
+  animation: bellWiggle 2s ease-in-out infinite;
+}
+
+.light-mode {
+  background-color: #f8fafc;
+}
+
+.light-mode body {
+  background-color: #f8fafc;
+}
+
+.light-mode .light-mode-bg {
+  background-color: #f8fafc !important;
+}
+
+.light-mode .light-mode-text {
+  color: #000 !important;
+}
+
+.light-mode .light-mode-card {
+  background-color: #ffffff !important;
+  border-color: rgba(0, 0, 0, 0.05) !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05) !important;
+}
+
+.light-mode .light-mode-modal {
+  background-color: #ffffff !important;
+  border-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+.light-mode .light-mode-btn {
+  background-color: rgba(0, 0, 0, 0.05) !important;
+  color: #000 !important;
+}
