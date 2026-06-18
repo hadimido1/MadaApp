@@ -1,4 +1,4 @@
-import { LayoutDashboard, Users, Settings } from 'lucide-react';
+import { LayoutDashboard, Users, Settings, ShoppingBag } from 'lucide-react';
 import { ViewState } from '../types';
 import { getTranslation } from '../i18n';
 
@@ -21,6 +21,14 @@ export function BottomNav({ currentView, onNavigate, isAdmin }: BottomNavProps) 
         >
           <LayoutDashboard className="w-6 h-6" />
           <span className="text-[10px] font-bold">{t.dashboard}</span>
+        </button>
+
+        <button 
+          onClick={() => onNavigate('store')}
+          className={`flex flex-col items-center gap-1.5 transition-colors ${currentView === 'store' ? 'text-blue-500' : 'text-gray-500 hover:text-white'}`}
+        >
+          <ShoppingBag className="w-6 h-6" />
+          <span className="text-[10px] font-bold">{t.store}</span>
         </button>
         
         {isAdmin && (

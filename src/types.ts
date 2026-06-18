@@ -1,4 +1,20 @@
-export type ViewState = 'login' | 'setup' | 'dashboard' | 'admin' | 'settings';
+export type ViewState = 'login' | 'setup' | 'dashboard' | 'admin' | 'settings' | 'store';
+
+export interface StorePackage {
+  id: string;
+  name: string;
+  originalPrice: number;
+  discountedPrice: number;
+}
+
+export interface StoreProduct {
+  id: string;
+  name: string;
+  category: 'giftcard' | 'game_topup';
+  image: string;
+  brand: 'google_play' | 'playstation' | 'steam' | 'xbox' | 'amazon' | 'pubg' | 'free_fire' | 'roblox' | 'shein';
+  packages: StorePackage[];
+}
 
 export interface AppNotification {
   id: string;

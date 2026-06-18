@@ -6,6 +6,7 @@ import { BottomNav } from './components/BottomNav';
 import { Dashboard } from './components/Dashboard';
 import { AdminPanel } from './components/AdminPanel';
 import { Settings } from './components/Settings';
+import { Store } from './components/Store';
 import { auth, db, signOutUser } from './firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import { doc, getDoc, setDoc, onSnapshot, collection, getDocs, updateDoc, query, where } from 'firebase/firestore';
@@ -44,7 +45,7 @@ export default function App() {
             }
             setCurrentUser({ id: u.uid, photoURL: u.photoURL || data.photoURL, ...data } as User);
             setLoading(false);
-            if (view === 'login') setView('dashboard');
+            setView((curr) => curr === 'login' ? 'dashboard' : curr);
           } else {
             setView('setup');
             setLoading(false);
@@ -63,7 +64,7 @@ export default function App() {
     });
 
     return () => unsubscribe();
-  }, [view]);
+  }, []);
 
   const handleProfileComplete = async (profileData: any) => {
     if (!firebaseUser) return;
@@ -145,6 +146,22 @@ export default function App() {
                 onUserUpdate={setCurrentUser}
                 theme={theme}
                 setTheme={setTheme}
+              />
+            </motion.div>
+          )}
+          {view === 'store' && (
+            <motion.div 
+              key="store"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              className="flex-1 overflow-y-auto h-full"
+            >
+              <Store 
+                user={currentUser} 
+                onNavigate={setView} 
+                onUserUpdate={setCurrentUser}
+                theme={theme}
               />
             </motion.div>
           )}

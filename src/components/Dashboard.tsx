@@ -1,6 +1,6 @@
 import { User, ViewState, AppNotification } from '../types';
 import { VisaCard } from './VisaCard';
-import { Shield, Bell, Settings as SettingsIcon, LogOut, ArrowUpRight, ArrowDownRight, CreditCard, Settings2, X, QrCode, Reply, Trash2 } from 'lucide-react';
+import { Shield, Bell, Settings as SettingsIcon, LogOut, ArrowUpRight, ArrowDownRight, CreditCard, Settings2, X, QrCode, Reply, Trash2, ShoppingBag } from 'lucide-react';
 import { getTranslation } from '../i18n';
 import { useState, useEffect, useRef } from 'react';
 import { toPng } from 'html-to-image';
@@ -354,7 +354,7 @@ export function Dashboard({ user, onNavigate, onUserUpdate, theme }: { user: Use
                { icon: ArrowUpRight, label: t.transfer, action: () => setActiveModal('transfer') },
                { icon: ArrowDownRight, label: t.receive, action: () => setActiveModal('receive') },
                { icon: QrCode, label: "Scan", action: () => { setActiveModal('transfer'); setIsScanning(true); } },
-               { icon: Settings2, label: t.settings, action: () => onNavigate('settings') },
+               { icon: ShoppingBag, label: t.store, action: () => onNavigate('store') },
              ].map((btn, i) => (
                 <button key={i} onClick={btn.action} className="flex flex-col items-center gap-2 group">
                   <div className="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center transition-all group-hover:bg-blue-600/20 group-hover:border-blue-500/30 group-active:scale-90 light-mode-btn">
