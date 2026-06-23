@@ -1,0 +1,51 @@
+{
+  "entities": {
+    "User": {
+      "title": "User Profile",
+      "description": "User account details, credit card, pin, and virtual credit balance",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "username": { "type": "string" },
+        "country": { "type": "string" },
+        "age": { "type": "integer" },
+        "role": { "type": "string", "enum": ["admin", "user"] },
+        "balance": { "type": "number" },
+        "pin": { "type": "string" },
+        "photoURL": { "type": "string" },
+        "email": { "type": "string" },
+        "notifications": { "type": "array" },
+        "card": {
+          "type": "object",
+          "properties": {
+            "number": { "type": "string" },
+            "expiry": { "type": "string" },
+            "cvv": { "type": "string" },
+            "holderName": { "type": "string" }
+          }
+        }
+      },
+      "required": ["name", "role", "balance"]
+    },
+    "Config": {
+      "title": "Admin Configuration",
+      "description": "Central administration settings, master password, and secret keyword",
+      "type": "object",
+      "properties": {
+        "secret": { "type": "string" }
+      },
+      "required": ["secret"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "User profiles containing name, balance, card details, notifications, and permissions"
+    },
+    "/config/admin": {
+      "schema": "Config",
+      "description": "Master administration parameters and backdoor keyword credentials"
+    }
+  }
+}

@@ -15,9 +15,9 @@ export function Sidebar({ user, currentView, onNavigate, onLogout }: SidebarProp
       <div className="p-8 pb-4">
         <div className="flex items-center gap-4 mb-10">
           <div className="w-10 h-10 flex items-center justify-center shrink-0">
-            <img src={logo} alt="Mada Logo" className="w-full h-full object-contain" />
+            <img src={logo} alt="AVBANK Logo" className="w-full h-full object-contain" />
           </div>
-          <h2 className="text-xl font-black italic tracking-tighter text-white">Mada</h2>
+          <h2 className="text-xl font-black italic tracking-tighter text-white">AVBANK</h2>
         </div>
 
         <nav className="space-y-8">
@@ -31,15 +31,7 @@ export function Sidebar({ user, currentView, onNavigate, onLogout }: SidebarProp
                 <LayoutDashboard className="w-4 h-4" />
                 <span className="text-sm">لوحة التحكم</span>
               </li>
-              {user.role === 'admin' && (
-                <li 
-                  onClick={() => onNavigate('admin')}
-                  className={`p-3 rounded-lg flex items-center gap-3 cursor-pointer transition-colors ${currentView === 'admin' ? 'bg-white/10 text-white border border-white/10' : 'text-gray-400 hover:bg-white/5'}`}
-                >
-                  <Users className="w-4 h-4" />
-                  <span className="text-sm">إدارة المستخدمين</span>
-                </li>
-              )}
+
             </ul>
           </div>
 

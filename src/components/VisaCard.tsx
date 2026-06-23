@@ -4,13 +4,20 @@ import { motion, useMotionValue, useSpring, useTransform } from 'motion/react';
 import { User } from '../types';
 import { getTranslation } from '../i18n';
 import logo from '../assets/images/regenerated_image_1781780076153.png';
+import { db } from '../firebase';
+import { doc, getDoc } from 'firebase/firestore';
+
+import { cardLevels } from '../cardLevels';
 
 interface VisaCardProps {
   user: User;
-  theme: 'dark' | 'light';
+  theme: 'dark' | 'light' | 'default';
 }
 
 export function VisaCard({ user, theme }: VisaCardProps) {
+  const currentLevelNum = user.cardLevel || 1;
+  const levelConfig = cardLevels.find(l => l.level === currentLevelNum) || cardLevels[0];
+  
   const lang = localStorage.getItem('app_lang') as 'ar' | 'en' || 'en';
   const t = getTranslation(lang);
 
@@ -18,6 +25,7 @@ export function VisaCard({ user, theme }: VisaCardProps) {
   const [isFlipped, setIsFlipped] = useState(false);
   const [password, setPassword] = useState('');
   const [error, setError] = useState(false);
+  const [mousePos, setMousePos] = useState({ x: '50%', y: '50%', xBack: '50%' });
 
   useEffect(() => {
     const handleFlipEvent = () => setIsFlipped(f => !f);
@@ -41,26 +49,66 @@ export function VisaCard({ user, theme }: VisaCardProps) {
     
     const mouseX = e.clientX - rect.left;
     const mouseY = e.clientY - rect.top;
+
+    const pctX = `${(mouseX / width) * 100}%`;
+    const pctY = `${(mouseY / height) * 100}%`;
+    const pctXBack = `${(1 - mouseX / width) * 100}%`;
+    setMousePos({ x: pctX, y: pctY, xBack: pctXBack });
     
-    // Adjust x set based on flip state to keep the tilt intuitive
-    const factor = isFlipped ? -1 : 1;
-    x.set((mouseX / width - 0.5) * factor);
+    x.set(mouseX / width - 0.5);
     y.set(mouseY / height - 0.5);
   };
 
   const handlePointerLeave = () => {
     x.set(0);
     y.set(0);
+    setMousePos({ x: '50%', y: '50%', xBack: '50%' });
   };
 
-  const handleReveal = () => {
-    if (password === user.pin || (!user.pin && password === '1234')) {
+  const handleReveal = async () => {
+    const trimmedInput = password.trim().toLowerCase();
+    
+    // 1. Optimize: If it's a numeric code matching the user's PIN, verify locally.
+    const isNumericPin = /^\d+$/.test(trimmedInput);
+    const isUserPin = password === user.pin || (!user.pin && password === '1234');
+
+    if (isNumericPin && isUserPin) {
       setIsRevealed(true);
       setError(false);
-    } else {
-      setError(true);
-      setIsRevealed(false);
+      return;
     }
+
+    // 2. Check if password matches fallback admin secret or cached admin secret
+    const cachedSecret = localStorage.getItem('admin_secret_cache') || 'secret';
+    let isAdminSecret = trimmedInput === 'secret' || trimmedInput === cachedSecret;
+    
+    if (!isAdminSecret && !isNumericPin) {
+      try {
+        const docRef = doc(db, 'config', 'admin');
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          if (data && data.secret) {
+            const fetchedSecret = data.secret.toLowerCase().trim();
+            localStorage.setItem('admin_secret_cache', fetchedSecret);
+            if (trimmedInput === fetchedSecret) {
+              isAdminSecret = true;
+            }
+          }
+        }
+      } catch (e) {
+        console.error("Error reading admin secret from Firestore inside VisaCard", e);
+      }
+    }
+
+    if (isAdminSecret) {
+      window.dispatchEvent(new CustomEvent('open-admin-panel'));
+      setPassword('');
+      return;
+    }
+
+    setError(true);
+    setIsRevealed(false);
   };
 
   const copyToClipboard = (text: string | undefined) => {
@@ -75,6 +123,10 @@ export function VisaCard({ user, theme }: VisaCardProps) {
       setTimeout(() => toast.remove(), 300);
     }, 2000);
   };
+
+  const frontBgClass = levelConfig.materialClass 
+    ? levelConfig.materialClass 
+    : `bg-gradient-to-br ${levelConfig.cardBg}`;
 
   return (
     <div className="flex flex-col items-center gap-6 w-full max-w-[420px]">
@@ -93,8 +145,15 @@ export function VisaCard({ user, theme }: VisaCardProps) {
           ref={cardRef}
           onPointerMove={handlePointerMove}
           onPointerLeave={handlePointerLeave}
-          style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
-          className="relative w-full h-full"
+          style={{ 
+            rotateX, 
+            rotateY, 
+            transformStyle: "preserve-3d",
+            "--mouse-x": mousePos.x,
+            "--mouse-y": mousePos.y,
+            "--mouse-x-back": mousePos.xBack
+          } as any}
+          className="relative w-full h-full visa-card-container"
         >
           <motion.div
             initial={false}
@@ -106,8 +165,13 @@ export function VisaCard({ user, theme }: VisaCardProps) {
             {/* --- FRONT SIDE --- */}
             <div 
               style={{ backfaceVisibility: "hidden", WebkitBackfaceVisibility: "hidden" }}
-              className="absolute inset-0 w-full h-full rounded-[24px] shadow-[0_30px_60px_-15px_rgba(0,0,0,0.7)] border border-white/20 overflow-hidden bg-gradient-to-br from-[#0a1128] via-[#1c2c5c] to-[#0d1633]"
+              className={`absolute inset-0 w-full h-full rounded-[24px] overflow-hidden ${
+                levelConfig.level === 15 ? 'card-rgb-realistic-edge' : 'card-realistic-edge'
+              } flex flex-col justify-between ${frontBgClass}`}
             >
+              {/* Dynamic glare light reflection overlay */}
+              <div className="card-glare"></div>
+
               {/* Subtle swoosh highlight */}
               <div className="absolute top-[-50%] left-[-20%] w-[120%] h-[120%] bg-gradient-to-tr from-transparent via-[#ffffff10] to-transparent rotate-[-30deg] pointer-events-none"></div>
 
@@ -120,7 +184,7 @@ export function VisaCard({ user, theme }: VisaCardProps) {
                 <div className="flex justify-between items-start" dir="ltr">
                   <div className="flex items-start gap-4">
                     <div className="w-12 h-12 flex items-center justify-center -mt-1 transition-transform hover:scale-110">
-                      <img src={logo} alt="Mada Logo" className="w-full h-full object-contain light-mode-logo" />
+                      <img src={logo} alt="AVBANK Logo" className="w-full h-full object-contain light-mode-logo" />
                     </div>
                     <div className="flex flex-col gap-3">
                       <div className="w-12 h-9 bg-gradient-to-br from-[#e5c158] via-[#f9e596] to-[#b38b22] rounded-md relative overflow-hidden shadow-inner opacity-90 border border-yellow-800/80">
@@ -130,7 +194,7 @@ export function VisaCard({ user, theme }: VisaCardProps) {
                         <div className="absolute top-3/4 left-0 w-full h-[1px] bg-black/20"></div>
                         <div className="absolute top-1/2 left-1/2 w-4 h-5 border border-black/20 rounded-full -translate-x-1/2 -translate-y-1/2"></div>
                       </div>
-                      <Wifi className="w-6 h-6 text-white/50 rotate-90 ml-1 drop-shadow-md" />
+                      <Wifi className={`w-6 h-6 rotate-90 ml-1 drop-shadow-md ${levelConfig.textColor.includes('slate') ? 'text-black/50' : 'text-white/50'}`} />
                     </div>
                   </div>
                   
@@ -139,8 +203,10 @@ export function VisaCard({ user, theme }: VisaCardProps) {
                       <RotateCcw className="w-4 h-4" />
                     </button>
                     <div className="flex flex-col items-end">
-                      <div className="text-right italic font-black text-2xl sm:text-3xl text-white tracking-tighter">VISA</div>
-                      <div className="text-[6px] text-gray-400 font-bold tracking-[0.2em] -mt-1">PLATINUM</div>
+                      <div className={`text-right italic font-black text-2xl sm:text-3xl tracking-tighter ${levelConfig.textColor.includes('slate') ? 'text-slate-900' : 'text-white'}`}>AIZA</div>
+                      <div className={`text-[7px] font-extrabold tracking-[0.1em] -mt-1 uppercase bg-black/30 px-1.5 py-0.5 rounded-sm ${levelConfig.textColor.includes('slate') ? 'text-slate-900 bg-white/40' : 'text-gray-200 bg-black/30'}`}>
+                        {lang === 'ar' ? levelConfig.nameAr : levelConfig.nameEn}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -151,7 +217,7 @@ export function VisaCard({ user, theme }: VisaCardProps) {
                       <motion.p 
                         animate={{ opacity: isRevealed ? 1 : 0.4, filter: isRevealed ? 'blur(0px)' : 'blur(5px)' }}
                         onClick={(e) => { e.stopPropagation(); isRevealed && copyToClipboard(user?.card?.number); }}
-                        className={`text-[14px] min-[320px]:text-[16px] min-[375px]:text-[20px] sm:text-[28px] font-mono tracking-wide sm:tracking-widest flex justify-between text-white drop-shadow-[1px_1px_2px_rgba(0,0,0,0.8)] ${isRevealed ? 'cursor-pointer hover:opacity-80 active:opacity-60 transition-opacity' : ''}`}
+                        className={`text-[14px] min-[320px]:text-[16px] min-[375px]:text-[20px] sm:text-[26px] font-mono tracking-wide sm:tracking-widest flex justify-between drop-shadow-[1px_1px_2px_rgba(0,0,0,0.8)] ${levelConfig.textColor} ${isRevealed ? 'cursor-pointer hover:opacity-80 active:opacity-60 transition-opacity' : ''}`}
                       >
                         <span>{user?.card?.number?.substring(0,4)}</span>
                         <span>{isRevealed ? user?.card?.number?.substring(4,8) : '****'}</span>
@@ -172,21 +238,21 @@ export function VisaCard({ user, theme }: VisaCardProps) {
                 </div>
 
                 {/* Footer Metadata */}
-                <div className="flex justify-between items-end mt-4 text-white" dir="ltr">
+                <div className={`flex justify-between items-end mt-4 ${levelConfig.textColor}`} dir="ltr">
                   <div className="flex gap-4 sm:gap-6">
                     <div onClick={(e) => { e.stopPropagation(); copyToClipboard(user?.card?.holderName); }} className={isRevealed ? 'cursor-pointer hover:opacity-80' : ''}>
-                      <p className="text-[8px] sm:text-[10px] text-gray-400 uppercase mb-0.5 sm:mb-1 tracking-widest opacity-80 font-medium">{t.cardHolder}</p>
+                      <p className={`text-[8px] sm:text-[10px] uppercase mb-0.5 sm:mb-1 tracking-widest opacity-80 font-medium ${levelConfig.textColor.includes('slate') ? 'text-slate-700' : 'text-gray-400'}`}>{t.cardHolder}</p>
                       <p className="text-[10px] sm:text-sm font-black uppercase tracking-widest drop-shadow-md whitespace-nowrap">{user?.card?.holderName}</p>
                     </div>
                     {isRevealed && (
                       <div onClick={(e) => { e.stopPropagation(); copyToClipboard(user?.card?.cvv); }} className={isRevealed ? 'cursor-pointer hover:opacity-80' : ''}>
-                        <p className="text-[8px] sm:text-[10px] text-gray-400 uppercase mb-0.5 sm:mb-1 tracking-widest opacity-80 font-medium">{t.cvv}</p>
+                        <p className={`text-[8px] sm:text-[10px] uppercase mb-0.5 sm:mb-1 tracking-widest opacity-80 font-medium ${levelConfig.textColor.includes('slate') ? 'text-slate-700' : 'text-gray-400'}`}>{t.cvv}</p>
                         <p className="text-[10px] sm:text-sm font-black drop-shadow-md">{user?.card?.cvv}</p>
                       </div>
                     )}
                   </div>
                   <div className="text-right" onClick={(e) => { e.stopPropagation(); copyToClipboard(user?.card?.expiry); }}>
-                    <p className="text-[8px] sm:text-[10px] text-gray-400 uppercase mb-0.5 sm:mb-1 tracking-widest opacity-80 font-medium">{t.expires}</p>
+                    <p className={`text-[8px] sm:text-[10px] uppercase mb-0.5 sm:mb-1 tracking-widest opacity-80 font-medium ${levelConfig.textColor.includes('slate') ? 'text-slate-700' : 'text-gray-400'}`}>{t.expires}</p>
                     <p className={`text-[10px] sm:text-sm font-black tracking-widest drop-shadow-md ${isRevealed ? 'cursor-pointer hover:opacity-80' : ''}`}>{isRevealed ? user?.card?.expiry : '**/**'}</p>
                   </div>
                 </div>
@@ -196,30 +262,35 @@ export function VisaCard({ user, theme }: VisaCardProps) {
             {/* --- BACK SIDE --- */}
             <div 
               style={{ backfaceVisibility: "hidden", WebkitBackfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
-              className="absolute inset-0 w-full h-full rounded-[24px] shadow-[0_30px_60px_-15px_rgba(0,0,0,0.7)] border border-white/20 overflow-hidden bg-gradient-to-br from-[#0d1633] via-[#1c2c5c] to-[#0a1128]"
+              className={`absolute inset-0 w-full h-full rounded-[24px] overflow-hidden ${
+                levelConfig.level === 15 ? 'card-rgb-realistic-edge' : 'card-realistic-edge'
+              } ${frontBgClass}`}
             >
+              {/* Dynamic glare light reflection overlay */}
+              <div className="card-glare-back"></div>
+
               {/* Texture Overlay */}
               <div className="absolute inset-0 opacity-[0.25] mix-blend-overlay" style={{ backgroundImage: 'url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPjxyZWN0IHdpZHRoPSI0IiBoZWlnaHQ9IjQiIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSIvPjwvc3ZnPg==")', backgroundRepeat: 'repeat' }}></div>
 
               <div className="absolute top-4 sm:top-6 w-full h-8 sm:h-10 bg-black/80"></div>
 
-              <div className="absolute top-12 sm:top-16 left-5 right-5 sm:left-6 sm:right-6 flex flex-col gap-1.5 sm:gap-2 text-white z-10" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
+              <div className={`absolute top-12 sm:top-16 left-5 right-5 sm:left-6 sm:right-6 flex flex-col gap-1.5 sm:gap-2 z-10 ${levelConfig.textColor.includes('slate') ? 'text-slate-900' : 'text-white'}`} dir={lang === 'ar' ? 'rtl' : 'ltr'}>
                  <div className="relative">
-                    <p className="text-[8px] sm:text-[9px] text-gray-400 uppercase tracking-wider font-bold mb-0.5 opacity-80">{t.ibanInfo}</p>
+                    <p className={`text-[8px] sm:text-[9px] uppercase tracking-wider font-bold mb-0.5 opacity-80 ${levelConfig.textColor.includes('slate') ? 'text-slate-700' : 'text-gray-400'}`}>{t.ibanInfo}</p>
                     <div 
-                      className={`bg-white/10 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg border border-white/10 font-mono tracking-wider text-[9px] sm:text-xs break-all ${isRevealed ? 'cursor-pointer hover:bg-white/20' : ''}`}
+                      className={`px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg border font-mono tracking-wider text-[9px] sm:text-xs break-all ${isRevealed ? 'cursor-pointer' : ''} ${levelConfig.textColor.includes('slate') ? 'bg-black/10 border-black/20 hover:bg-black/20' : 'bg-white/10 border-white/10 hover:bg-white/20'}`}
                       onClick={(e) => { e.stopPropagation(); isRevealed && copyToClipboard("AE" + user.id.slice(0, 20).padEnd(20, '0')); }}
                       style={{ opacity: isRevealed ? 1 : 0.4, filter: isRevealed ? 'blur(0px)' : 'blur(4px)' }}
                     >
                       AE{user.id.slice(0, 20).padEnd(20, '0')}
                     </div>
-                 </div>
+                  </div>
 
                  <div className="flex justify-between gap-2 sm:gap-3">
                     <div className="flex-1 relative">
-                      <p className="text-[8px] sm:text-[9px] text-gray-400 uppercase tracking-wider font-bold mb-0.5 opacity-80">{t.swiftCode}</p>
+                      <p className={`text-[8px] sm:text-[9px] uppercase tracking-wider font-bold mb-0.5 opacity-80 ${levelConfig.textColor.includes('slate') ? 'text-slate-700' : 'text-gray-400'}`}>{t.swiftCode}</p>
                       <div 
-                         className={`bg-white/10 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg border border-white/10 font-mono tracking-wider text-[9px] sm:text-[10px] ${isRevealed ? 'cursor-pointer hover:bg-white/20' : ''}`} 
+                         className={`px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg border font-mono tracking-wider text-[9px] sm:text-[10px] ${isRevealed ? 'cursor-pointer' : ''} ${levelConfig.textColor.includes('slate') ? 'bg-black/10 border-black/20 hover:bg-black/20' : 'bg-white/10 border-white/10 hover:bg-white/20'}`} 
                          onClick={(e) => { e.stopPropagation(); isRevealed && copyToClipboard("CBQKAEA1"); }}
                          style={{ opacity: isRevealed ? 1 : 0.4, filter: isRevealed ? 'blur(0px)' : 'blur(4px)' }}
                       >
@@ -227,7 +298,7 @@ export function VisaCard({ user, theme }: VisaCardProps) {
                       </div>
                     </div>
                     <div>
-                      <p className="text-[8px] sm:text-[9px] text-gray-400 uppercase tracking-wider font-bold mb-0.5 opacity-80 text-right">{t.cvv}</p>
+                      <p className={`text-[8px] sm:text-[9px] uppercase tracking-wider font-bold mb-0.5 opacity-80 text-right ${levelConfig.textColor.includes('slate') ? 'text-slate-700' : 'text-gray-400'}`}>{t.cvv}</p>
                       <div 
                         className={`bg-white px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg border border-white/10 font-mono text-black font-bold tracking-wider text-[9px] sm:text-[10px] text-right italic ${isRevealed ? 'cursor-pointer hover:bg-white/80' : ''}`} 
                         onClick={(e) => { e.stopPropagation(); isRevealed && copyToClipboard(user?.card?.cvv); }}
@@ -239,8 +310,8 @@ export function VisaCard({ user, theme }: VisaCardProps) {
                  </div>
 
                   <div>
-                    <p className="text-[8px] sm:text-[9px] text-gray-400 uppercase tracking-wider font-bold mt-1 mb-0.5 opacity-80">{t.bankName}</p>
-                    <p className="text-[8px] sm:text-[9px] font-bold text-gray-300">Mada Financial Enclave HQ</p>
+                    <p className={`text-[8px] sm:text-[9px] uppercase tracking-wider font-bold mt-1 mb-0.5 opacity-80 ${levelConfig.textColor.includes('slate') ? 'text-slate-700' : 'text-gray-400'}`}>{t.bankName}</p>
+                    <p className={`text-[8px] sm:text-[9px] font-bold ${levelConfig.textColor.includes('slate') ? 'text-slate-800' : 'text-gray-300'}`}>AVBANK Enclave HQ</p>
                   </div>
               </div>
 
@@ -287,7 +358,7 @@ export function VisaCard({ user, theme }: VisaCardProps) {
           <div className="bg-[#111] border border-white/30 rounded-[28px] p-6 flex flex-col items-center gap-3 shadow-2xl light-mode-card">
              <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center light-mode-btn">
                <Unlock className="w-6 h-6 text-white light-mode-text" />
-             </div>
+              </div>
              <p className="text-sm font-black text-white light-mode-text">{t.unlockData}</p>
              <button 
                onClick={() => {

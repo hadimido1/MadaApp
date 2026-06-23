@@ -10,8 +10,8 @@ interface SettingsProps {
   onLogout: () => void;
   onNavigate: (v: ViewState) => void;
   onUserUpdate: (u: User) => void;
-  theme: 'dark' | 'light';
-  setTheme: (t: 'dark' | 'light') => void;
+  theme: 'dark' | 'default';
+  setTheme: (t: 'dark' | 'default') => void;
 }
 
 export function Settings({ user, onLogout, onNavigate, onUserUpdate, theme, setTheme }: SettingsProps) {
@@ -28,7 +28,7 @@ export function Settings({ user, onLogout, onNavigate, onUserUpdate, theme, setT
   const [editPin, setEditPin] = useState(user.pin || '');
   const [isSaving, setIsSaving] = useState(false);
 
-  const handleThemeChange = (newTheme: 'dark' | 'light') => {
+  const handleThemeChange = (newTheme: 'dark' | 'default') => {
     setTheme(newTheme);
     localStorage.setItem('app_theme', newTheme);
     setActiveModal(null);
@@ -60,12 +60,13 @@ export function Settings({ user, onLogout, onNavigate, onUserUpdate, theme, setT
   };
 
   return (
-    <div className="flex-1 flex flex-col w-full overflow-y-auto pt-safe pb-32 px-4 bg-black touch-pan-y relative light-mode-bg">
-      <div className="relative z-10 w-full max-w-lg mx-auto pt-10">
+    <div className="flex-1 flex flex-col w-full overflow-y-auto pt-safe pb-32 px-4 bg-transparent touch-pan-y relative light-mode-bg">
+      <div className="relative z-10 w-full max-w-4xl mx-auto pt-10">
         
         <h1 className="text-3xl font-black text-white mb-8 tracking-tight light-mode-text">{t.settings}</h1>
 
-        <div className="flex flex-col gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+          <div className="flex flex-col gap-6">
           {/* Account Settings */}
           <div>
             <h2 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-3 px-2">{t.account}</h2>
@@ -128,7 +129,7 @@ export function Settings({ user, onLogout, onNavigate, onUserUpdate, theme, setT
                   </div>
                   <div className="flex flex-col text-left">
                     <span className="text-white font-bold text-sm light-mode-text">{t.theme}</span>
-                    <span className="text-blue-500 text-[10px] font-black uppercase tracking-tighter">{theme === 'dark' ? t.dark : t.light}</span>
+                    <span className="text-blue-500 text-[10px] font-black uppercase tracking-tighter">{theme === 'dark' ? t.dark : t.themeDefault}</span>
                   </div>
                 </div>
                 <ChevronLeft className={`w-5 h-5 text-gray-500 ${language === 'en' ? 'rotate-180' : ''}`} />
@@ -161,6 +162,44 @@ export function Settings({ user, onLogout, onNavigate, onUserUpdate, theme, setT
           </div>
         </div>
 
+        {/* Right Column: Premium desktop Membership Summary Card */}
+        <div className="hidden md:flex flex-col gap-6 p-6 rounded-3xl bg-white/[0.02] border border-white/10 shadow-lg sticky top-6">
+           <h3 className="text-xs font-black uppercase tracking-widest text-gray-500">Membership Summary</h3>
+           <div className="flex items-center gap-4 p-5 rounded-[24px] bg-white/[0.03] border border-white/5">
+             <div className="w-14 h-14 rounded-full bg-blue-500/10 flex items-center justify-center border border-blue-500/20 overflow-hidden">
+               {user.photoURL ? <img src={user.photoURL} className="w-full h-full object-cover" /> : <UserIcon className="w-7 h-7 text-gray-400" />}
+             </div>
+             <div className="flex flex-col">
+                <span className="font-extrabold text-base text-white">{user.name}</span>
+                <span className="text-xs text-blue-400 font-bold uppercase mt-1">LVL {user.cardLevel || 1} Member</span>
+             </div>
+           </div>
+           
+           <div className="flex flex-col gap-3 text-xs text-gray-400 p-2">
+             <div className="flex justify-between py-2 border-b border-white/5">
+               <span>Account ID</span>
+               <span className="font-mono font-bold text-white text-[10px] select-all">{user.id}</span>
+             </div>
+             <div className="flex justify-between py-2 border-b border-white/5">
+               <span>Country</span>
+               <span className="font-bold text-white">{user.country || "Not specified"}</span>
+             </div>
+             <div className="flex justify-between py-2 border-b border-white/5">
+               <span>Age</span>
+               <span className="font-bold text-white">{user.age || "Not specified"}</span>
+             </div>
+           </div>
+           
+           <button 
+             onClick={() => setActiveModal('accounts' as any)}
+             className="w-full mt-4 py-3.5 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 text-white font-bold text-xs transition-all flex items-center justify-center gap-2"
+           >
+             <UserIcon className="w-4 h-4 text-blue-400" />
+             <span>{t.switchAccount || "Switch Accounts"}</span>
+           </button>
+        </div>
+
+      </div>
       </div>
 
       {/* Modals */}
@@ -283,12 +322,12 @@ export function Settings({ user, onLogout, onNavigate, onUserUpdate, theme, setT
                      </div>
                      {theme === 'dark' && <div className="w-3 h-3 rounded-full bg-blue-500 shadow-[0_0_10px_#3b82f6]" />}
                   </button>
-                  <button onClick={() => handleThemeChange('light')} className={`flex items-center justify-between p-4 rounded-2xl border ${theme === 'light' ? 'border-blue-500 bg-blue-500/10' : 'border-white/5 bg-white/5'} transition-colors`}>
+                  <button onClick={() => handleThemeChange('default')} className={`flex items-center justify-between p-4 rounded-2xl border ${theme === 'default' ? 'border-blue-500 bg-blue-500/10' : 'border-white/5 bg-white/5'} transition-colors`}>
                      <div className="flex items-center gap-3">
-                       <Sun className={`w-5 h-5 ${theme === 'light' ? 'text-blue-400' : 'text-gray-400'}`} />
-                       <span className={`font-bold text-sm ${theme === 'light' ? 'text-blue-400' : 'text-white light-mode-text'}`}>{t.light}</span>
+                       <Sun className={`w-5 h-5 ${theme === 'default' ? 'text-blue-400' : 'text-gray-400'}`} />
+                       <span className={`font-bold text-sm ${theme === 'default' ? 'text-blue-400' : 'text-white light-mode-text'}`}>{t.themeDefault}</span>
                      </div>
-                     {theme === 'light' && <div className="w-3 h-3 rounded-full bg-blue-500 shadow-[0_0_10px_#3b82f6]" />}
+                     {theme === 'default' && <div className="w-3 h-3 rounded-full bg-blue-500 shadow-[0_0_10px_#3b82f6]" />}
                   </button>
                 </div>
               </div>

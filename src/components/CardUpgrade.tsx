@@ -1,0 +1,300 @@
+import React, { useState } from 'react';
+import { ArrowLeft, Lock, Check, Sparkles, Trophy, ShieldAlert, Award } from 'lucide-react';
+import { User, ViewState } from '../types';
+import { getTranslation } from '../i18n';
+import { cardLevels, CardLevel } from '../cardLevels';
+import { db } from '../firebase';
+import { doc, updateDoc, arrayUnion } from 'firebase/firestore';
+import { VisaCard } from './VisaCard';
+import { motion } from 'motion/react';
+
+interface CardUpgradeProps {
+  user: User;
+  onNavigate: (v: ViewState) => void;
+  onUserUpdate: (u: User) => void;
+  theme: 'dark' | 'default';
+}
+
+export function CardUpgrade({ user, onNavigate, onUserUpdate, theme }: CardUpgradeProps) {
+  const lang = localStorage.getItem('app_lang') as 'ar' | 'en' || 'en';
+  const t = getTranslation(lang);
+  
+  const currentLevelNum = user.cardLevel || 1;
+  const currentLvl = cardLevels.find(l => l.level === currentLevelNum) || cardLevels[0];
+
+  const [celebrating, setCelebrating] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  // Find the highest level the user can actually unlock right now based on their balance
+  const maxPossibleLevel = [...cardLevels]
+    .reverse()
+    .find(l => user.balance >= l.minBalance);
+
+  const canUpgrade = maxPossibleLevel && maxPossibleLevel.level > currentLevelNum;
+
+  const handleSelectLevel = async (levelNum: number) => {
+    const targetLvl = cardLevels.find(l => l.level === levelNum);
+    if (!targetLvl) return;
+
+    if (user.balance < targetLvl.minBalance) {
+      setErrorMsg(t.insufficientFundsUpgrade);
+      setTimeout(() => setErrorMsg(null), 4000);
+      return;
+    }
+
+    try {
+      const userRef = doc(db, 'users', user.id);
+      
+      // If upgrading to a new level, let's trigger a celebration and send a system notification!
+      if (levelNum > currentLevelNum) {
+        setCelebrating(true);
+        setTimeout(() => setCelebrating(false), 3000);
+
+        // Generate a milestone system notification
+        const newNotification = {
+          id: 'sys_' + Date.now(),
+          type: 'system' as const,
+          message: lang === 'ar' 
+            ? `تهانينا! لقد قمت بترقية بطاقتك إلى مستوى: ${targetLvl.nameAr}`
+            : `Congratulations! You have upgraded your card to: ${targetLvl.nameEn}`,
+          timestamp: Date.now(),
+          read: false
+        };
+
+        await updateDoc(userRef, {
+          cardLevel: levelNum,
+          notifications: arrayUnion(newNotification)
+        });
+
+        onUserUpdate({
+          ...user,
+          cardLevel: levelNum,
+          notifications: [...(user.notifications || []), newNotification]
+        });
+      } else {
+        await updateDoc(userRef, { cardLevel: levelNum });
+        onUserUpdate({ ...user, cardLevel: levelNum });
+      }
+    } catch (err) {
+      console.error("Error updating level in Firestore", err);
+    }
+  };
+
+  const handleAutoUpgrade = () => {
+    if (canUpgrade && maxPossibleLevel) {
+      handleSelectLevel(maxPossibleLevel.level);
+    }
+  };
+
+  const formatMoney = (val: number) => {
+    return val.toLocaleString(lang === 'ar' ? 'ar-EG' : 'en-US', {
+      style: 'currency',
+      currency: 'USD',
+      maximumFractionDigits: 0
+    });
+  };
+
+  return (
+    <div id="card-upgrade-view" className="flex-1 flex flex-col h-full overflow-y-auto pb-24 relative select-none">
+      
+      {/* Header */}
+      <div className="p-4 flex items-center justify-between border-b border-white/10 sticky top-0 bg-black/60 backdrop-blur-md z-30">
+        <button 
+          onClick={() => onNavigate('dashboard')}
+          className="p-2 hover:bg-white/10 rounded-full transition-colors"
+        >
+          <ArrowLeft className={`w-6 h-6 text-white ${lang === 'ar' ? 'rotate-180' : ''}`} />
+        </button>
+        <span className="font-black text-white text-lg tracking-tight">
+          {lang === 'ar' ? 'ترقية البطاقة والجماليات' : 'Card Levels & Upgrades'}
+        </span>
+        <div className="w-10"></div>
+      </div>
+
+      {/* Main Content Area */}
+      <div className="p-6 w-full max-w-6xl mx-auto flex flex-col items-stretch">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+          
+          {/* Left Column: Fixed Card live preview and upgrade summaries */}
+          <div className="flex flex-col gap-6 md:sticky md:top-20">
+             
+             {/* Active Card Live Preview Frame */}
+             <div className="w-full flex justify-center py-2 relative">
+               {celebrating && (
+                 <div className="absolute inset-0 z-20 pointer-events-none flex items-center justify-center">
+                   <motion.div 
+                     initial={{ scale: 0.5, opacity: 0 }}
+                     animate={{ scale: [1, 1.3, 1], opacity: [0, 1, 0] }}
+                     transition={{ duration: 1.5, repeat: Infinity }}
+                     className="absolute text-yellow-400 font-black text-xl flex items-center gap-1.5"
+                   >
+                     <Sparkles className="w-10 h-10 animate-spin" />
+                     <span>LEVEL UP!</span>
+                   </motion.div>
+                 </div>
+               )}
+               <VisaCard user={user} theme={theme} />
+             </div>
+
+             {/* Upgrade Summary Dashboard Widget */}
+             <div className="w-full theme-card-bg border rounded-3xl p-5 flex flex-col gap-4 shadow-xl relative overflow-hidden">
+               <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 rounded-full blur-2xl pointer-events-none"></div>
+               
+               <div className="flex justify-between items-start">
+                 <div>
+                   <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">
+                     {lang === 'ar' ? 'التصميم المفعل حالياً' : 'Currently Active Design'}
+                   </p>
+                   <h3 className="text-xl font-black text-white mt-1">
+                     {lang === 'ar' ? currentLvl.nameAr : currentLvl.nameEn}
+                   </h3>
+                   <p className="text-xs text-gray-400 mt-1">
+                     {lang === 'ar' ? currentLvl.descriptionAr : currentLvl.descriptionEn}
+                   </p>
+                 </div>
+                 <div className="bg-blue-500/10 border border-blue-500/20 px-3 py-1 rounded-full text-blue-400 text-xs font-black uppercase">
+                   LVL {currentLevelNum}
+                 </div>
+               </div>
+
+               {/* Quick Upgrade Trigger */}
+               {canUpgrade && maxPossibleLevel ? (
+                 <button 
+                   onClick={handleAutoUpgrade}
+                   className="w-full py-4 rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-black text-sm shadow-[0_4px_20px_rgba(59,130,246,0.4)] flex items-center justify-center gap-2 animate-pulse active:scale-[0.98] transition-all"
+                 >
+                   <Sparkles className="w-4 h-4 text-yellow-300" />
+                   <span>
+                     {lang === 'ar' 
+                       ? `ترقية تلقائية للمستوى ${maxPossibleLevel.level}`
+                       : `Auto Upgrade to Level ${maxPossibleLevel.level}`}
+                   </span>
+                 </button>
+               ) : (
+                 <div className="w-full py-3 px-4 rounded-xl bg-white/[0.02] border border-white/5 text-center text-xs text-gray-500 font-semibold flex items-center justify-center gap-2">
+                   <Check className="w-4 h-4 text-emerald-500" />
+                   <span>
+                     {lang === 'ar' 
+                       ? 'أنت في أعلى مستوى بطاقة متاح لرصيدك الحالي.'
+                       : 'You have activated the best styling for your current balance.'}
+                   </span>
+                 </div>
+               )}
+
+               {/* Progress Indicator to RGB Millionaire Level */}
+               <div className="mt-2 flex flex-col gap-1.5">
+                 <div className="flex justify-between text-[10px] font-bold text-gray-500 uppercase tracking-wider">
+                   <span>{lang === 'ar' ? 'التقدم نحو مستوى المليونير' : 'Progress towards Millionaire'}</span>
+                   <span>{Math.min(100, Math.floor((user.balance / 1000000) * 100))}%</span>
+                 </div>
+                 <div className="w-full h-2 bg-white/5 rounded-full overflow-hidden">
+                   <div 
+                     className="h-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 transition-all duration-1000"
+                     style={{ width: `${Math.min(100, (user.balance / 1000000) * 100)}%` }}
+                   ></div>
+                 </div>
+               </div>
+             </div>
+
+             {/* Error / Feedback Popup Alert */}
+             {errorMsg && (
+               <div className="w-full p-4 rounded-2xl bg-red-950/40 border border-red-500/30 flex items-center gap-3 text-red-200 text-xs font-bold shadow-lg animate-in fade-in slide-in-from-top-2">
+                 <ShieldAlert className="w-5 h-5 text-red-500 flex-shrink-0" />
+                 <span>{errorMsg}</span>
+               </div>
+             )}
+          </div>
+
+          {/* Right Column: Card Level Catalog / Tier List */}
+          <div className="flex flex-col gap-5">
+             <div className="w-full text-left px-1">
+               <h4 className="text-sm font-black text-white/90 uppercase tracking-widest flex items-center gap-1.5">
+                 <Trophy className="w-4 h-4 text-yellow-400" />
+                 <span>{lang === 'ar' ? 'كتالوج مستويات البطاقة' : 'Card Level Catalog'}</span>
+               </h4>
+               <p className="text-xs text-gray-500 mt-1">
+                 {lang === 'ar' 
+                   ? 'تعتمد الترقية على رصيدك المتاح. كلما زاد رصيدك، فُتحت مزايا وتصاميم أرقى.'
+                   : 'Card designs unlock based on your balance. Keep growing your funds to open elite skins.'}
+               </p>
+             </div>
+
+             {/* All 21 Levels Grid */}
+             <div className="w-full flex flex-col gap-3">
+               {cardLevels.map((lvl) => {
+            const isUnlocked = user.balance >= lvl.minBalance;
+            const isActive = lvl.level === currentLevelNum;
+
+            return (
+              <div 
+                key={lvl.level}
+                onClick={() => isUnlocked && handleSelectLevel(lvl.level)}
+                className={`group w-full p-4 rounded-2xl border flex items-center justify-between transition-all relative overflow-hidden ${
+                  isActive 
+                    ? 'border-blue-500 bg-blue-500/5 shadow-[0_0_15px_rgba(59,130,246,0.15)] ring-1 ring-blue-500/20' 
+                    : isUnlocked 
+                      ? 'border-white/10 bg-white/[0.02] hover:bg-white/[0.04] cursor-pointer' 
+                      : 'border-white/5 bg-black/40 opacity-70'
+                }`}
+              >
+                
+                {/* Level Styling / Card representation */}
+                <div className="flex items-center gap-4">
+                  
+                  {/* Decorative miniature gradient thumbnail of the card design */}
+                  <div className={`w-12 h-8 rounded-md border border-white/20 shadow-md flex-shrink-0 flex items-center justify-center overflow-hidden ${
+                    lvl.materialClass ? lvl.materialClass : `bg-gradient-to-br ${lvl.cardBg}`
+                  }`}>
+                    <div className="w-2 h-2 bg-yellow-500/80 rounded-sm"></div>
+                  </div>
+
+                  {/* Level Details */}
+                  <div className="flex flex-col">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-black text-blue-500">LVL {lvl.level}</span>
+                      <span className="font-extrabold text-white text-sm">
+                        {lang === 'ar' ? lvl.nameAr : lvl.nameEn}
+                      </span>
+                      {isActive && (
+                        <span className="bg-emerald-500/20 text-emerald-400 text-[8px] font-black tracking-widest px-2 py-0.5 rounded uppercase">
+                          {t.activeCard}
+                        </span>
+                      )}
+                    </div>
+                    <span className="text-[10px] text-gray-500 mt-0.5 font-bold uppercase tracking-wider">
+                      {isUnlocked 
+                        ? (lang === 'ar' ? 'جاهز للتفعيل' : 'Ready to activate') 
+                        : (lang === 'ar' ? `يتطلب رصيد ${formatMoney(lvl.minBalance)}` : `Requires ${formatMoney(lvl.minBalance)}`)}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Unlock status icons or padlocks */}
+                <div className="flex items-center">
+                  {isActive ? (
+                    <div className="w-8 h-8 rounded-full bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+                      <Check className="w-4 h-4 stroke-[3px]" />
+                    </div>
+                  ) : isUnlocked ? (
+                    <div className="w-8 h-8 rounded-full bg-white/5 group-hover:bg-blue-500/10 group-hover:border-blue-500/30 border border-white/10 flex items-center justify-center text-gray-400 group-hover:text-blue-400 transition-colors">
+                      <Award className="w-4 h-4" />
+                    </div>
+                  ) : (
+                    <div className="w-8 h-8 rounded-full bg-white/[0.02] border border-white/5 flex items-center justify-center text-gray-600">
+                      <Lock className="w-4 h-4" />
+                    </div>
+                  )}
+                </div>
+
+              </div>
+            );
+          })}
+        </div>
+        
+        </div> {/* Closes right column */}
+        </div> {/* Closes main grid layout */}
+
+      </div>
+    </div>
+  );
+}

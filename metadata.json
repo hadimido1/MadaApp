@@ -1,6 +1,6 @@
 {
-  "name": "Mada - Financial Enclave",
-  "description": "Mada is a premium financial enclave featuring 3D card visualizations, quick account switching, and real-time notifications with professional branding.",
+  "name": "AVBANK",
+  "description": "AVBANK is a premium banking enclave featuring 3D dynamic card custom levels, quick account switching, and real-time transactions.",
   "requestFramePermissions": ["camera"],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

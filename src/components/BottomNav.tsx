@@ -31,15 +31,7 @@ export function BottomNav({ currentView, onNavigate, isAdmin }: BottomNavProps) 
           <span className="text-[10px] font-bold">{t.store}</span>
         </button>
         
-        {isAdmin && (
-          <button 
-            onClick={() => onNavigate('admin')}
-            className={`flex flex-col items-center gap-1.5 transition-colors ${currentView === 'admin' ? 'text-blue-500' : 'text-gray-500 hover:text-white'}`}
-          >
-            <Users className="w-6 h-6" />
-            <span className="text-[10px] font-bold">{t.admin}</span>
-          </button>
-        )}
+
 
         <button 
           onClick={() => onNavigate('settings')}

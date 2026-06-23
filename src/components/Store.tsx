@@ -126,8 +126,9 @@ export function Store({ user, onNavigate, onUserUpdate, theme }: StoreProps) {
   };
 
   return (
-    <div className={`p-4 pb-28 ${theme === 'light' ? 'bg-[#f8f9fa]' : 'bg-black'} min-h-screen`}>
-      {/* Header */}
+    <div className={`p-6 pb-28 ${theme === 'light' ? 'bg-[#f8f9fa]' : 'bg-transparent'} min-h-screen w-full flex flex-col items-stretch`}>
+      <div className="max-w-7xl mx-auto w-full flex flex-col">
+        {/* Header */}
       <div className="flex items-center justify-between mb-6 sticky top-0 bg-transparent pt-2 z-20 backdrop-blur-md">
         <div className="flex items-center gap-3">
           <button 
@@ -137,7 +138,7 @@ export function Store({ user, onNavigate, onUserUpdate, theme }: StoreProps) {
             <ChevronLeft className="w-5 h-5 light-mode-text" />
           </button>
           <div>
-            <h1 className="text-xl font-black italic tracking-tighter light-mode-text">Mada Store</h1>
+            <h1 className="text-xl font-black italic tracking-tighter light-mode-text">AVBANK Store</h1>
             <p className="text-[10px] text-gray-500 font-bold tracking-widest uppercase">{lang === 'ar' ? 'الشحن الرقمي الفوري' : 'Instant Digital Delivery'}</p>
           </div>
         </div>
@@ -182,7 +183,7 @@ export function Store({ user, onNavigate, onUserUpdate, theme }: StoreProps) {
       </div>
 
       {/* Products Grid (No Prices Outside) */}
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 max-w-7xl mx-auto w-full">
         {filteredProducts.map((product) => (
           <motion.div
             key={product.id}
@@ -219,6 +220,7 @@ export function Store({ user, onNavigate, onUserUpdate, theme }: StoreProps) {
             </div>
           </motion.div>
         ))}
+      </div>
       </div>
 
       {/* Product Detail Modal */}

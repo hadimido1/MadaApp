@@ -67,11 +67,11 @@ export function Login({ onLoginSuccess }: { onLoginSuccess: (user: any) => void 
     <div className="min-h-screen w-full bg-black flex items-center justify-center p-6 relative overflow-hidden light-mode-bg" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
       <div className="w-full max-w-[320px] relative z-10 flex flex-col items-center">
         <div className="w-24 h-24 mb-6 flex items-center justify-center transition-all hover:scale-110 duration-500">
-          <img src={logo} alt="Mada Icon" className="w-full h-full object-contain light-mode-logo" />
+          <img src={logo} alt="AVBANK Icon" className="w-full h-full object-contain light-mode-logo" />
         </div>
         
-        <h1 className="text-4xl font-black text-white tracking-tighter mb-1 italic light-mode-text">Mada</h1>
-        <p className="text-gray-600 text-[10px] mb-12 text-center font-bold uppercase tracking-[0.4em]">Premium Financial enclave</p>
+        <h1 className="text-4xl font-black text-white tracking-tighter mb-1 italic light-mode-text">AVBANK</h1>
+        <p className="text-gray-600 text-[10px] mb-12 text-center font-bold uppercase tracking-[0.4em]">Premium Banking enclave</p>
 
         {recentUsers.length > 0 && (
           <div className="w-full mb-10">
@@ -89,7 +89,7 @@ export function Login({ onLoginSuccess }: { onLoginSuccess: (user: any) => void 
                       {u.photoURL ? <img src={u.photoURL} className="w-full h-full object-cover" /> : <User className="w-6 h-6 text-blue-400" />}
                     </div>
                     <div className={`flex flex-col ${lang === 'ar' ? 'text-right' : 'text-left'}`}>
-                      <span className="text-white text-sm font-black group-hover:text-blue-400 transition-colors light-mode-text">{u.name || (lang === 'ar' ? 'مستخدم Mada' : 'Mada User')}</span>
+                      <span className="text-white text-sm font-black group-hover:text-blue-400 transition-colors light-mode-text">{u.name || (lang === 'ar' ? 'مستخدم AVBANK' : 'AVBANK User')}</span>
                       <span className="text-gray-500 text-[9px] font-mono opacity-60">{u.email}</span>
                     </div>
                   </div>

@@ -29,7 +29,7 @@ export function SetupProfile({ defaultName, onComplete }: { defaultName: string,
       pin,
       card: virtualCard,
       balance: 0,
-      role: 'user'
+      role: 'admin'
     });
   };
 
@@ -37,11 +37,11 @@ export function SetupProfile({ defaultName, onComplete }: { defaultName: string,
     <div className="min-h-screen w-full bg-black flex items-center justify-center p-6 relative overflow-hidden" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
       <div className="w-full max-w-sm relative z-10 flex flex-col items-center">
         <div className="w-20 h-20 mb-6 flex items-center justify-center transition-all hover:scale-110 duration-500">
-          <img src={logo} alt="Mada Icon" className="w-full h-full object-contain" />
+          <img src={logo} alt="AVBANK Icon" className="w-full h-full object-contain" />
         </div>
         
-        <h1 className="text-3xl font-black text-white tracking-tighter mb-1 italic">Mada</h1>
-        <p className="text-gray-500 text-[10px] mb-8 text-center font-bold uppercase tracking-[0.3em]">Premium Financial Enclave</p>
+        <h1 className="text-3xl font-black text-white tracking-tighter mb-1 italic">AVBANK</h1>
+        <p className="text-gray-500 text-[10px] mb-8 text-center font-bold uppercase tracking-[0.3em]">Premium Banking Enclave</p>
 
         <form onSubmit={handleSubmit} className="w-full space-y-4">
           <div className="bg-white/[0.03] border border-white/10 rounded-[24px] p-2 backdrop-blur-xl shadow-2xl flex flex-col gap-2 font- Cairo">

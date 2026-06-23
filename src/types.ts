@@ -1,4 +1,4 @@
-export type ViewState = 'login' | 'setup' | 'dashboard' | 'admin' | 'settings' | 'store';
+export type ViewState = 'login' | 'setup' | 'dashboard' | 'admin' | 'settings' | 'store' | 'upgrade';
 
 export interface StorePackage {
   id: string;
@@ -37,12 +37,13 @@ export interface User {
   pin?: string;
   role: 'admin' | 'user';
   balance: number;
-  card: {
+  card?: {
     number: string;
     expiry: string;
     cvv: string;
     holderName: string;
   };
+  cardLevel?: number;
   notifications?: AppNotification[];
 }
 

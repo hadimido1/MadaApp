@@ -39,6 +39,21 @@ input, textarea {
   75% { transform: rotate(-5deg); }
 }
 
+@keyframes rainbow-gradient {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.animate-rainbow-gradient {
+  background-size: 200% 200%;
+  animation: rainbow-gradient 5s ease infinite;
+}
+
+.text-shadow-rainbow {
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.6), 0 0 20px rgba(255, 0, 234, 0.4);
+}
+
 .animate-float-up {
   animation: floatUp 3s ease-in-out infinite;
 }
@@ -47,47 +62,324 @@ input, textarea {
   animation: bellWiggle 2s ease-in-out infinite;
 }
 
-.light-mode {
-  background-color: #f8fafc;
+/* Base theme support using CSS Variables */
+:root {
+  --theme-bg: #000000;
+  --theme-bg-gradient: linear-gradient(to bottom, #0d1527, #020617);
+  --theme-text: #f1f5f9;
+  --theme-accent: #3b82f6;
+  --theme-card: rgba(255, 255, 255, 0.03);
+  --theme-card-border: rgba(255, 255, 255, 0.08);
 }
 
-.light-mode body {
-  background-color: #f8fafc;
+/* Authentic Physical Material styles */
+
+/* Brushed Bronze */
+.material-bronze {
+  background: linear-gradient(135deg, #45240e 0%, #a86c3d 25%, #70401b 50%, #b8855c 75%, #3d1b05 100%);
+  background-size: 250% 250%;
+  position: relative;
+  border: 1px solid rgba(205, 127, 50, 0.4);
+}
+.material-bronze::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(90deg, rgba(255,255,255,0.03) 0px, rgba(255,255,255,0.03) 1px, transparent 1px, transparent 3px);
+  pointer-events: none;
 }
 
-.light-mode .light-mode-bg {
-  background-color: #f8fafc !important;
+/* Sterling Silver (Chrome) */
+.material-silver {
+  background: linear-gradient(135deg, #1e293b 0%, #cbd5e1 20%, #94a3b8 40%, #f8fafc 60%, #475569 80%, #0f172a 100%);
+  background-size: 300% 300%;
+  position: relative;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+}
+.material-silver::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg, transparent 40%, rgba(255, 255, 255, 0.3) 50%, transparent 60%);
+  background-size: 200% 100%;
+  pointer-events: none;
 }
 
-.light-mode .light-mode-text {
-  color: #000 !important;
+/* 24K Solid Gold */
+.material-gold {
+  background: linear-gradient(135deg, #2b1a00 0%, #d9a014 20%, #fef08a 40%, #b47a06 60%, #fef9c3 80%, #1e1200 100%);
+  background-size: 300% 300%;
+  position: relative;
+  border: 1px solid rgba(255, 215, 0, 0.6);
+}
+.material-gold::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(110deg, transparent 35%, rgba(255, 255, 255, 0.4) 48%, rgba(255, 255, 255, 0.5) 50%, rgba(255, 255, 255, 0.1) 55%, transparent 70%);
+  pointer-events: none;
 }
 
-.light-mode .light-mode-card {
-  background-color: #ffffff !important;
-  border-color: rgba(0, 0, 0, 0.05) !important;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05) !important;
+/* Frosted Obsidian Glass */
+.material-glass {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.03) 50%, rgba(0, 0, 0, 0.3) 100%);
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.15), 0 10px 40px rgba(0, 0, 0, 0.5);
 }
 
-.light-mode .light-mode-modal {
-  background-color: #ffffff !important;
-  border-color: rgba(0, 0, 0, 0.1) !important;
+/* Crystalline Diamond with dispersive refraction shimmer */
+.material-diamond {
+  background: linear-gradient(135deg, #0f172a 0%, #ecfeff 20%, #a5f3fc 40%, #e0f2fe 60%, #c084fc 80%, #020617 100%);
+  background-size: 300% 300%;
+  position: relative;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+}
+.material-diamond::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.15) 0%, transparent 60%), 
+                    radial-gradient(circle at 80% 70%, rgba(34, 211, 238, 0.1) 0%, transparent 60%);
+  pointer-events: none;
 }
 
-.light-mode .light-mode-btn {
-  background-color: rgba(0, 0, 0, 0.05) !important;
-  color: #000 !important;
+/* Visual Effects (Levels 11 to 15) */
+
+/* Magma Heatwave pulse */
+@keyframes magmaPulse {
+  0% { background-position: 0% 50%; opacity: 0.9; }
+  50% { background-position: 100% 50%; opacity: 1; }
+  100% { background-position: 0% 50%; opacity: 0.9; }
+}
+.effect-magma {
+  background: linear-gradient(135deg, #1a0202 0%, #7f1d1d 30%, #ef4444 50%, #f97316 70%, #2e0505 100%);
+  background-size: 200% 200%;
+  animation: magmaPulse 8s ease-in-out infinite;
+  border: 1px solid rgba(239, 68, 68, 0.5);
 }
 
-.light-mode .flip-btn {
-  background-color: #000 !important;
-  color: #fff !important;
+/* Interactive Water flow ripples */
+@keyframes hydroFlow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 100%; }
+  100% { background-position: 0% 50%; }
+}
+.effect-hydro {
+  background: linear-gradient(135deg, #0c4a6e 0%, #0284c7 35%, #0ea5e9 60%, #0369a1 85%, #082f49 100%);
+  background-size: 200% 200%;
+  animation: hydroFlow 6s infinite ease-in-out;
+  border: 1px solid rgba(14, 165, 233, 0.4);
 }
 
-.light-mode .flip-btn .light-mode-text {
-  color: #fff !important;
+/* Cyber holographic glitch grid */
+.effect-cyber {
+  background: linear-gradient(135deg, #310019 0%, #db2777 40%, #0284c7 70%, #1e0010 100%);
+  background-size: 200% 200%;
+  animation: magmaPulse 10s ease infinite;
+  border: 1px solid rgba(219, 39, 119, 0.5);
+}
+.effect-cyber::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-size: 16px 16px;
+  background-image: linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+                    linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  pointer-events: none;
 }
 
-.light-mode .light-mode-logo {
-  filter: invert(1) brightness(0);
+/* Celestial Nebula starry cosmic aura */
+@keyframes nebulaDrift {
+  0% { background-position: 0% 0%; }
+  50% { background-position: 100% 100%; }
+  100% { background-position: 0% 0%; }
+}
+.effect-nebula {
+  background: linear-gradient(135deg, #0b021a 0%, #4c1d95 30%, #a855f7 55%, #1d072f 80%, #020617 100%);
+  background-size: 300% 300%;
+  animation: nebulaDrift 15s infinite alternate ease-in-out;
+  border: 1px solid rgba(168, 85, 247, 0.4);
+}
+.effect-nebula::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(white, rgba(255,255,255,0.2) 2px, transparent 40px);
+  background-size: 120px 120px;
+  background-repeat: repeat;
+  opacity: 0.15;
+  pointer-events: none;
+}
+
+/* Complete glowing scrolling RGB wave */
+@keyframes rgbWave {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+.effect-rgb {
+  /* Softened RGB colors, slightly deeper and less blinding, yet highly rich and colorful */
+  background: linear-gradient(135deg, #bd0a46 0%, #bd440a 15%, #ac940a 30%, #209903 45%, #039480 60%, #0a46bd 75%, #7a0abd 90%, #bd0a46 100%);
+  background-size: 400% 400%;
+  animation: rgbWave 12s linear infinite;
+  border: none;
+}
+.effect-rgb::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  /* Digital/Cyber Tech Grid overlay and dark vignette layer to soften the bright RGB background */
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.08) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.08) 1px, transparent 1px),
+    radial-gradient(circle at 50% 50%, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.55) 100%);
+  background-size: 15px 15px, 15px 15px, 100% 100%;
+  pointer-events: none;
+  opacity: 0.95;
+  z-index: 1;
+}
+
+/* High-fidelity realistic physical card border and bevel */
+.card-realistic-edge {
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  box-shadow: 
+    inset 0 1px 0 rgba(255, 255, 255, 0.3),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.4),
+    0 15px 35px rgba(0, 0, 0, 0.6);
+}
+
+/* Subtle, realistic light-reflecting bevel for RGB Level 15 card */
+@keyframes borderRgb {
+  0% { border-color: rgba(189, 10, 70, 0.8); }
+  15% { border-color: rgba(189, 68, 10, 0.8); }
+  30% { border-color: rgba(172, 148, 10, 0.8); }
+  45% { border-color: rgba(32, 153, 3, 0.8); }
+  60% { border-color: rgba(3, 148, 128, 0.8); }
+  75% { border-color: rgba(10, 70, 189, 0.8); }
+  90% { border-color: rgba(122, 10, 189, 0.8); }
+  100% { border-color: rgba(189, 10, 70, 0.8); }
+}
+
+.card-rgb-realistic-edge {
+  border: 1.5px solid rgba(189, 10, 70, 0.8);
+  animation: borderRgb 12s linear infinite;
+  box-shadow: 
+    inset 0 1px 0 rgba(255, 255, 255, 0.35),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.4),
+    0 15px 35px rgba(0, 0, 0, 0.6);
+}
+
+/* Dynamic Hover/Pointer Glare Overlay */
+.card-glare {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0) 60%);
+  mix-blend-mode: overlay;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 5;
+}
+.visa-card-container:hover .card-glare {
+  opacity: 1;
+}
+
+/* Dynamic Hover/Pointer Glare Overlay for Back Face */
+.card-glare-back {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at var(--mouse-x-back, 50%) var(--mouse-y, 50%), rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0) 60%);
+  mix-blend-mode: overlay;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 5;
+}
+.visa-card-container:hover .card-glare-back {
+  opacity: 1;
+}
+
+/* Responsive Desktop-First styling */
+.main-widescreen-wrapper {
+  display: flex !important;
+  flex-direction: column !important;
+  min-height: 100vh !important;
+  width: 100vw !important;
+  background: var(--theme-bg-gradient) !important;
+}
+
+@media (min-width: 768px) {
+  /* Set beautiful widescreen grid on computers */
+  .desktop-horizontal-layout {
+    display: flex !important;
+    flex-direction: row !important;
+    max-width: 1200px !important;
+    margin: 0 auto !important;
+    padding: 2rem !important;
+    gap: 3rem !important;
+    align-items: stretch !important;
+    height: calc(100vh - 80px) !important;
+    overflow: hidden !important;
+  }
+  .desktop-sidebar-fixed {
+    width: 320px !important;
+    flex-shrink: 0 !important;
+    border-radius: 32px !important;
+    border: 1px solid var(--theme-card-border) !important;
+    background: rgba(255, 255, 255, 0.02) !important;
+    backdrop-filter: blur(16px) !important;
+  }
+  .desktop-content-pane {
+    flex-grow: 1 !important;
+    overflow-y: auto !important;
+    border-radius: 32px !important;
+    border: 1px solid var(--theme-card-border) !important;
+    background: rgba(0, 0, 0, 0.4) !important;
+    backdrop-filter: blur(10px) !important;
+    box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5) !important;
+  }
+}
+
+/* Theme variables connection */
+.theme-container {
+  background: var(--theme-bg-gradient) !important;
+  color: var(--theme-text) !important;
+  transition: background 0.8s ease, color 0.5s ease;
+}
+
+.theme-card-bg {
+  background: var(--theme-card) !important;
+  border-color: var(--theme-card-border) !important;
+}
+
+.theme-accent-text {
+  color: var(--theme-accent) !important;
+}
+
+.theme-accent-bg {
+  background-color: var(--theme-accent) !important;
+}
+
+.theme-accent-border {
+  border-color: var(--theme-accent) !important;
+}
+
+/* Landscape/Rotate Optimization styling */
+@media (orientation: landscape) and (max-height: 500px) {
+  body {
+    overflow-y: auto !important;
+    position: relative !important;
+  }
+  .rotate-landscape-row {
+    flex-direction: row !important;
+    align-items: flex-start !important;
+    gap: 2rem !important;
+    max-width: 90% !important;
+  }
+  .rotate-landscape-col {
+    flex: 1 !important;
+    width: 50% !important;
+  }
 }

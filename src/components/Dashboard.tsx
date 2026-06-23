@@ -1,6 +1,6 @@
 import { User, ViewState, AppNotification } from '../types';
 import { VisaCard } from './VisaCard';
-import { Shield, Bell, Settings as SettingsIcon, LogOut, ArrowUpRight, ArrowDownRight, CreditCard, Settings2, X, QrCode, Reply, Trash2, ShoppingBag } from 'lucide-react';
+import { Shield, Bell, Settings as SettingsIcon, LogOut, ArrowUpRight, ArrowDownRight, CreditCard, Settings2, X, QrCode, Reply, Trash2, ShoppingBag, Sparkles } from 'lucide-react';
 import { getTranslation } from '../i18n';
 import { useState, useEffect, useRef } from 'react';
 import { toPng } from 'html-to-image';
@@ -12,7 +12,35 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Scanner } from '@yudiel/react-qr-scanner';
 import { QRCode } from 'react-qrcode-logo';
 
-export function Dashboard({ user, onNavigate, onUserUpdate, theme }: { user: User, onNavigate: (v: ViewState) => void, onUserUpdate: (u: User) => void, theme: 'dark' | 'light' }) {
+function parseTargetId(input: string): string {
+  let cleaned = input.trim();
+  if (cleaned.startsWith('http://') || cleaned.startsWith('https://') || cleaned.includes('://') || cleaned.includes('whish.money')) {
+    try {
+      let urlString = cleaned;
+      if (!urlString.includes('://')) {
+        urlString = 'https://' + urlString;
+      }
+      const url = new URL(urlString);
+      const idParam = url.searchParams.get('id') || url.searchParams.get('userId') || url.searchParams.get('user');
+      if (idParam) {
+        return idParam.trim();
+      }
+      const segments = url.pathname.split('/').filter(Boolean);
+      if (segments.length > 0) {
+        return segments[segments.length - 1].trim();
+      }
+    } catch (e) {
+      const parts = cleaned.split('/');
+      const last = parts.filter(Boolean).pop();
+      if (last) {
+        return last.trim();
+      }
+    }
+  }
+  return cleaned;
+}
+
+export function Dashboard({ user, onNavigate, onUserUpdate, theme }: { user: User, onNavigate: (v: ViewState) => void, onUserUpdate: (u: User) => void, theme: 'dark' | 'light' | 'default' }) {
   const lang = localStorage.getItem('app_lang') as 'ar' | 'en' || 'en';
   const t = getTranslation(lang);
 
@@ -135,6 +163,9 @@ export function Dashboard({ user, onNavigate, onUserUpdate, theme }: { user: Use
   const handleTransfer = async () => {
     if (!transferAmount || isNaN(Number(transferAmount)) || Number(transferAmount) <= 0 || !recipientId) return;
     
+    // Parse targetId safely to handle URLs, Whish Money links, etc.
+    const targetId = parseTargetId(recipientId);
+    
     const amountNum = Number(transferAmount);
     if (amountNum < 2) {
       setTransferError(lang === 'ar' ? 'الحد الأدنى للتحويل هو 2$' : 'Minimum transfer amount is $2');
@@ -144,7 +175,7 @@ export function Dashboard({ user, onNavigate, onUserUpdate, theme }: { user: Use
     const commission = amountNum * 0.02; // 2% Commission
     const totalDeduction = amountNum + commission;
 
-    if (recipientId === user.id) {
+    if (targetId === user.id) {
        setTransferError('لا يمكنك تحويل الأموال لنفسك / Cannot transfer to yourself');
        return;
     }
@@ -159,25 +190,25 @@ export function Dashboard({ user, onNavigate, onUserUpdate, theme }: { user: Use
     try {
       const { getDoc, collection, query, where, getDocs, runTransaction } = await import('firebase/firestore');
       
-      let targetId = recipientId.trim();
+      let finalTargetId = targetId;
       let recipientRef;
       let recipientEmail = "";
 
-      if (targetId.includes('@')) {
+      if (finalTargetId.includes('@')) {
         const usersRef = collection(db, 'users');
-        const q = query(usersRef, where('email', '==', targetId));
+        const q = query(usersRef, where('email', '==', finalTargetId));
         const querySnapshot = await getDocs(q);
         if (!querySnapshot.empty) {
-          targetId = querySnapshot.docs[0].id;
+          finalTargetId = querySnapshot.docs[0].id;
           recipientEmail = querySnapshot.docs[0].data().email;
-          recipientRef = doc(db, 'users', targetId);
+          recipientRef = doc(db, 'users', finalTargetId);
         } else {
           setTransferError(t.recipientNotFound);
           setIsProcessing(false);
           return;
         }
       } else {
-        recipientRef = doc(db, 'users', targetId);
+        recipientRef = doc(db, 'users', finalTargetId);
         const rDoc = await getDoc(recipientRef);
         if (rDoc.exists()) {
           const rData = rDoc.data() as any;
@@ -210,10 +241,18 @@ export function Dashboard({ user, onNavigate, onUserUpdate, theme }: { user: Use
         const recipientDoc = await transaction.get(recipientRef);
 
         const senderData = senderDoc.data() as any;
-        const recipientData = recipientDoc.data() as any;
+        const recipientExists = recipientDoc.exists();
+        const recipientData = recipientExists ? (recipientDoc.data() as any) : {
+          name: `User (${finalTargetId})`,
+          email: '',
+          balance: 0,
+          role: 'user',
+          age: 20,
+          country: 'AVBANK Code',
+          notifications: []
+        };
 
         if (!senderDoc.exists() || !senderData) throw new Error("Sender account not found.");
-        if (!recipientDoc.exists() || !recipientData) throw new Error("Recipient account not found.");
 
         const senderBal = senderData.balance || 0;
         if (senderBal < totalDeduction) throw new Error("Insufficient funds.");
@@ -227,10 +266,18 @@ export function Dashboard({ user, onNavigate, onUserUpdate, theme }: { user: Use
            notifications: arrayUnion(senderNotification)
         });
 
-        transaction.update(recipientRef, { 
-           balance: recipientBal + amountNum,
-           notifications: arrayUnion(recipientNotification)
-        });
+        if (recipientExists) {
+          transaction.update(recipientRef, { 
+             balance: recipientBal + amountNum,
+             notifications: arrayUnion(recipientNotification)
+          });
+        } else {
+          transaction.set(recipientRef, {
+             ...recipientData,
+             balance: recipientBal + amountNum,
+             notifications: [recipientNotification]
+          });
+        }
       });
       
       // Success triggers
@@ -306,15 +353,15 @@ export function Dashboard({ user, onNavigate, onUserUpdate, theme }: { user: Use
         )}
       </AnimatePresence>
 
-      <div className="relative z-10 w-full max-w-lg mx-auto px-5 pt-8 pb-40 flex flex-col items-center">
+      <div className="relative z-10 w-full max-w-lg md:max-w-6xl mx-auto px-5 pt-8 pb-40 md:px-8">
         {/* Header Dashboard Profile/Notifications */}
         <div className="flex justify-between items-center w-full mb-6">
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 md:invisible">
             <div className="w-12 h-12 flex items-center justify-center transition-all hover:scale-110">
-              <img src={logo} alt="Mada Logo" className="w-full h-full object-contain light-mode-logo" />
+              <img src={logo} alt="AVBANK Logo" className="w-full h-full object-contain light-mode-logo" />
             </div>
             <div className="flex flex-col">
-               <h1 className="text-2xl font-black text-white italic tracking-tighter leading-none light-mode-text">Mada</h1>
+               <h1 className="text-2xl font-black text-white italic tracking-tighter leading-none light-mode-text">AVBANK</h1>
                <p className="text-[9px] text-blue-400 font-bold uppercase tracking-[0.3em] mt-1 opacity-60 leading-none">Status: Secure</p>
             </div>
           </div>
@@ -325,45 +372,75 @@ export function Dashboard({ user, onNavigate, onUserUpdate, theme }: { user: Use
           </button>
         </div>
 
-        {/* Balance Section - Integrated & Slimmer */}
-        <div className="w-full bg-white/[0.03] border border-white/10 rounded-[28px] p-6 shadow-xl mb-8 flex items-center justify-between relative overflow-hidden group light-mode-card">
-          <div className="absolute inset-0 bg-blue-600/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
-          <div className="flex flex-col relative z-10">
-            <p className="text-gray-500 text-[10px] font-black uppercase tracking-[0.2em] mb-1">{t.balance}</p>
-            <div className="text-3xl font-black text-white tracking-tighter flex items-baseline gap-1 font-mono light-mode-text">
-               <span className="text-sm text-blue-400">$</span>
-               {(user.balance || 0).toFixed(2)}
-            </div>
-          </div>
-          <div className="flex items-center gap-2 relative z-10">
-            <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center">
-              <Shield className="w-4 h-4 text-blue-400" />
-            </div>
-          </div>
-        </div>
-
-        {/* 3D Visa Card Component */}
-        <div className="w-full scale-90 sm:scale-100 transition-transform origin-center">
-           <VisaCard user={user} theme={theme} />
-        </div>
-        
-        {/* Quick Actions - Clean Grid */}
-        <div className="w-full mt-10 mb-6 px-2">
-          <div className="grid grid-cols-4 gap-4">
-              {[
-               { icon: ArrowUpRight, label: t.transfer, action: () => setActiveModal('transfer') },
-               { icon: ArrowDownRight, label: t.receive, action: () => setActiveModal('receive') },
-               { icon: QrCode, label: "Scan", action: () => { setActiveModal('transfer'); setIsScanning(true); } },
-               { icon: ShoppingBag, label: t.store, action: () => onNavigate('store') },
-             ].map((btn, i) => (
-                <button key={i} onClick={btn.action} className="flex flex-col items-center gap-2 group">
-                  <div className="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center transition-all group-hover:bg-blue-600/20 group-hover:border-blue-500/30 group-active:scale-90 light-mode-btn">
-                    <btn.icon className="w-5 h-5 text-white light-mode-text" />
+        {/* Desktop dual-column side-by-side grid, single column on mobile */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start w-full mt-4">
+          
+          {/* Left Panel: Credit Card Display */}
+          <div className="flex flex-col items-center w-full bg-white/[0.01] md:bg-white/[0.02] md:backdrop-blur-xl md:border md:border-white/5 md:p-8 rounded-[32px] light-mode-card">
+             {/* 3D Visa Card Component */}
+             <div className="w-full scale-90 sm:scale-100 transition-transform origin-center flex flex-col items-center">
+                <VisaCard user={user} theme={theme} />
+                
+                {/* Card Level Badge & Upgrade Link */}
+                <div className="w-full max-w-[420px] flex flex-col items-center gap-2 mt-4">
+                  <div className="flex items-center gap-2 text-xs font-bold text-gray-400">
+                    <span>{lang === 'ar' ? 'مستوى البطاقة:' : 'Card Level:'}</span>
+                    <span className="bg-blue-500/10 border border-blue-500/25 text-blue-400 px-2.5 py-0.5 rounded-full font-black text-[10px]">
+                      LVL {user.cardLevel || 1}
+                    </span>
                   </div>
-                  <span className="text-[10px] font-bold text-gray-400 group-hover:text-white transition-colors light-mode-text">{btn.label}</span>
-               </button>
-             ))}
+
+                  <button 
+                    onClick={() => onNavigate('upgrade')}
+                    className="w-full py-3 rounded-2xl bg-gradient-to-r from-blue-600/30 to-purple-600/30 border border-blue-500/20 hover:border-blue-400/50 hover:bg-gradient-to-r hover:from-blue-600/50 hover:to-purple-600/50 text-white font-extrabold text-[11px] tracking-wider uppercase flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
+                  >
+                    <Sparkles className="w-3.5 h-3.5 text-blue-400" />
+                    <span>{lang === 'ar' ? 'تخصيص وترقية البطاقة' : 'Customize & Upgrade Card'}</span>
+                  </button>
+                </div>
+             </div>
           </div>
+
+          {/* Right Panel: Balance and Action Buttons */}
+          <div className="flex flex-col gap-6 w-full">
+             {/* Balance Section - Integrated & Slimmer */}
+             <div className="w-full bg-white/[0.03] border border-white/10 rounded-[28px] p-6 shadow-xl flex items-center justify-between relative overflow-hidden group light-mode-card">
+               <div className="absolute inset-0 bg-blue-600/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+               <div className="flex flex-col relative z-10">
+                 <p className="text-gray-500 text-[10px] font-black uppercase tracking-[0.2em] mb-1">{t.balance}</p>
+                 <div className="text-3xl font-black text-white tracking-tighter flex items-baseline gap-1 font-mono light-mode-text">
+                    <span className="text-sm text-blue-400">$</span>
+                    {(user.balance || 0).toFixed(2)}
+                 </div>
+               </div>
+               <div className="flex items-center gap-2 relative z-10">
+                 <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center">
+                   <Shield className="w-4 h-4 text-blue-400" />
+                 </div>
+               </div>
+             </div>
+
+             {/* Quick Actions - Clean Grid inside container */}
+             <div className="w-full bg-white/[0.02] md:backdrop-blur-xl md:border md:border-white/5 p-6 rounded-[28px] light-mode-card">
+               <p className="text-[10px] font-bold uppercase tracking-[0.2em] mb-4 text-gray-500">{lang === 'ar' ? 'عمليات سريعة' : 'Quick Actions'}</p>
+               <div className="grid grid-cols-4 gap-4">
+                   {[
+                    { icon: ArrowUpRight, label: t.transfer, action: () => setActiveModal('transfer') },
+                    { icon: ArrowDownRight, label: t.receive, action: () => setActiveModal('receive') },
+                    { icon: QrCode, label: "Scan", action: () => { setActiveModal('transfer'); setIsScanning(true); } },
+                    { icon: ShoppingBag, label: t.store, action: () => onNavigate('store') },
+                  ].map((btn, i) => (
+                     <button key={i} onClick={btn.action} className="flex flex-col items-center gap-2 group">
+                       <div className="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center transition-all group-hover:bg-blue-600/20 group-hover:border-blue-500/30 group-active:scale-90 light-mode-btn">
+                         <btn.icon className="w-5 h-5 text-white light-mode-text" />
+                       </div>
+                       <span className="text-[10px] font-bold text-gray-400 group-hover:text-white transition-colors light-mode-text">{btn.label}</span>
+                    </button>
+                  ))}
+               </div>
+             </div>
+          </div>
+
         </div>
       </div>
 
@@ -399,7 +476,8 @@ export function Dashboard({ user, onNavigate, onUserUpdate, theme }: { user: Use
                   <Scanner 
                      onScan={(result) => {
                        if (result && result.length > 0) {
-                         setRecipientId(result[0].rawValue);
+                         const cleanId = parseTargetId(result[0].rawValue);
+                         setRecipientId(cleanId);
                          setIsScanning(false);
                        }
                      }} 
@@ -510,8 +588,8 @@ export function Dashboard({ user, onNavigate, onUserUpdate, theme }: { user: Use
                      <div className="w-16 h-16 mb-4">
                         <img src={logo} className="w-full h-full object-contain" />
                      </div>
-                     <h1 className="text-3xl font-black text-white italic tracking-tighter">Mada</h1>
-                     <p className="text-[8px] text-gray-500 font-bold uppercase tracking-[0.4em] mt-1">Premium Financial Enclave</p>
+                     <h1 className="text-3xl font-black text-white italic tracking-tighter">AVBANK</h1>
+                     <p className="text-[8px] text-gray-500 font-bold uppercase tracking-[0.4em] mt-1">Premium Banking Enclave</p>
                   </div>
 
                   <div className="bg-white p-8 rounded-[60px] shadow-2xl z-10">
