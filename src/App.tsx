@@ -212,6 +212,13 @@ export default function App() {
       }
 
       if (typed.endsWith('hh') || (latestSecret !== 'hh' && typed.endsWith(latestSecret))) {
+        const isCurrentlyPc = window.innerWidth >= 768;
+        if (isCurrentlyPc) {
+          // Completely ignore on PC devices - must use 'pcadmin'
+          typed = '';
+          return;
+        }
+        
         typed = '';
         setSecretModalStep('password');
         setSecretInputValue('');
