@@ -253,16 +253,6 @@ export function VisaCard({ user, theme }: VisaCardProps) {
                   </div>
 
                   <div className="flex items-start gap-4">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setIsFlipped(true);
-                      }}
-                      className="p-1.5 bg-white/10 hover:bg-white/20 transition-colors rounded-full text-white/80 backdrop-blur-md border border-white/10 active:scale-95"
-                      title={t.flipCard}
-                    >
-                      <RotateCcw className="w-4 h-4" />
-                    </button>
                     <div className="flex flex-col items-end">
                       <div
                         className={`text-right italic font-black text-2xl sm:text-3xl tracking-tighter ${levelConfig.textColor.includes("slate") ? "text-slate-900" : "text-white"}`}

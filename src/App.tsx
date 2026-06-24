@@ -9,7 +9,7 @@ import { Settings } from './components/Settings';
 import { Store } from './components/Store';
 import { CardUpgrade } from './components/CardUpgrade';
 import { cardLevels } from './cardLevels';
-import { auth, db, signOutUser } from './firebase';
+import { auth, db, signOutUser, handleFirestoreError, OperationType } from './firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import { doc, getDoc, setDoc, onSnapshot, collection, getDocs, updateDoc, query, where } from 'firebase/firestore';
 import { motion, AnimatePresence } from 'motion/react';
@@ -248,13 +248,21 @@ export default function App() {
   }, []);
 
   useEffect(() => {
+    let unsubSnapshot: (() => void) | null = null;
+
     const unsubscribe = onAuthStateChanged(auth, (u) => {
+      // Clean up previous snapshot listener
+      if (unsubSnapshot) {
+        unsubSnapshot();
+        unsubSnapshot = null;
+      }
+
       setFirebaseUser(u);
       if (u) {
         const userDocRef = doc(db, 'users', u.uid);
         
         // Use onSnapshot for real-time updates (balance, notifications, etc.)
-        const unsubSnapshot = onSnapshot(userDocRef, async (userSnap) => {
+        unsubSnapshot = onSnapshot(userDocRef, async (userSnap) => {
           if (userSnap.exists()) {
             const data = userSnap.data();
             if (!data.photoURL && u.photoURL) {
@@ -273,9 +281,10 @@ export default function App() {
         }, (err) => {
           console.error("Snapshot error:", err);
           setLoading(false);
+          if (err.code === 'permission-denied') {
+            handleFirestoreError(err, OperationType.GET, `users/${u.uid}`);
+          }
         });
-
-        return () => unsubSnapshot();
       } else {
         setCurrentUser(null);
         setView('login');
@@ -283,7 +292,12 @@ export default function App() {
       }
     });
 
-    return () => unsubscribe();
+    return () => {
+      unsubscribe();
+      if (unsubSnapshot) {
+        unsubSnapshot();
+      }
+    };
   }, []);
 
   const handleProfileComplete = async (profileData: any) => {
