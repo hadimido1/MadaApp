@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=JetBrains+Mono:wght@400;500;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=JetBrains+Mono:wght@400;500;700&display=swap");
 @import "tailwindcss";
 
 @theme {
@@ -17,7 +17,8 @@ body {
   height: 100%;
 }
 
-input, textarea {
+input,
+textarea {
   -webkit-user-select: text;
   user-select: text;
 }
@@ -26,23 +27,48 @@ input, textarea {
   display: none;
 }
 @keyframes floatUp {
-  0% { transform: translateY(100vh) scale(0.5) rotate(0deg); opacity: 0; }
-  20% { opacity: 1; }
-  80% { opacity: 1; }
-  100% { transform: translateY(-20vh) scale(1.5) rotate(360deg); opacity: 0; }
+  0% {
+    transform: translateY(100vh) scale(0.5) rotate(0deg);
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-20vh) scale(1.5) rotate(360deg);
+    opacity: 0;
+  }
 }
 
 @keyframes bellWiggle {
-  0%, 100% { transform: rotate(0deg); }
-  25% { transform: rotate(-10deg); }
-  50% { transform: rotate(10deg); }
-  75% { transform: rotate(-5deg); }
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-10deg);
+  }
+  50% {
+    transform: rotate(10deg);
+  }
+  75% {
+    transform: rotate(-5deg);
+  }
 }
 
 @keyframes rainbow-gradient {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
 .animate-rainbow-gradient {
@@ -51,7 +77,9 @@ input, textarea {
 }
 
 .text-shadow-rainbow {
-  text-shadow: 0 0 10px rgba(255, 255, 255, 0.6), 0 0 20px rgba(255, 0, 234, 0.4);
+  text-shadow:
+    0 0 10px rgba(255, 255, 255, 0.6),
+    0 0 20px rgba(255, 0, 234, 0.4);
 }
 
 .animate-float-up {
@@ -76,7 +104,14 @@ input, textarea {
 
 /* Brushed Bronze */
 .material-bronze {
-  background: linear-gradient(135deg, #45240e 0%, #a86c3d 25%, #70401b 50%, #b8855c 75%, #3d1b05 100%);
+  background: linear-gradient(
+    135deg,
+    #45240e 0%,
+    #a86c3d 25%,
+    #70401b 50%,
+    #b8855c 75%,
+    #3d1b05 100%
+  );
   background-size: 250% 250%;
   position: relative;
   border: 1px solid rgba(205, 127, 50, 0.4);
@@ -85,13 +120,27 @@ input, textarea {
   content: "";
   position: absolute;
   inset: 0;
-  background: repeating-linear-gradient(90deg, rgba(255,255,255,0.03) 0px, rgba(255,255,255,0.03) 1px, transparent 1px, transparent 3px);
+  background: repeating-linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.03) 0px,
+    rgba(255, 255, 255, 0.03) 1px,
+    transparent 1px,
+    transparent 3px
+  );
   pointer-events: none;
 }
 
 /* Sterling Silver (Chrome) */
 .material-silver {
-  background: linear-gradient(135deg, #1e293b 0%, #cbd5e1 20%, #94a3b8 40%, #f8fafc 60%, #475569 80%, #0f172a 100%);
+  background: linear-gradient(
+    135deg,
+    #1e293b 0%,
+    #cbd5e1 20%,
+    #94a3b8 40%,
+    #f8fafc 60%,
+    #475569 80%,
+    #0f172a 100%
+  );
   background-size: 300% 300%;
   position: relative;
   border: 1px solid rgba(255, 255, 255, 0.5);
@@ -100,14 +149,27 @@ input, textarea {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(105deg, transparent 40%, rgba(255, 255, 255, 0.3) 50%, transparent 60%);
+  background: linear-gradient(
+    105deg,
+    transparent 40%,
+    rgba(255, 255, 255, 0.3) 50%,
+    transparent 60%
+  );
   background-size: 200% 100%;
   pointer-events: none;
 }
 
 /* 24K Solid Gold */
 .material-gold {
-  background: linear-gradient(135deg, #2b1a00 0%, #d9a014 20%, #fef08a 40%, #b47a06 60%, #fef9c3 80%, #1e1200 100%);
+  background: linear-gradient(
+    135deg,
+    #2b1a00 0%,
+    #d9a014 20%,
+    #fef08a 40%,
+    #b47a06 60%,
+    #fef9c3 80%,
+    #1e1200 100%
+  );
   background-size: 300% 300%;
   position: relative;
   border: 1px solid rgba(255, 215, 0, 0.6);
@@ -116,22 +178,44 @@ input, textarea {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(110deg, transparent 35%, rgba(255, 255, 255, 0.4) 48%, rgba(255, 255, 255, 0.5) 50%, rgba(255, 255, 255, 0.1) 55%, transparent 70%);
+  background: linear-gradient(
+    110deg,
+    transparent 35%,
+    rgba(255, 255, 255, 0.4) 48%,
+    rgba(255, 255, 255, 0.5) 50%,
+    rgba(255, 255, 255, 0.1) 55%,
+    transparent 70%
+  );
   pointer-events: none;
 }
 
 /* Frosted Obsidian Glass */
 .material-glass {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.03) 50%, rgba(0, 0, 0, 0.3) 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.1) 0%,
+    rgba(255, 255, 255, 0.03) 50%,
+    rgba(0, 0, 0, 0.3) 100%
+  );
   backdrop-filter: blur(25px);
   -webkit-backdrop-filter: blur(25px);
   border: 1px solid rgba(255, 255, 255, 0.25);
-  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.15), 0 10px 40px rgba(0, 0, 0, 0.5);
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.15),
+    0 10px 40px rgba(0, 0, 0, 0.5);
 }
 
 /* Crystalline Diamond with dispersive refraction shimmer */
 .material-diamond {
-  background: linear-gradient(135deg, #0f172a 0%, #ecfeff 20%, #a5f3fc 40%, #e0f2fe 60%, #c084fc 80%, #020617 100%);
+  background: linear-gradient(
+    135deg,
+    #0f172a 0%,
+    #ecfeff 20%,
+    #a5f3fc 40%,
+    #e0f2fe 60%,
+    #c084fc 80%,
+    #020617 100%
+  );
   background-size: 300% 300%;
   position: relative;
   border: 1px solid rgba(255, 255, 255, 0.7);
@@ -140,8 +224,17 @@ input, textarea {
   content: "";
   position: absolute;
   inset: 0;
-  background-image: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.15) 0%, transparent 60%), 
-                    radial-gradient(circle at 80% 70%, rgba(34, 211, 238, 0.1) 0%, transparent 60%);
+  background-image:
+    radial-gradient(
+      circle at 30% 30%,
+      rgba(255, 255, 255, 0.15) 0%,
+      transparent 60%
+    ),
+    radial-gradient(
+      circle at 80% 70%,
+      rgba(34, 211, 238, 0.1) 0%,
+      transparent 60%
+    );
   pointer-events: none;
 }
 
@@ -149,12 +242,28 @@ input, textarea {
 
 /* Magma Heatwave pulse */
 @keyframes magmaPulse {
-  0% { background-position: 0% 50%; opacity: 0.9; }
-  50% { background-position: 100% 50%; opacity: 1; }
-  100% { background-position: 0% 50%; opacity: 0.9; }
+  0% {
+    background-position: 0% 50%;
+    opacity: 0.9;
+  }
+  50% {
+    background-position: 100% 50%;
+    opacity: 1;
+  }
+  100% {
+    background-position: 0% 50%;
+    opacity: 0.9;
+  }
 }
 .effect-magma {
-  background: linear-gradient(135deg, #1a0202 0%, #7f1d1d 30%, #ef4444 50%, #f97316 70%, #2e0505 100%);
+  background: linear-gradient(
+    135deg,
+    #1a0202 0%,
+    #7f1d1d 30%,
+    #ef4444 50%,
+    #f97316 70%,
+    #2e0505 100%
+  );
   background-size: 200% 200%;
   animation: magmaPulse 8s ease-in-out infinite;
   border: 1px solid rgba(239, 68, 68, 0.5);
@@ -162,12 +271,25 @@ input, textarea {
 
 /* Interactive Water flow ripples */
 @keyframes hydroFlow {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 100%; }
-  100% { background-position: 0% 50%; }
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 100%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }
 .effect-hydro {
-  background: linear-gradient(135deg, #0c4a6e 0%, #0284c7 35%, #0ea5e9 60%, #0369a1 85%, #082f49 100%);
+  background: linear-gradient(
+    135deg,
+    #0c4a6e 0%,
+    #0284c7 35%,
+    #0ea5e9 60%,
+    #0369a1 85%,
+    #082f49 100%
+  );
   background-size: 200% 200%;
   animation: hydroFlow 6s infinite ease-in-out;
   border: 1px solid rgba(14, 165, 233, 0.4);
@@ -175,7 +297,13 @@ input, textarea {
 
 /* Cyber holographic glitch grid */
 .effect-cyber {
-  background: linear-gradient(135deg, #310019 0%, #db2777 40%, #0284c7 70%, #1e0010 100%);
+  background: linear-gradient(
+    135deg,
+    #310019 0%,
+    #db2777 40%,
+    #0284c7 70%,
+    #1e0010 100%
+  );
   background-size: 200% 200%;
   animation: magmaPulse 10s ease infinite;
   border: 1px solid rgba(219, 39, 119, 0.5);
@@ -185,19 +313,33 @@ input, textarea {
   position: absolute;
   inset: 0;
   background-size: 16px 16px;
-  background-image: linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
-                    linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
   pointer-events: none;
 }
 
 /* Celestial Nebula starry cosmic aura */
 @keyframes nebulaDrift {
-  0% { background-position: 0% 0%; }
-  50% { background-position: 100% 100%; }
-  100% { background-position: 0% 0%; }
+  0% {
+    background-position: 0% 0%;
+  }
+  50% {
+    background-position: 100% 100%;
+  }
+  100% {
+    background-position: 0% 0%;
+  }
 }
 .effect-nebula {
-  background: linear-gradient(135deg, #0b021a 0%, #4c1d95 30%, #a855f7 55%, #1d072f 80%, #020617 100%);
+  background: linear-gradient(
+    135deg,
+    #0b021a 0%,
+    #4c1d95 30%,
+    #a855f7 55%,
+    #1d072f 80%,
+    #020617 100%
+  );
   background-size: 300% 300%;
   animation: nebulaDrift 15s infinite alternate ease-in-out;
   border: 1px solid rgba(168, 85, 247, 0.4);
@@ -206,7 +348,11 @@ input, textarea {
   content: "";
   position: absolute;
   inset: 0;
-  background-image: radial-gradient(white, rgba(255,255,255,0.2) 2px, transparent 40px);
+  background-image: radial-gradient(
+    white,
+    rgba(255, 255, 255, 0.2) 2px,
+    transparent 40px
+  );
   background-size: 120px 120px;
   background-repeat: repeat;
   opacity: 0.15;
@@ -215,13 +361,29 @@ input, textarea {
 
 /* Complete glowing scrolling RGB wave */
 @keyframes rgbWave {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }
 .effect-rgb {
   /* Softened RGB colors, slightly deeper and less blinding, yet highly rich and colorful */
-  background: linear-gradient(135deg, #bd0a46 0%, #bd440a 15%, #ac940a 30%, #209903 45%, #039480 60%, #0a46bd 75%, #7a0abd 90%, #bd0a46 100%);
+  background: linear-gradient(
+    135deg,
+    #bd0a46 0%,
+    #bd440a 15%,
+    #ac940a 30%,
+    #209903 45%,
+    #039480 60%,
+    #0a46bd 75%,
+    #7a0abd 90%,
+    #bd0a46 100%
+  );
   background-size: 400% 400%;
   animation: rgbWave 12s linear infinite;
   border: none;
@@ -231,11 +393,18 @@ input, textarea {
   position: absolute;
   inset: 0;
   /* Digital/Cyber Tech Grid overlay and dark vignette layer to soften the bright RGB background */
-  background-image: 
+  background-image:
     linear-gradient(to right, rgba(255, 255, 255, 0.08) 1px, transparent 1px),
     linear-gradient(to bottom, rgba(255, 255, 255, 0.08) 1px, transparent 1px),
-    radial-gradient(circle at 50% 50%, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.55) 100%);
-  background-size: 15px 15px, 15px 15px, 100% 100%;
+    radial-gradient(
+      circle at 50% 50%,
+      rgba(0, 0, 0, 0.1) 0%,
+      rgba(0, 0, 0, 0.55) 100%
+    );
+  background-size:
+    15px 15px,
+    15px 15px,
+    100% 100%;
   pointer-events: none;
   opacity: 0.95;
   z-index: 1;
@@ -244,7 +413,7 @@ input, textarea {
 /* High-fidelity realistic physical card border and bevel */
 .card-realistic-edge {
   border: 1px solid rgba(255, 255, 255, 0.22);
-  box-shadow: 
+  box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.3),
     inset 0 -1px 0 rgba(0, 0, 0, 0.4),
     0 15px 35px rgba(0, 0, 0, 0.6);
@@ -252,20 +421,36 @@ input, textarea {
 
 /* Subtle, realistic light-reflecting bevel for RGB Level 15 card */
 @keyframes borderRgb {
-  0% { border-color: rgba(189, 10, 70, 0.8); }
-  15% { border-color: rgba(189, 68, 10, 0.8); }
-  30% { border-color: rgba(172, 148, 10, 0.8); }
-  45% { border-color: rgba(32, 153, 3, 0.8); }
-  60% { border-color: rgba(3, 148, 128, 0.8); }
-  75% { border-color: rgba(10, 70, 189, 0.8); }
-  90% { border-color: rgba(122, 10, 189, 0.8); }
-  100% { border-color: rgba(189, 10, 70, 0.8); }
+  0% {
+    border-color: rgba(189, 10, 70, 0.8);
+  }
+  15% {
+    border-color: rgba(189, 68, 10, 0.8);
+  }
+  30% {
+    border-color: rgba(172, 148, 10, 0.8);
+  }
+  45% {
+    border-color: rgba(32, 153, 3, 0.8);
+  }
+  60% {
+    border-color: rgba(3, 148, 128, 0.8);
+  }
+  75% {
+    border-color: rgba(10, 70, 189, 0.8);
+  }
+  90% {
+    border-color: rgba(122, 10, 189, 0.8);
+  }
+  100% {
+    border-color: rgba(189, 10, 70, 0.8);
+  }
 }
 
 .card-rgb-realistic-edge {
   border: 1.5px solid rgba(189, 10, 70, 0.8);
   animation: borderRgb 12s linear infinite;
-  box-shadow: 
+  box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.35),
     inset 0 -1px 0 rgba(0, 0, 0, 0.4),
     0 15px 35px rgba(0, 0, 0, 0.6);
@@ -275,7 +460,11 @@ input, textarea {
 .card-glare {
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0) 60%);
+  background: radial-gradient(
+    circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+    rgba(255, 255, 255, 0.3) 0%,
+    rgba(255, 255, 255, 0) 60%
+  );
   mix-blend-mode: overlay;
   pointer-events: none;
   opacity: 0;
@@ -290,7 +479,11 @@ input, textarea {
 .card-glare-back {
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at var(--mouse-x-back, 50%) var(--mouse-y, 50%), rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0) 60%);
+  background: radial-gradient(
+    circle at var(--mouse-x-back, 50%) var(--mouse-y, 50%),
+    rgba(255, 255, 255, 0.3) 0%,
+    rgba(255, 255, 255, 0) 60%
+  );
   mix-blend-mode: overlay;
   pointer-events: none;
   opacity: 0;
@@ -338,7 +531,7 @@ input, textarea {
     border: 1px solid var(--theme-card-border) !important;
     background: rgba(0, 0, 0, 0.4) !important;
     backdrop-filter: blur(10px) !important;
-    box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5) !important;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5) !important;
   }
 }
 
@@ -346,7 +539,9 @@ input, textarea {
 .theme-container {
   background: var(--theme-bg-gradient) !important;
   color: var(--theme-text) !important;
-  transition: background 0.8s ease, color 0.5s ease;
+  transition:
+    background 0.8s ease,
+    color 0.5s ease;
 }
 
 .theme-card-bg {
@@ -367,19 +562,127 @@ input, textarea {
 }
 
 /* Landscape/Rotate Optimization styling */
-@media (orientation: landscape) and (max-height: 500px) {
+@media (orientation: landscape) and (max-height: 600px) {
   body {
     overflow-y: auto !important;
     position: relative !important;
   }
-  .rotate-landscape-row {
-    flex-direction: row !important;
-    align-items: flex-start !important;
-    gap: 2rem !important;
-    max-width: 90% !important;
+  
+  /* Scale the dashboard container slightly but allow it to flow naturally */
+  .max-w-lg.md\:max-w-6xl {
+    max-width: 100% !important;
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
   }
-  .rotate-landscape-col {
-    flex: 1 !important;
-    width: 50% !important;
+
+  /* Reduce paddings in landscape so it fits better */
+  .pb-40 {
+    padding-bottom: 2rem !important;
+  }
+  .pt-8 {
+    padding-top: 0.5rem !important;
+  }
+
+  .visa-card-container {
+    max-width: 300px !important;
+    margin: 0 auto !important;
+  }
+
+  .dashboard-grid {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    grid-template-areas:
+      "balance card"
+      "actions transactions" !important;
+    gap: 1.5rem !important;
+    align-items: stretch !important;
+  }
+
+  /* Make sidebar icon-only */
+  aside.w-72,
+  aside.xl\:w-80 {
+    display: flex !important;
+    width: 4.5rem !important;
+    z-index: 50;
+  }
+  aside .text-white,
+  aside .text-gray-500,
+  aside .text-gray-300,
+  aside span {
+    display: none !important;
+  }
+  aside img {
+    margin-left: -0.25rem;
+  }
+  aside button {
+    justify-content: center !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+  aside button svg {
+    margin: 0 !important;
+  }
+  /* Hide the regular bottom nav on landscape to prevent conflicts */
+  .md\:hidden {
+    display: none !important;
+  }
+}
+
+/* --- NEW DASHBOARD GRID ARCHITECTURE --- */
+.dashboard-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+}
+
+.area-balance {
+  grid-area: balance;
+}
+.area-transactions {
+  grid-area: transactions;
+}
+.area-card {
+  grid-area: card;
+}
+.area-actions {
+  grid-area: actions;
+}
+
+@media (min-width: 768px) {
+  .dashboard-grid {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    grid-template-areas:
+      "balance card"
+      "transactions actions";
+    gap: 2rem;
+    align-items: start;
+  }
+}
+
+/* 1920x1080 / 16:9 Ultra-Wide Responsive Design */
+@media (min-width: 1536px), (min-width: 1100px) and (min-aspect-ratio: 16/9), (width: 1920px) {
+  .dashboard-grid {
+    display: grid !important;
+    grid-template-columns: 1.1fr 400px 1.1fr !important;
+    grid-template-rows: 1fr 1fr !important;
+    grid-template-areas:
+      "balance card transactions"
+      "actions card transactions" !important;
+    gap: 2rem !important;
+    align-items: stretch !important;
+    min-height: calc(100vh - 120px) !important;
+  }
+  
+  .area-balance, .area-actions, .area-card, .area-transactions {
+    height: 100% !important;
+    min-height: unset !important;
+  }
+  
+  .visa-card-container {
+    max-width: 100% !important;
+    transform: scale(1.05);
+    transform-origin: center;
   }
 }

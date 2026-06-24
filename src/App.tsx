@@ -57,18 +57,16 @@ export default function App() {
     const currentLvl = cardLevels.find(l => l.level === currentLevelNum) || cardLevels[0];
     
     if (theme === 'default') {
-      document.documentElement.style.setProperty('--theme-bg', currentLvl.appBg.includes('gradient') ? 'transparent' : currentLvl.appBg);
-      document.documentElement.style.setProperty('--theme-bg-gradient', currentLvl.appBg);
-      
-      const isWhiteText = !(currentLvl.textColor.includes('slate-900') || currentLvl.textColor.includes('slate-950'));
-      document.documentElement.style.setProperty('--theme-text', isWhiteText ? '#f1f5f9' : '#0f172a');
-      document.documentElement.style.setProperty('--theme-accent', currentLvl.themeColor);
-      document.documentElement.style.setProperty('--theme-card', isWhiteText ? 'rgba(255, 255, 255, 0.03)' : 'rgba(0, 0, 0, 0.03)');
-      document.documentElement.style.setProperty('--theme-card-border', isWhiteText ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.05)');
-    } else {
-      // Force dark mode
       document.documentElement.style.setProperty('--theme-bg', '#000000');
-      document.documentElement.style.setProperty('--theme-bg-gradient', 'linear-gradient(to bottom, #000000, #000000)');
+      document.documentElement.style.setProperty('--theme-bg-gradient', currentLvl.appBg || 'linear-gradient(to bottom, #020617, #000000)');
+      document.documentElement.style.setProperty('--theme-text', '#ffffff');
+      document.documentElement.style.setProperty('--theme-accent', currentLvl.themeColor || '#3b82f6');
+      document.documentElement.style.setProperty('--theme-card', 'rgba(255, 255, 255, 0.05)');
+      document.documentElement.style.setProperty('--theme-card-border', 'rgba(255, 255, 255, 0.15)');
+    } else {
+      // Pure Dark Mode
+      document.documentElement.style.setProperty('--theme-bg', '#000000');
+      document.documentElement.style.setProperty('--theme-bg-gradient', 'linear-gradient(to bottom, #020617, #000000)');
       document.documentElement.style.setProperty('--theme-text', '#ffffff');
       document.documentElement.style.setProperty('--theme-accent', '#3b82f6');
       document.documentElement.style.setProperty('--theme-card', 'rgba(255, 255, 255, 0.03)');
@@ -372,8 +370,8 @@ export default function App() {
   return (
     <div className={`fixed inset-0 w-full h-full text-gray-100 font-sans flex items-stretch justify-stretch selection:bg-blue-500/30 overflow-hidden theme-container ${lang === 'en' ? 'font-sans' : ''}`} dir={dir}>
       
-      {/* --- DESKTOP HIGH-END SIDEBAR (Visible only on md screens and larger) --- */}
-      <aside className="hidden md:flex flex-col w-72 xl:w-80 bg-black/45 backdrop-blur-xl border-r border-white/10 flex-shrink-0 text-gray-300 relative h-full">
+      {/* --- DESKTOP HIGH-END SIDEBAR (Visible only on md screens and larger, or landscape) --- */}
+      <aside className="hidden md:flex landscape:flex flex-col w-72 xl:w-80 bg-black/45 backdrop-blur-xl border-r border-white/10 flex-shrink-0 text-gray-300 relative h-full z-50">
         {/* Branding Header */}
         <div className="p-6 flex items-center gap-3 border-b border-white/10">
           <div className="w-12 h-12 flex items-center justify-center shrink-0 transition-all hover:scale-105">
@@ -628,7 +626,7 @@ export default function App() {
         </AnimatePresence>
 
         {/* Bottom Nav: Only visible on mobile devices */}
-        <div className="md:hidden">
+        <div className="md:hidden landscape:hidden">
           <BottomNav 
             currentView={view} 
             onNavigate={(v) => setView(v)} 
