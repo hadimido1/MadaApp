@@ -40,7 +40,7 @@ export function Sidebar({ user, currentView, onNavigate, onLogout }: SidebarProp
             <div className="bg-white/[0.02] border border-white/5 p-4 rounded-xl">
               <div className="flex justify-between items-center mb-1">
                 <span className="text-[10px] text-gray-400 font-bold">Premium Tier Status</span>
-                <div className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse"></div>
+                <div className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse"></div>
               </div>
               <p className="text-[9px] text-gray-600 uppercase font-black tracking-widest">Active Member</p>
             </div>

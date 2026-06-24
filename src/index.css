@@ -4,6 +4,7 @@
 @theme {
   --font-sans: "Cairo", ui-sans-serif, system-ui, -apple-system, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  --color-accent: var(--theme-accent);
 }
 
 body {
@@ -113,7 +114,6 @@ textarea {
     #3d1b05 100%
   );
   background-size: 250% 250%;
-  position: relative;
   border: 1px solid rgba(205, 127, 50, 0.4);
 }
 .material-bronze::before {
@@ -142,7 +142,6 @@ textarea {
     #0f172a 100%
   );
   background-size: 300% 300%;
-  position: relative;
   border: 1px solid rgba(255, 255, 255, 0.5);
 }
 .material-silver::before {
@@ -171,7 +170,6 @@ textarea {
     #1e1200 100%
   );
   background-size: 300% 300%;
-  position: relative;
   border: 1px solid rgba(255, 215, 0, 0.6);
 }
 .material-gold::before {
@@ -217,7 +215,6 @@ textarea {
     #020617 100%
   );
   background-size: 300% 300%;
-  position: relative;
   border: 1px solid rgba(255, 255, 255, 0.7);
 }
 .material-diamond::before {
@@ -372,21 +369,21 @@ textarea {
   }
 }
 .effect-rgb {
-  /* Softened RGB colors, slightly deeper and less blinding, yet highly rich and colorful */
+  /* Extreme, vibrant and beautiful high-end real-time cycling RGB rainbow spectrum gradient */
   background: linear-gradient(
     135deg,
-    #bd0a46 0%,
-    #bd440a 15%,
-    #ac940a 30%,
-    #209903 45%,
-    #039480 60%,
-    #0a46bd 75%,
-    #7a0abd 90%,
-    #bd0a46 100%
-  );
-  background-size: 400% 400%;
-  animation: rgbWave 12s linear infinite;
-  border: none;
+    #ff0055 0%,
+    #ff5500 15%,
+    #ffcc00 30%,
+    #33ff00 45%,
+    #00ffcc 60%,
+    #0055ff 75%,
+    #8800ff 90%,
+    #ff0055 100%
+  ) !important;
+  background-size: 400% 400% !important;
+  animation: rgbWave 6s linear infinite !important;
+  border: none !important;
 }
 .effect-rgb::before {
   content: "";
@@ -399,7 +396,7 @@ textarea {
     radial-gradient(
       circle at 50% 50%,
       rgba(0, 0, 0, 0.1) 0%,
-      rgba(0, 0, 0, 0.55) 100%
+      rgba(0, 0, 0, 0.5) 100%
     );
   background-size:
     15px 15px,
@@ -419,41 +416,139 @@ textarea {
     0 15px 35px rgba(0, 0, 0, 0.6);
 }
 
-/* Subtle, realistic light-reflecting bevel for RGB Level 15 card */
+/* Vibrant dynamic real-time light-reflecting bevel for RGB Level 15 card */
 @keyframes borderRgb {
-  0% {
-    border-color: rgba(189, 10, 70, 0.8);
-  }
-  15% {
-    border-color: rgba(189, 68, 10, 0.8);
-  }
-  30% {
-    border-color: rgba(172, 148, 10, 0.8);
-  }
-  45% {
-    border-color: rgba(32, 153, 3, 0.8);
-  }
-  60% {
-    border-color: rgba(3, 148, 128, 0.8);
-  }
-  75% {
-    border-color: rgba(10, 70, 189, 0.8);
-  }
-  90% {
-    border-color: rgba(122, 10, 189, 0.8);
-  }
-  100% {
-    border-color: rgba(189, 10, 70, 0.8);
-  }
+  0% { border-color: #ff0055; }
+  14% { border-color: #ff5500; }
+  28% { border-color: #ffcc00; }
+  42% { border-color: #33ff00; }
+  56% { border-color: #00ffcc; }
+  70% { border-color: #0055ff; }
+  84% { border-color: #8800ff; }
+  100% { border-color: #ff0055; }
 }
 
 .card-rgb-realistic-edge {
-  border: 1.5px solid rgba(189, 10, 70, 0.8);
-  animation: borderRgb 12s linear infinite;
+  border: 2px solid #ff0055 !important;
+  animation: borderRgb 6s linear infinite !important;
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
     inset 0 -1px 0 rgba(0, 0, 0, 0.4),
-    0 15px 35px rgba(0, 0, 0, 0.6);
+    0 20px 45px rgba(0, 0, 0, 0.7) !important;
+}
+
+/* Dynamic neon rainbow outline for high-end millionaire card glow */
+@keyframes rainbowGlowOutlineAnim {
+  0% {
+    outline-color: #ff0055;
+    box-shadow: 0 0 35px rgba(255, 0, 85, 0.5) !important;
+  }
+  14% {
+    outline-color: #ff5500;
+    box-shadow: 0 0 35px rgba(255, 85, 0, 0.5) !important;
+  }
+  28% {
+    outline-color: #ffcc00;
+    box-shadow: 0 0 35px rgba(255, 204, 0, 0.5) !important;
+  }
+  42% {
+    outline-color: #33ff00;
+    box-shadow: 0 0 35px rgba(51, 255, 0, 0.5) !important;
+  }
+  56% {
+    outline-color: #00ffcc;
+    box-shadow: 0 0 35px rgba(0, 255, 204, 0.5) !important;
+  }
+  70% {
+    outline-color: #0055ff;
+    box-shadow: 0 0 35px rgba(0, 85, 255, 0.5) !important;
+  }
+  84% {
+    outline-color: #8800ff;
+    box-shadow: 0 0 35px rgba(136, 0, 255, 0.5) !important;
+  }
+  100% {
+    outline-color: #ff0055;
+    box-shadow: 0 0 35px rgba(255, 0, 85, 0.5) !important;
+  }
+}
+
+.rainbow-glow-outline {
+  outline: 3.5px solid #ff0055 !important;
+  border: none !important;
+  animation: rainbowGlowOutlineAnim 6s linear infinite !important;
+}
+
+/* Luxurious deep dark slow-moving website background rainbow gradient */
+@keyframes themeRgbWave {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.theme-container.theme-rgb-active {
+  background: linear-gradient(
+    135deg,
+    #14020c 0%,
+    #140702 15%,
+    #121002 30%,
+    #031401 45%,
+    #011411 60%,
+    #020b14 75%,
+    #0d0214 90%,
+    #14020c 100%
+  ) !important;
+  background-size: 400% 400% !important;
+  animation: themeRgbWave 20s ease infinite !important;
+}
+
+/* Dynamic live website accent morphing styles */
+@keyframes rgbTextColor {
+  0% { color: #ff0055 !important; }
+  14% { color: #ff5500 !important; }
+  28% { color: #ffcc00 !important; }
+  42% { color: #33ff00 !important; }
+  56% { color: #00ffcc !important; }
+  70% { color: #0055ff !important; }
+  84% { color: #8800ff !important; }
+  100% { color: #ff0055 !important; }
+}
+
+@keyframes rgbBgColor {
+  0% { background-color: #ff0055 !important; }
+  14% { background-color: #ff5500 !important; }
+  28% { background-color: #ffcc00 !important; }
+  42% { background-color: #33ff00 !important; }
+  56% { background-color: #00ffcc !important; }
+  70% { background-color: #0055ff !important; }
+  84% { background-color: #8800ff !important; }
+  100% { background-color: #ff0055 !important; }
+}
+
+@keyframes rgbBorderColor {
+  0% { border-color: rgba(255, 0, 85, 0.4) !important; }
+  14% { border-color: rgba(255, 85, 0, 0.4) !important; }
+  28% { border-color: rgba(255, 204, 0, 0.4) !important; }
+  42% { border-color: rgba(51, 255, 0, 0.4) !important; }
+  56% { border-color: rgba(0, 255, 204, 0.4) !important; }
+  70% { border-color: rgba(0, 85, 255, 0.4) !important; }
+  84% { border-color: rgba(136, 0, 255, 0.4) !important; }
+  100% { border-color: rgba(255, 0, 85, 0.4) !important; }
+}
+
+.theme-rgb-active .theme-accent-text,
+.theme-rgb-active .text-accent {
+  animation: rgbTextColor 6s linear infinite !important;
+}
+
+.theme-rgb-active .theme-accent-bg,
+.theme-rgb-active .bg-accent {
+  animation: rgbBgColor 6s linear infinite !important;
+}
+
+.theme-rgb-active .border-accent,
+.theme-rgb-active .focus\:border-accent {
+  animation: rgbBorderColor 6s linear infinite !important;
 }
 
 /* Dynamic Hover/Pointer Glare Overlay */
@@ -682,7 +777,5 @@ textarea {
   
   .visa-card-container {
     max-width: 100% !important;
-    transform: scale(1.05);
-    transform-origin: center;
   }
 }

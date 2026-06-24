@@ -83,7 +83,7 @@ export function SetupProfile({ defaultName, onComplete }: { defaultName: string,
             </div>
             <div className="h-[1px] w-full bg-white/5"></div>
             <div className="px-5 pb-4 pt-2">
-              <label className="block text-[10px] font-black text-blue-500 mb-2 uppercase tracking-wide">{t.pinLabel}</label>
+              <label className="block text-[10px] font-black text-accent mb-2 uppercase tracking-wide">{t.pinLabel}</label>
               <input 
                 type="password" 
                 value={pin}

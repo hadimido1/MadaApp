@@ -392,7 +392,7 @@ export function Dashboard({
   return (
     <div className="flex-1 flex flex-col relative w-full overflow-y-auto overflow-x-hidden pt-safe">
       <div className="fixed inset-0 pointer-events-none opacity-20 z-0">
-        <div className="absolute top-[-10%] right-[-20%] w-[60%] h-[50%] bg-blue-600/10 rounded-full blur-[140px]"></div>
+        <div className="absolute top-[-10%] right-[-20%] w-[60%] h-[50%] bg-accent/10 rounded-full blur-[140px]"></div>
       </div>
 
       {/* Email-style notification alert */}
@@ -412,12 +412,12 @@ export function Dashboard({
             className="fixed top-0 left-4 right-4 z-[110] flex justify-center cursor-grab active:cursor-grabbing"
           >
             <div className="bg-white text-black p-4 rounded-2xl shadow-2xl flex items-center gap-4 border border-black/5 max-w-sm w-full mx-auto relative overflow-hidden group">
-              <div className="absolute inset-0 bg-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-              <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center shrink-0">
+              <div className="absolute inset-0 bg-accent/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+              <div className="w-10 h-10 bg-accent rounded-full flex items-center justify-center shrink-0">
                 <Bell className="w-5 h-5 text-white" />
               </div>
               <div className="flex flex-col relative z-10">
-                <p className="text-[10px] font-black uppercase tracking-tighter text-blue-600">
+                <p className="text-[10px] font-black uppercase tracking-tighter text-accent">
                   Secure Notification
                 </p>
                 <p className="text-sm font-bold truncate">
@@ -450,7 +450,7 @@ export function Dashboard({
               <h1 className="text-2xl font-black text-white italic tracking-tighter leading-none light-mode-text">
                 AVBANK
               </h1>
-              <p className="text-[9px] text-blue-400 font-bold uppercase tracking-[0.3em] mt-1 opacity-60 leading-none">
+              <p className="text-[9px] text-accent font-bold uppercase tracking-[0.3em] mt-1 opacity-60 leading-none">
                 Status: Secure
               </p>
             </div>
@@ -471,13 +471,13 @@ export function Dashboard({
         <div className="dashboard-grid mt-2">
           {/* Balance Widget */}
           <div className="area-balance w-full bg-white/[0.03] border border-white/10 rounded-[32px] p-6 sm:p-8 shadow-2xl flex flex-col items-center justify-center relative overflow-hidden group light-mode-card h-full min-h-[160px] md:min-h-[220px]">
-            <div className="absolute inset-0 bg-blue-600/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+            <div className="absolute inset-0 bg-accent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
 
             <p className="text-gray-400 text-[10px] sm:text-xs font-black uppercase tracking-[0.3em] mb-2 sm:mb-4">
               {t.balance}
             </p>
             <div className="text-3xl sm:text-4xl md:text-5xl font-black text-white tracking-tighter flex items-baseline gap-1 sm:gap-2 font-mono light-mode-text drop-shadow-lg max-w-full px-2 break-all text-center">
-              <span className="text-xl sm:text-2xl text-blue-500 shrink-0">
+              <span className="text-xl sm:text-2xl text-accent shrink-0">
                 $
               </span>
               <span className="leading-none flex-1">
@@ -491,7 +491,7 @@ export function Dashboard({
                 (h, i) => (
                   <div
                     key={i}
-                    className="w-1.5 md:w-2 bg-blue-400 rounded-t-sm transition-all duration-500 hover:h-full"
+                    className="w-1.5 md:w-2 bg-accent rounded-t-sm transition-all duration-500 hover:h-full"
                     style={{ height: `${h}%` }}
                   />
                 ),
@@ -499,7 +499,7 @@ export function Dashboard({
             </div>
 
             <div className="absolute top-4 right-4 sm:top-6 sm:right-6 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/5 flex items-center justify-center border border-white/10">
-              <Shield className="w-4 h-4 sm:w-5 sm:h-5 text-blue-400" />
+              <Shield className="w-4 h-4 sm:w-5 sm:h-5 text-accent" />
             </div>
           </div>
 
@@ -514,7 +514,7 @@ export function Dashboard({
                   <span>
                     {lang === "ar" ? "مستوى البطاقة:" : "Card Level:"}
                   </span>
-                  <span className="bg-blue-500/10 border border-blue-500/25 text-blue-400 px-3 py-1 rounded-full font-black text-[11px] shadow-sm">
+                  <span className="bg-accent/10 border border-accent/25 text-accent px-3 py-1 rounded-full font-black text-[11px] shadow-sm">
                     LVL {user.cardLevel || 1}
                   </span>
                 </div>
@@ -523,7 +523,7 @@ export function Dashboard({
                   onClick={() => onNavigate("upgrade")}
                   className="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white font-extrabold text-[11px] tracking-wider uppercase flex items-center gap-2 transition-all active:scale-95"
                 >
-                  <Sparkles className="w-4 h-4 text-blue-400" />
+                  <Sparkles className="w-4 h-4 text-accent" />
                   <span>{lang === "ar" ? "ترقية" : "Upgrade"}</span>
                 </button>
               </div>
@@ -562,7 +562,7 @@ export function Dashboard({
                     const isReceived = n.type === 'transfer_received';
                     const isSystem = n.type === 'system';
                     const IconComp = isSystem ? Shield : isReceived ? ArrowDownRight : ArrowUpRight;
-                    const amountColor = isSystem ? "text-blue-400" : isReceived ? "text-green-400" : "text-white";
+                    const amountColor = isSystem ? "text-accent" : isReceived ? "text-green-400" : "text-white";
                     const amountPrefix = isReceived ? "+" : isSystem ? "" : "-";
                     
                     let title = n.message || "Transfer";
@@ -637,7 +637,7 @@ export function Dashboard({
                 <button
                   key={i}
                   onClick={btn.action}
-                  className="flex flex-col items-center justify-center gap-3 p-4 rounded-[20px] bg-white/5 border border-white/10 transition-all hover:bg-blue-600/20 hover:border-blue-500/30 hover:shadow-[0_0_20px_rgba(59,130,246,0.2)] active:scale-95 group light-mode-btn"
+                  className="flex flex-col items-center justify-center gap-3 p-4 rounded-[20px] bg-white/5 border border-white/10 transition-all hover:bg-accent/20 hover:border-accent/30 hover:shadow-[0_0_20px_rgba(59,130,246,0.2)] active:scale-95 group light-mode-btn"
                 >
                   <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-white/5 flex items-center justify-center group-hover:scale-110 transition-transform border border-white/5">
                     <btn.icon className="w-5 h-5 text-white light-mode-text" />
@@ -761,7 +761,7 @@ export function Dashboard({
                   Number(transferAmount) <= 0 ||
                   !recipientId
                 }
-                className="w-full bg-blue-500 text-white rounded-2xl py-4 font-bold disabled:opacity-50 mt-2"
+                className="w-full bg-accent text-white rounded-2xl py-4 font-bold disabled:opacity-50 mt-2"
               >
                 {isProcessing ? t.processing : t.confirmAdd}
               </button>
@@ -829,7 +829,7 @@ export function Dashboard({
               <button
                 onClick={downloadQrCode}
                 disabled={loading}
-                className="w-full bg-blue-600 text-white rounded-2xl py-4 font-black shadow-lg shadow-blue-600/20 active:scale-95 transition-all text-sm flex items-center justify-center gap-2"
+                className="w-full bg-accent text-white rounded-2xl py-4 font-black shadow-lg shadow-accent/20 active:scale-95 transition-all text-sm flex items-center justify-center gap-2"
               >
                 {loading ? t.processing : t.downloadQr}
               </button>
@@ -847,7 +847,7 @@ export function Dashboard({
                 ref={qrRef}
                 className="w-[400px] h-[600px] bg-black p-10 flex flex-col items-center justify-between relative overflow-hidden"
               >
-                <div className="absolute top-[-10%] right-[-10%] w-[60%] h-[40%] bg-blue-600/10 rounded-full blur-[100px]"></div>
+                <div className="absolute top-[-10%] right-[-10%] w-[60%] h-[40%] bg-accent/10 rounded-full blur-[100px]"></div>
                 <div className="absolute bottom-[-10%] left-[-10%] w-[60%] h-[40%] bg-emerald-600/5 rounded-full blur-[100px]"></div>
 
                 <div className="flex flex-col items-center z-10">
@@ -883,7 +883,7 @@ export function Dashboard({
                   <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-2">
                     Account ID
                   </p>
-                  <p className="text-sm font-bold text-blue-400 font-mono tracking-widest break-all px-4">
+                  <p className="text-sm font-bold text-accent font-mono tracking-widest break-all px-4">
                     {user.id}
                   </p>
                 </div>
@@ -987,19 +987,19 @@ export function Dashboard({
                       <div className="flex flex-wrap gap-2 pt-1">
                         <button
                           onClick={() => handleReply(n.senderId, t.thankYou)}
-                          className="px-3 py-1.5 rounded-full bg-white/5 hover:bg-blue-600/20 border border-white/10 text-[10px] font-bold text-white transition-all active:scale-95"
+                          className="px-3 py-1.5 rounded-full bg-white/5 hover:bg-accent/20 border border-white/10 text-[10px] font-bold text-white transition-all active:scale-95"
                         >
                           {t.thankYou}
                         </button>
                         <button
                           onClick={() => handleReply(n.senderId, t.received)}
-                          className="px-3 py-1.5 rounded-full bg-white/5 hover:bg-blue-600/20 border border-white/10 text-[10px] font-bold text-white transition-all active:scale-95"
+                          className="px-3 py-1.5 rounded-full bg-white/5 hover:bg-accent/20 border border-white/10 text-[10px] font-bold text-white transition-all active:scale-95"
                         >
                           {t.received}
                         </button>
                         <button
                           onClick={() => handleReply(n.senderId, "")}
-                          className="px-3 py-1.5 rounded-full bg-white/5 hover:bg-blue-600/20 border border-white/10 text-[10px] font-bold text-white transition-all active:scale-95 flex items-center gap-1"
+                          className="px-3 py-1.5 rounded-full bg-white/5 hover:bg-accent/20 border border-white/10 text-[10px] font-bold text-white transition-all active:scale-95 flex items-center gap-1"
                         >
                           <Reply className="w-3 h-3" />
                           {t.reply}

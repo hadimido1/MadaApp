@@ -83,13 +83,13 @@ export function Login({ onLoginSuccess }: { onLoginSuccess: (user: any) => void 
                   onClick={() => handleGoogleLogin()}
                   className="flex items-center justify-between p-4 rounded-[28px] bg-white/[0.03] border border-white/5 hover:bg-white/10 hover:border-white/20 transition-all cursor-pointer group relative overflow-hidden light-mode-card"
                 >
-                  <div className={`absolute inset-0 bg-gradient-to-${lang === 'ar' ? 'l' : 'r'} from-blue-500/0 to-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity`}></div>
+                  <div className={`absolute inset-0 bg-gradient-to-${lang === 'ar' ? 'l' : 'r'} from-accent/0 to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity`}></div>
                   <div className={`flex items-center gap-4 relative z-10 ${lang === 'ar' ? 'flex-row' : 'flex-row-reverse'}`}>
                     <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center overflow-hidden shadow-xl group-hover:scale-105 transition-transform light-mode-card">
-                      {u.photoURL ? <img src={u.photoURL} className="w-full h-full object-cover" /> : <User className="w-6 h-6 text-blue-400" />}
+                      {u.photoURL ? <img src={u.photoURL} className="w-full h-full object-cover" /> : <User className="w-6 h-6 text-accent" />}
                     </div>
                     <div className={`flex flex-col ${lang === 'ar' ? 'text-right' : 'text-left'}`}>
-                      <span className="text-white text-sm font-black group-hover:text-blue-400 transition-colors light-mode-text">{u.name || (lang === 'ar' ? 'مستخدم AVBANK' : 'AVBANK User')}</span>
+                      <span className="text-white text-sm font-black group-hover:text-accent transition-colors light-mode-text">{u.name || (lang === 'ar' ? 'مستخدم AVBANK' : 'AVBANK User')}</span>
                       <span className="text-gray-500 text-[9px] font-mono opacity-60">{u.email}</span>
                     </div>
                   </div>

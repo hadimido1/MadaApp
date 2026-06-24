@@ -138,7 +138,7 @@ export function CardUpgrade({ user, onNavigate, onUserUpdate, theme }: CardUpgra
 
              {/* Upgrade Summary Dashboard Widget */}
              <div className="w-full theme-card-bg border rounded-3xl p-5 flex flex-col gap-4 shadow-xl relative overflow-hidden">
-               <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 rounded-full blur-2xl pointer-events-none"></div>
+               <div className="absolute top-0 right-0 w-32 h-32 bg-accent/5 rounded-full blur-2xl pointer-events-none"></div>
                
                <div className="flex justify-between items-start">
                  <div>
@@ -152,7 +152,7 @@ export function CardUpgrade({ user, onNavigate, onUserUpdate, theme }: CardUpgra
                      {lang === 'ar' ? currentLvl.descriptionAr : currentLvl.descriptionEn}
                    </p>
                  </div>
-                 <div className="bg-blue-500/10 border border-blue-500/20 px-3 py-1 rounded-full text-blue-400 text-xs font-black uppercase">
+                 <div className="bg-accent/10 border border-accent/20 px-3 py-1 rounded-full text-accent text-xs font-black uppercase">
                    LVL {currentLevelNum}
                  </div>
                </div>
@@ -161,7 +161,7 @@ export function CardUpgrade({ user, onNavigate, onUserUpdate, theme }: CardUpgra
                {canUpgrade && maxPossibleLevel ? (
                  <button 
                    onClick={handleAutoUpgrade}
-                   className="w-full py-4 rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-black text-sm shadow-[0_4px_20px_rgba(59,130,246,0.4)] flex items-center justify-center gap-2 animate-pulse active:scale-[0.98] transition-all"
+                   className="w-full py-4 rounded-2xl bg-gradient-to-r from-accent via-indigo-600 to-purple-600 hover:from-accent hover:to-purple-500 text-white font-black text-sm shadow-[0_4px_20px_rgba(59,130,246,0.4)] flex items-center justify-center gap-2 animate-pulse active:scale-[0.98] transition-all"
                  >
                    <Sparkles className="w-4 h-4 text-yellow-300" />
                    <span>
@@ -189,7 +189,7 @@ export function CardUpgrade({ user, onNavigate, onUserUpdate, theme }: CardUpgra
                  </div>
                  <div className="w-full h-2 bg-white/5 rounded-full overflow-hidden">
                    <div 
-                     className="h-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 transition-all duration-1000"
+                     className="h-full bg-gradient-to-r from-accent via-purple-500 to-pink-500 transition-all duration-1000"
                      style={{ width: `${Math.min(100, (user.balance / 1000000) * 100)}%` }}
                    ></div>
                  </div>
@@ -231,7 +231,7 @@ export function CardUpgrade({ user, onNavigate, onUserUpdate, theme }: CardUpgra
                 onClick={() => isUnlocked && handleSelectLevel(lvl.level)}
                 className={`group w-full p-4 rounded-2xl border flex items-center justify-between transition-all relative overflow-hidden ${
                   isActive 
-                    ? 'border-blue-500 bg-blue-500/5 shadow-[0_0_15px_rgba(59,130,246,0.15)] ring-1 ring-blue-500/20' 
+                    ? 'border-accent bg-accent/5 shadow-[0_0_15px_rgba(59,130,246,0.15)] ring-1 ring-accent/20' 
                     : isUnlocked 
                       ? 'border-white/10 bg-white/[0.02] hover:bg-white/[0.04] cursor-pointer' 
                       : 'border-white/5 bg-black/40 opacity-70'
@@ -251,7 +251,7 @@ export function CardUpgrade({ user, onNavigate, onUserUpdate, theme }: CardUpgra
                   {/* Level Details */}
                   <div className="flex flex-col">
                     <div className="flex items-center gap-2">
-                      <span className="text-xs font-black text-blue-500">LVL {lvl.level}</span>
+                      <span className="text-xs font-black text-accent">LVL {lvl.level}</span>
                       <span className="font-extrabold text-white text-sm">
                         {lang === 'ar' ? lvl.nameAr : lvl.nameEn}
                       </span>
@@ -276,7 +276,7 @@ export function CardUpgrade({ user, onNavigate, onUserUpdate, theme }: CardUpgra
                       <Check className="w-4 h-4 stroke-[3px]" />
                     </div>
                   ) : isUnlocked ? (
-                    <div className="w-8 h-8 rounded-full bg-white/5 group-hover:bg-blue-500/10 group-hover:border-blue-500/30 border border-white/10 flex items-center justify-center text-gray-400 group-hover:text-blue-400 transition-colors">
+                    <div className="w-8 h-8 rounded-full bg-white/5 group-hover:bg-accent/10 group-hover:border-accent/30 border border-white/10 flex items-center justify-center text-gray-400 group-hover:text-accent transition-colors">
                       <Award className="w-4 h-4" />
                     </div>
                   ) : (

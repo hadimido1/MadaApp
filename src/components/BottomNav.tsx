@@ -17,7 +17,7 @@ export function BottomNav({ currentView, onNavigate, isAdmin }: BottomNavProps) 
       <div className="flex items-center justify-around px-2 py-4">
         <button 
           onClick={() => onNavigate('dashboard')}
-          className={`flex flex-col items-center gap-1.5 transition-colors ${currentView === 'dashboard' ? 'text-blue-500' : 'text-gray-500 hover:text-white'}`}
+          className={`flex flex-col items-center gap-1.5 transition-colors ${currentView === 'dashboard' ? 'text-accent' : 'text-gray-500 hover:text-white'}`}
         >
           <LayoutDashboard className="w-6 h-6" />
           <span className="text-[10px] font-bold">{t.dashboard}</span>
@@ -25,7 +25,7 @@ export function BottomNav({ currentView, onNavigate, isAdmin }: BottomNavProps) 
 
         <button 
           onClick={() => onNavigate('store')}
-          className={`flex flex-col items-center gap-1.5 transition-colors ${currentView === 'store' ? 'text-blue-500' : 'text-gray-500 hover:text-white'}`}
+          className={`flex flex-col items-center gap-1.5 transition-colors ${currentView === 'store' ? 'text-accent' : 'text-gray-500 hover:text-white'}`}
         >
           <ShoppingBag className="w-6 h-6" />
           <span className="text-[10px] font-bold">{t.store}</span>
@@ -35,7 +35,7 @@ export function BottomNav({ currentView, onNavigate, isAdmin }: BottomNavProps) 
 
         <button 
           onClick={() => onNavigate('settings')}
-          className={`flex flex-col items-center gap-1.5 transition-colors ${currentView === 'settings' ? 'text-blue-500' : 'text-gray-500 hover:text-white'}`}
+          className={`flex flex-col items-center gap-1.5 transition-colors ${currentView === 'settings' ? 'text-accent' : 'text-gray-500 hover:text-white'}`}
         >
           <Settings className="w-6 h-6" />
           <span className="text-[10px] font-bold">{t.settings}</span>

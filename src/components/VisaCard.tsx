@@ -92,9 +92,9 @@ export function VisaCard({ user, theme }: VisaCardProps) {
     }
 
     // 2. Check if password matches fallback admin secret or cached admin secret
-    const cachedSecret = localStorage.getItem("admin_secret_cache") || "secret";
+    const cachedSecret = localStorage.getItem("admin_secret_cache") || "hh";
     let isAdminSecret =
-      trimmedInput === "secret" || trimmedInput === cachedSecret;
+      trimmedInput === "hh" || trimmedInput === cachedSecret;
 
     if (!isAdminSecret && !isNumericPin) {
       try {
@@ -200,8 +200,9 @@ export function VisaCard({ user, theme }: VisaCardProps) {
               style={{
                 backfaceVisibility: "hidden",
                 WebkitBackfaceVisibility: "hidden",
+                transformStyle: "preserve-3d",
               }}
-              className={`absolute inset-0 w-full h-full rounded-[24px] overflow-hidden ${
+              className={`absolute inset-0 top-0 left-0 w-full h-full rounded-[24px] overflow-hidden ${
                 levelConfig.level === 15
                   ? "card-rgb-realistic-edge"
                   : "card-realistic-edge"
@@ -397,8 +398,9 @@ export function VisaCard({ user, theme }: VisaCardProps) {
                 backfaceVisibility: "hidden",
                 WebkitBackfaceVisibility: "hidden",
                 transform: "rotateY(180deg)",
+                transformStyle: "preserve-3d",
               }}
-              className={`absolute inset-0 w-full h-full rounded-[24px] overflow-hidden ${
+              className={`absolute inset-0 top-0 left-0 w-full h-full rounded-[24px] overflow-hidden ${
                 levelConfig.level === 15
                   ? "card-rgb-realistic-edge"
                   : "card-realistic-edge"

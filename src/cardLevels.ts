@@ -67,7 +67,7 @@ export const cardLevels: CardLevel[] = [
     textColor: "text-blue-100",
     appBg: "linear-gradient(to bottom, #111e47, #0b1329)",
     themeColor: "#3b82f6",
-    glow: "shadow-[0_10px_30px_rgba(59,130,246,0.3)] border-blue-500/20",
+    glow: "shadow-[0_10px_30px_rgba(59,130,246,0.3)] border-accent/20",
     styleType: 'color',
     descriptionAr: "تدرج ملوكي مستوحى من أعماق البحار العميقة.",
     descriptionEn: "A royal deep blue design inspired by oceanic trenches."
@@ -234,7 +234,7 @@ export const cardLevels: CardLevel[] = [
     textColor: "text-white font-black tracking-widest text-shadow-rainbow",
     appBg: "linear-gradient(to bottom, #0c0214, #000000)",
     themeColor: "#ff00ea",
-    glow: "outline outline-[3.5px] outline-pink-500/80 border-none shadow-none",
+    glow: "rainbow-glow-outline",
     styleType: 'effect',
     materialClass: "effect-rgb",
     descriptionAr: "قوة المليونيرات النهائية! طيف RGB مشع بالكامل وبطاقة تتغير ألوانها كقوس قزح باستمرار.",

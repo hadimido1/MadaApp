@@ -71,9 +71,9 @@ export function Settings({ user, onLogout, onNavigate, onUserUpdate, theme, setT
           <div>
             <h2 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-3 px-2">{t.account}</h2>
             <div className="bg-white/[0.03] border border-white/10 rounded-[28px] overflow-hidden flex flex-col shadow-lg light-mode-card">
-              <div className="flex items-center justify-between p-5 border-b border-white/10 active:bg-blue-500/10 transition-colors cursor-pointer group" onClick={() => setActiveModal('accounts' as any)}>
+              <div className="flex items-center justify-between p-5 border-b border-white/10 active:bg-accent/10 transition-colors cursor-pointer group" onClick={() => setActiveModal('accounts' as any)}>
                 <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center border border-blue-500/20 overflow-hidden">
+                  <div className="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center border border-accent/20 overflow-hidden">
                     {user.photoURL ? (
                       <img src={user.photoURL} alt={user.name} referrerPolicy="no-referrer" className="w-full h-full object-cover" />
                     ) : (
@@ -85,34 +85,34 @@ export function Settings({ user, onLogout, onNavigate, onUserUpdate, theme, setT
                     <span className="text-gray-500 text-[10px] mt-0.5">{user.email}</span>
                   </div>
                 </div>
-                <div className="flex items-center gap-2 text-blue-500">
+                <div className="flex items-center gap-2 text-accent">
                   <span className="text-[10px] font-bold uppercase tracking-widest">{t.switchAccount || "Switch"}</span>
                   <ChevronLeft className={`w-4 h-4 transition-transform -rotate-90`} />
                 </div>
               </div>
-              <div className="flex items-center justify-between p-5 active:bg-blue-500/10 transition-colors">
+              <div className="flex items-center justify-between p-5 active:bg-accent/10 transition-colors">
                 <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center border border-blue-500/20">
-                    <Lock className="w-5 h-5 text-blue-500" />
+                  <div className="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center border border-accent/20">
+                    <Lock className="w-5 h-5 text-accent" />
                   </div>
                   <div className="flex flex-col">
                     <span className="text-white font-bold text-sm light-mode-text">{t.security}</span>
                     <span className="text-gray-500 text-xs mt-0.5">{t.protected}</span>
                   </div>
                 </div>
-                <CheckCircle2 className="w-5 h-5 text-blue-500" />
+                <CheckCircle2 className="w-5 h-5 text-accent" />
               </div>
             </div>
           </div>
 
           {/* App Settings */}
           <div>
-            <h2 className="text-xs font-bold text-blue-500/60 uppercase tracking-widest mb-3 px-2">{t.app}</h2>
+            <h2 className="text-xs font-bold text-accent/60 uppercase tracking-widest mb-3 px-2">{t.app}</h2>
             <div className="bg-white/[0.03] border border-white/10 rounded-[28px] overflow-hidden flex flex-col shadow-lg light-mode-card">
-              <button onClick={() => setActiveModal('privacy')} className="flex items-center justify-between p-5 border-b border-white/10 active:bg-blue-500/10 transition-colors text-right w-full">
+              <button onClick={() => setActiveModal('privacy')} className="flex items-center justify-between p-5 border-b border-white/10 active:bg-accent/10 transition-colors text-right w-full">
                 <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center border border-blue-500/20">
-                    <Shield className="w-5 h-5 text-blue-500" />
+                  <div className="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center border border-accent/20">
+                    <Shield className="w-5 h-5 text-accent" />
                   </div>
                   <div className="flex flex-col text-left">
                     <span className="text-white font-bold text-sm light-mode-text">{t.privacy}</span>
@@ -122,23 +122,23 @@ export function Settings({ user, onLogout, onNavigate, onUserUpdate, theme, setT
                 <ChevronLeft className={`w-5 h-5 text-gray-500 ${language === 'en' ? 'rotate-180' : ''}`} />
               </button>
               
-              <button onClick={() => setActiveModal('theme')} className="flex items-center justify-between p-5 border-b border-white/10 active:bg-blue-500/10 transition-colors text-right w-full">
+              <button onClick={() => setActiveModal('theme')} className="flex items-center justify-between p-5 border-b border-white/10 active:bg-accent/10 transition-colors text-right w-full">
                 <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center border border-blue-500/20">
-                    <Palette className="w-5 h-5 text-blue-500" />
+                  <div className="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center border border-accent/20">
+                    <Palette className="w-5 h-5 text-accent" />
                   </div>
                   <div className="flex flex-col text-left">
                     <span className="text-white font-bold text-sm light-mode-text">{t.theme}</span>
-                    <span className="text-blue-500 text-[10px] font-black uppercase tracking-tighter">{theme === 'dark' ? t.dark : t.themeDefault}</span>
+                    <span className="text-accent text-[10px] font-black uppercase tracking-tighter">{theme === 'dark' ? t.dark : t.themeDefault}</span>
                   </div>
                 </div>
                 <ChevronLeft className={`w-5 h-5 text-gray-500 ${language === 'en' ? 'rotate-180' : ''}`} />
               </button>
               
-              <button onClick={() => setActiveModal('language')} className="flex items-center justify-between p-5 active:bg-blue-500/10 transition-colors text-right w-full">
+              <button onClick={() => setActiveModal('language')} className="flex items-center justify-between p-5 active:bg-accent/10 transition-colors text-right w-full">
                 <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center border border-blue-500/20">
-                    <Globe className="w-5 h-5 text-blue-500" />
+                  <div className="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center border border-accent/20">
+                    <Globe className="w-5 h-5 text-accent" />
                   </div>
                   <div className="flex flex-col text-left">
                     <span className="text-white font-bold text-sm light-mode-text">{t.language}</span>
@@ -166,12 +166,12 @@ export function Settings({ user, onLogout, onNavigate, onUserUpdate, theme, setT
         <div className="hidden md:flex flex-col gap-6 p-6 rounded-3xl bg-white/[0.02] border border-white/10 shadow-lg sticky top-6">
            <h3 className="text-xs font-black uppercase tracking-widest text-gray-500">Membership Summary</h3>
            <div className="flex items-center gap-4 p-5 rounded-[24px] bg-white/[0.03] border border-white/5">
-             <div className="w-14 h-14 rounded-full bg-blue-500/10 flex items-center justify-center border border-blue-500/20 overflow-hidden">
+             <div className="w-14 h-14 rounded-full bg-accent/10 flex items-center justify-center border border-accent/20 overflow-hidden">
                {user.photoURL ? <img src={user.photoURL} className="w-full h-full object-cover" /> : <UserIcon className="w-7 h-7 text-gray-400" />}
              </div>
              <div className="flex flex-col">
                 <span className="font-extrabold text-base text-white">{user.name}</span>
-                <span className="text-xs text-blue-400 font-bold uppercase mt-1">LVL {user.cardLevel || 1} Member</span>
+                <span className="text-xs text-accent font-bold uppercase mt-1">LVL {user.cardLevel || 1} Member</span>
              </div>
            </div>
            
@@ -194,7 +194,7 @@ export function Settings({ user, onLogout, onNavigate, onUserUpdate, theme, setT
              onClick={() => setActiveModal('accounts' as any)}
              className="w-full mt-4 py-3.5 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 text-white font-bold text-xs transition-all flex items-center justify-center gap-2"
            >
-             <UserIcon className="w-4 h-4 text-blue-400" />
+             <UserIcon className="w-4 h-4 text-accent" />
              <span>{t.switchAccount || "Switch Accounts"}</span>
            </button>
         </div>
@@ -208,8 +208,8 @@ export function Settings({ user, onLogout, onNavigate, onUserUpdate, theme, setT
           <div className="bg-[#111] border border-white/10 w-full max-w-sm rounded-[32px] overflow-hidden shadow-2xl relative light-mode-modal flex flex-col">
             <div className="flex items-center justify-between p-6 border-b border-white/5">
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-blue-500/10 flex items-center justify-center border border-blue-500/20">
-                  {activeModal === 'accounts' ? <UserIcon className="w-4 h-4 text-blue-500" /> : <Shield className="w-4 h-4 text-blue-500" />}
+                <div className="w-8 h-8 rounded-full bg-accent/10 flex items-center justify-center border border-accent/20">
+                  {activeModal === 'accounts' ? <UserIcon className="w-4 h-4 text-accent" /> : <Shield className="w-4 h-4 text-accent" />}
                 </div>
                 <h2 className="text-base font-black text-white light-mode-text">
                   {activeModal === 'accounts' ? t.savedAccounts : t.editAccount}
@@ -224,8 +224,8 @@ export function Settings({ user, onLogout, onNavigate, onUserUpdate, theme, setT
             {activeModal === 'accounts' && (
               <div className="flex flex-col gap-6 mt-2">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center border border-blue-500/20">
-                    <UserIcon className="w-5 h-5 text-blue-500" />
+                  <div className="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center border border-accent/20">
+                    <UserIcon className="w-5 h-5 text-accent" />
                   </div>
                   <h2 className="text-lg font-black text-white light-mode-text">{t.savedAccounts}</h2>
                 </div>
@@ -242,7 +242,7 @@ export function Settings({ user, onLogout, onNavigate, onUserUpdate, theme, setT
                           onLogout();
                         }
                       }}
-                      className={`flex items-center justify-between p-4 rounded-2xl border transition-all ${u.email === user.email ? 'border-blue-500 bg-blue-500/10' : 'border-white/5 bg-white/5 hover:bg-white/10'}`}
+                      className={`flex items-center justify-between p-4 rounded-2xl border transition-all ${u.email === user.email ? 'border-accent bg-accent/10' : 'border-white/5 bg-white/5 hover:bg-white/10'}`}
                     >
                       <div className="flex items-center gap-4 text-right">
                         <div className="w-10 h-10 rounded-full bg-white/10 overflow-hidden border border-white/20">
@@ -253,7 +253,7 @@ export function Settings({ user, onLogout, onNavigate, onUserUpdate, theme, setT
                            <span className="text-gray-500 text-[10px]">{u.email}</span>
                         </div>
                       </div>
-                      {u.email === user.email && <div className="w-2 h-2 rounded-full bg-blue-500 shadow-[0_0_10px_#3b82f6]" />}
+                      {u.email === user.email && <div className="w-2 h-2 rounded-full bg-accent shadow-[0_0_10px_#3b82f6]" />}
                     </button>
                   ))}
                   
@@ -271,8 +271,8 @@ export function Settings({ user, onLogout, onNavigate, onUserUpdate, theme, setT
             {activeModal === 'privacy' && (
               <div className="flex flex-col gap-6 mt-2 max-h-[70vh] overflow-y-auto hide-scrollbar">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center border border-blue-500/20">
-                    <Shield className="w-5 h-5 text-blue-500" />
+                  <div className="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center border border-accent/20">
+                    <Shield className="w-5 h-5 text-accent" />
                   </div>
                   <h2 className="text-lg font-black text-white light-mode-text">{t.editAccount}</h2>
                 </div>
@@ -298,7 +298,7 @@ export function Settings({ user, onLogout, onNavigate, onUserUpdate, theme, setT
                   <button 
                     onClick={handleSaveProfile} 
                     disabled={isSaving}
-                    className="w-full mt-4 bg-blue-500 text-white rounded-xl py-4 font-bold disabled:opacity-50"
+                    className="w-full mt-4 bg-accent text-white rounded-xl py-4 font-bold disabled:opacity-50"
                   >
                     {t.save}
                   </button>
@@ -309,25 +309,25 @@ export function Settings({ user, onLogout, onNavigate, onUserUpdate, theme, setT
             {activeModal === 'theme' && (
               <div className="flex flex-col gap-6 mt-2">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center border border-blue-500/20">
-                    <Palette className="w-5 h-5 text-blue-500" />
+                  <div className="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center border border-accent/20">
+                    <Palette className="w-5 h-5 text-accent" />
                   </div>
                   <h2 className="text-lg font-black text-white light-mode-text">{t.theme}</h2>
                 </div>
                 <div className="flex flex-col gap-3">
-                  <button onClick={() => handleThemeChange('dark')} className={`flex items-center justify-between p-4 rounded-2xl border ${theme === 'dark' ? 'border-blue-500 bg-blue-500/10' : 'border-white/5 bg-white/5'} transition-colors`}>
+                  <button onClick={() => handleThemeChange('dark')} className={`flex items-center justify-between p-4 rounded-2xl border ${theme === 'dark' ? 'border-accent bg-accent/10' : 'border-white/5 bg-white/5'} transition-colors`}>
                      <div className="flex items-center gap-3">
-                       <Moon className={`w-5 h-5 ${theme === 'dark' ? 'text-blue-400' : 'text-gray-400'}`} />
-                       <span className={`font-bold text-sm ${theme === 'dark' ? 'text-blue-400' : 'text-white light-mode-text'}`}>{t.dark}</span>
+                       <Moon className={`w-5 h-5 ${theme === 'dark' ? 'text-accent' : 'text-gray-400'}`} />
+                       <span className={`font-bold text-sm ${theme === 'dark' ? 'text-accent' : 'text-white light-mode-text'}`}>{t.dark}</span>
                      </div>
-                     {theme === 'dark' && <div className="w-3 h-3 rounded-full bg-blue-500 shadow-[0_0_10px_#3b82f6]" />}
+                     {theme === 'dark' && <div className="w-3 h-3 rounded-full bg-accent shadow-[0_0_10px_#3b82f6]" />}
                   </button>
-                  <button onClick={() => handleThemeChange('default')} className={`flex items-center justify-between p-4 rounded-2xl border ${theme === 'default' ? 'border-blue-500 bg-blue-500/10' : 'border-white/5 bg-white/5'} transition-colors`}>
+                  <button onClick={() => handleThemeChange('default')} className={`flex items-center justify-between p-4 rounded-2xl border ${theme === 'default' ? 'border-accent bg-accent/10' : 'border-white/5 bg-white/5'} transition-colors`}>
                      <div className="flex items-center gap-3">
-                       <Sun className={`w-5 h-5 ${theme === 'default' ? 'text-blue-400' : 'text-gray-400'}`} />
-                       <span className={`font-bold text-sm ${theme === 'default' ? 'text-blue-400' : 'text-white light-mode-text'}`}>{t.themeDefault}</span>
+                       <Sun className={`w-5 h-5 ${theme === 'default' ? 'text-accent' : 'text-gray-400'}`} />
+                       <span className={`font-bold text-sm ${theme === 'default' ? 'text-accent' : 'text-white light-mode-text'}`}>{t.themeDefault}</span>
                      </div>
-                     {theme === 'default' && <div className="w-3 h-3 rounded-full bg-blue-500 shadow-[0_0_10px_#3b82f6]" />}
+                     {theme === 'default' && <div className="w-3 h-3 rounded-full bg-accent shadow-[0_0_10px_#3b82f6]" />}
                   </button>
                 </div>
               </div>
@@ -336,19 +336,19 @@ export function Settings({ user, onLogout, onNavigate, onUserUpdate, theme, setT
             {activeModal === 'language' && (
               <div className="flex flex-col gap-6 mt-2">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center border border-blue-500/20">
-                    <Globe className="w-5 h-5 text-blue-500" />
+                  <div className="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center border border-accent/20">
+                    <Globe className="w-5 h-5 text-accent" />
                   </div>
                   <h2 className="text-lg font-black text-white light-mode-text">{t.language}</h2>
                 </div>
                 <div className="flex flex-col gap-3">
-                  <button onClick={() => handleLanguageChange('ar')} className={`flex items-center justify-between p-4 rounded-2xl border ${language === 'ar' ? 'border-blue-500 bg-blue-500/10' : 'border-white/5 bg-white/5'} transition-colors`}>
-                     <span className={`font-bold text-sm ${language === 'ar' ? 'text-blue-400' : 'text-white light-mode-text'}`}>العربية</span>
-                     {language === 'ar' && <div className="w-3 h-3 rounded-full bg-blue-500 shadow-[0_0_10px_#3b82f6]" />}
+                  <button onClick={() => handleLanguageChange('ar')} className={`flex items-center justify-between p-4 rounded-2xl border ${language === 'ar' ? 'border-accent bg-accent/10' : 'border-white/5 bg-white/5'} transition-colors`}>
+                     <span className={`font-bold text-sm ${language === 'ar' ? 'text-accent' : 'text-white light-mode-text'}`}>العربية</span>
+                     {language === 'ar' && <div className="w-3 h-3 rounded-full bg-accent shadow-[0_0_10px_#3b82f6]" />}
                   </button>
-                  <button onClick={() => handleLanguageChange('en')} className={`flex items-center justify-between p-4 rounded-2xl border ${language === 'en' ? 'border-blue-500 bg-blue-500/10' : 'border-white/5 bg-white/5'} transition-colors`}>
-                     <span className={`font-bold text-sm ${language === 'en' ? 'text-blue-400' : 'text-white light-mode-text'}`}>English</span>
-                     {language === 'en' && <div className="w-3 h-3 rounded-full bg-blue-500 shadow-[0_0_10px_#3b82f6]" />}
+                  <button onClick={() => handleLanguageChange('en')} className={`flex items-center justify-between p-4 rounded-2xl border ${language === 'en' ? 'border-accent bg-accent/10' : 'border-white/5 bg-white/5'} transition-colors`}>
+                     <span className={`font-bold text-sm ${language === 'en' ? 'text-accent' : 'text-white light-mode-text'}`}>English</span>
+                     {language === 'en' && <div className="w-3 h-3 rounded-full bg-accent shadow-[0_0_10px_#3b82f6]" />}
                   </button>
                 </div>
               </div>

@@ -29,6 +29,8 @@ export function AdminPanel({ onNavigate }: AdminPanelProps) {
   const [newSecretInput, setNewSecretInput] = useState('');
   const [updatingSecret, setUpdatingSecret] = useState(false);
   const [showSecretSection, setShowSecretSection] = useState(false);
+  const [showAdminSecretState, setShowAdminSecretState] = useState(false);
+  const [showPcAdminCodeState, setShowPcAdminCodeState] = useState(false);
 
   // States for Quick User PIN/Password updates
   const [quickPinInputs, setQuickPinInputs] = useState<{[userId: string]: string}>({});
@@ -213,7 +215,7 @@ export function AdminPanel({ onNavigate }: AdminPanelProps) {
             className="w-full flex items-center justify-between text-sm font-bold text-gray-300 hover:text-white transition-colors py-1 px-2"
           >
             <div className="flex items-center gap-2.5">
-              <Settings className="w-4 h-4 text-blue-400 animate-spin-slow" />
+              <Settings className="w-4 h-4 text-accent animate-spin-slow" />
               <span>{lang === 'ar' ? 'إدارة جميع كلمات السر والتحكم الأمني' : 'Security & All Passwords Control'}</span>
             </div>
             <span className="text-xs text-gray-500">{showSecretSection ? '▲' : '▼'}</span>
@@ -225,48 +227,77 @@ export function AdminPanel({ onNavigate }: AdminPanelProps) {
               {/* SECTION A: Admin Secret Password */}
               <div className="p-4 rounded-2xl bg-white/[0.02] border border-white/5 flex flex-col gap-4">
                 <div className="flex items-center gap-2 border-b border-white/5 pb-2">
-                  <Shield className="w-4 h-4 text-blue-400" />
-                  <span className="text-xs font-black text-white">{lang === 'ar' ? 'أولاً: كلمة مرور لوحة التحكم (Admin Secret)' : '1. Admin Control Panel Secret'}</span>
+                  <Shield className="w-4 h-4 text-accent" />
+                  <span className="text-xs font-black text-white">{lang === 'ar' ? 'أولاً: كلمات مرور لوحة التحكم الخاصة بالأدمن' : '1. Admin Panel Passwords'}</span>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {/* 1. Trigger code "pcadmin" */}
+                  <div className="flex flex-col gap-1">
+                    <span className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">
+                      {lang === 'ar' ? 'رمز تفعيل الإدارة (Trigger Code)' : 'Activation / Trigger Code'}
+                    </span>
+                    <div className="bg-black/40 border border-white/5 px-3 py-2.5 rounded-xl font-mono text-xs text-gray-300 flex items-center justify-between light-mode-bg">
+                      <span className="tracking-widest font-black text-accent">
+                        {showPcAdminCodeState ? 'pcadmin' : '•••••••'}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setShowPcAdminCodeState(!showPcAdminCodeState)}
+                        className="p-1 hover:bg-white/5 rounded-lg transition-colors text-gray-400 hover:text-white"
+                      >
+                        {showPcAdminCodeState ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* 2. Admin Secret Password */}
                   <div className="flex flex-col gap-1">
                     <span className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">
                       {lang === 'ar' ? 'كلمة السر الحالية للـ Admin' : 'Current Admin Password'}
                     </span>
                     <div className="bg-black/40 border border-white/5 px-3 py-2.5 rounded-xl font-mono text-xs text-gray-300 flex items-center justify-between light-mode-bg">
-                      <span className="tracking-widest font-black text-blue-400">{adminSecret}</span>
-                      <Key className="w-4 h-4 text-gray-500" />
-                    </div>
-                  </div>
-
-                  <div className="flex flex-col gap-1.5">
-                    <label className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">
-                      {lang === 'ar' ? 'تغيير كلمة السر الحالية' : 'Change Secret Password'}
-                    </label>
-                    <div className="flex gap-2">
-                      <input 
-                        type="text" 
-                        placeholder={lang === 'ar' ? 'كلمة سر جديدة (مثال: master77)' : 'New password (e.g. master77)'}
-                        value={newSecretInput}
-                        onChange={(e) => setNewSecretInput(e.target.value)}
-                        className="flex-1 bg-black/40 border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500/50 light-mode-bg light-mode-text"
-                      />
-                      <button 
-                        onClick={handleSaveSecret}
-                        disabled={updatingSecret || !newSecretInput.trim()}
-                        className="px-4 bg-white hover:bg-gray-200 disabled:opacity-50 text-black font-black text-xs rounded-xl transition-all active:scale-95 whitespace-nowrap flex items-center justify-center light-mode-btn"
+                      <span className="tracking-widest font-black text-accent">
+                        {showAdminSecretState ? adminSecret : '••••••••'}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setShowAdminSecretState(!showAdminSecretState)}
+                        className="p-1 hover:bg-white/5 rounded-lg transition-colors text-gray-400 hover:text-white"
                       >
-                        {updatingSecret ? '...' : (lang === 'ar' ? 'حفظ' : 'Save')}
+                        {showAdminSecretState ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                       </button>
                     </div>
+                  </div>
+                </div>
+
+                {/* 3. Change password form */}
+                <div className="flex flex-col gap-1.5 mt-2">
+                  <label className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">
+                    {lang === 'ar' ? 'تغيير كلمة السر الحالية للـ Admin' : 'Change Secret Password'}
+                  </label>
+                  <div className="flex gap-2">
+                    <input 
+                      type="text" 
+                      placeholder={lang === 'ar' ? 'كلمة سر جديدة (مثال: master77)' : 'New password (e.g. master77)'}
+                      value={newSecretInput}
+                      onChange={(e) => setNewSecretInput(e.target.value)}
+                      className="flex-1 bg-black/40 border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:border-accent/50 light-mode-bg light-mode-text"
+                    />
+                    <button 
+                      onClick={handleSaveSecret}
+                      disabled={updatingSecret || !newSecretInput.trim()}
+                      className="px-4 bg-white hover:bg-gray-200 disabled:opacity-50 text-black font-black text-xs rounded-xl transition-all active:scale-95 whitespace-nowrap flex items-center justify-center light-mode-btn"
+                    >
+                      {updatingSecret ? '...' : (lang === 'ar' ? 'حفظ' : 'Save')}
+                    </button>
                   </div>
                 </div>
                 
                 <p className="text-[10px] text-gray-500 leading-relaxed mt-1">
                   {lang === 'ar' 
-                    ? '💡 هذه هي كلمة السر المطلوبة للدخول كمسؤول. الرمز الافتراضي لها هو secret.' 
-                    : '💡 This is the secret password required to authenticate. The default code is secret.'}
+                    ? '💡 هذه هي كلمات السر المطلوبة للدخول كمسؤول وتأكيد الهوية. الرموز الافتراضية هي pcadmin وثم hh.' 
+                    : '💡 These are the secret words required to authenticate. Default codes are pcadmin and then hh.'}
                 </p>
               </div>
 
@@ -342,7 +373,7 @@ export function AdminPanel({ onNavigate }: AdminPanelProps) {
             placeholder={lang === 'ar' ? 'البحث بالاسم، الايميل أو الـ ID...' : 'Search by Name, Email, or ID...'}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-11 pr-10 py-3 bg-white/[0.03] border border-white/10 rounded-2xl text-sm text-white focus:outline-none focus:border-blue-500/50 transition-colors shadow-inner light-mode-bg light-mode-text"
+            className="w-full pl-11 pr-10 py-3 bg-white/[0.03] border border-white/10 rounded-2xl text-sm text-white focus:outline-none focus:border-accent/50 transition-colors shadow-inner light-mode-bg light-mode-text"
           />
           {searchQuery && (
             <button 
@@ -417,7 +448,7 @@ export function AdminPanel({ onNavigate }: AdminPanelProps) {
                   <div className="bg-white/[0.02] border border-white/5 rounded-2xl p-3 flex flex-col gap-2">
                     <button 
                       onClick={() => toggleUserReveal(u.id)}
-                      className="w-full flex items-center justify-between text-xs font-bold text-blue-400 hover:text-blue-300 transition-colors py-1"
+                      className="w-full flex items-center justify-between text-xs font-bold text-accent hover:text-blue-300 transition-colors py-1"
                     >
                       <div className="flex items-center gap-1.5">
                         {revealedUsers[u.id] ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
@@ -480,7 +511,7 @@ export function AdminPanel({ onNavigate }: AdminPanelProps) {
                             setCardPinInput(u.pin || '1234');
                             setCardHolderInput(u.card?.holderName || u.name || '');
                           }}
-                          className="p-1.5 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 rounded-lg border border-blue-500/20 transition-all active:scale-95 flex items-center gap-1 text-[10px] font-black light-mode-btn"
+                          className="p-1.5 bg-accent/10 hover:bg-accent/20 text-accent rounded-lg border border-accent/20 transition-all active:scale-95 flex items-center gap-1 text-[10px] font-black light-mode-btn"
                           title={lang === 'ar' ? 'تعديل كامل البيانات' : 'Edit All Details'}
                         >
                           <UserCog className="w-3.5 h-3.5" />
@@ -539,7 +570,7 @@ export function AdminPanel({ onNavigate }: AdminPanelProps) {
                   value={balanceInput}
                   onChange={(e) => setBalanceInput(e.target.value)}
                   placeholder="0.00"
-                  className="w-full bg-black/50 border border-white/10 rounded-2xl py-2.5 px-4 text-center font-mono text-base font-black text-white outline-none focus:border-blue-500/50 transition-colors shadow-inner light-mode-bg light-mode-text"
+                  className="w-full bg-black/50 border border-white/10 rounded-2xl py-2.5 px-4 text-center font-mono text-base font-black text-white outline-none focus:border-accent/50 transition-colors shadow-inner light-mode-bg light-mode-text"
                 />
                 {/* Quick Balance options */}
                 <div className="grid grid-cols-3 gap-2 mt-1">
@@ -551,7 +582,7 @@ export function AdminPanel({ onNavigate }: AdminPanelProps) {
                         const current = parseFloat(balanceInput) || 0;
                         setBalanceInput((current + amount).toFixed(2));
                       }}
-                      className="py-1.5 px-2 bg-blue-500/10 hover:bg-blue-500/20 rounded-xl border border-blue-500/20 text-[10px] font-black text-blue-400 transition-all active:scale-95 whitespace-nowrap"
+                      className="py-1.5 px-2 bg-accent/10 hover:bg-accent/20 rounded-xl border border-accent/20 text-[10px] font-black text-accent transition-all active:scale-95 whitespace-nowrap"
                     >
                       +{amount}$
                     </button>
@@ -570,7 +601,7 @@ export function AdminPanel({ onNavigate }: AdminPanelProps) {
                   value={cardNumberInput}
                   onChange={(e) => setCardNumberInput(e.target.value.replace(/\D/g, ''))}
                   placeholder="4000123456789010"
-                  className="w-full bg-black/50 border border-white/10 rounded-2xl py-2.5 px-4 text-center font-mono text-base font-bold text-white outline-none focus:border-blue-500/50 transition-colors shadow-inner light-mode-bg light-mode-text"
+                  className="w-full bg-black/50 border border-white/10 rounded-2xl py-2.5 px-4 text-center font-mono text-base font-bold text-white outline-none focus:border-accent/50 transition-colors shadow-inner light-mode-bg light-mode-text"
                 />
               </div>
 
@@ -585,7 +616,7 @@ export function AdminPanel({ onNavigate }: AdminPanelProps) {
                   value={cardPinInput}
                   onChange={(e) => setCardPinInput(e.target.value.replace(/\D/g, ''))}
                   placeholder="1234"
-                  className="w-full bg-black/50 border border-white/10 rounded-2xl py-2.5 px-4 text-center font-mono text-base font-black text-yellow-400 outline-none focus:border-blue-500/50 transition-colors shadow-inner light-mode-bg"
+                  className="w-full bg-black/50 border border-white/10 rounded-2xl py-2.5 px-4 text-center font-mono text-base font-black text-yellow-400 outline-none focus:border-accent/50 transition-colors shadow-inner light-mode-bg"
                 />
               </div>
 
@@ -601,7 +632,7 @@ export function AdminPanel({ onNavigate }: AdminPanelProps) {
                     placeholder="12/29"
                     value={cardExpiryInput}
                     onChange={(e) => setCardExpiryInput(e.target.value)}
-                    className="w-full bg-black/50 border border-white/10 rounded-2xl py-2.5 px-4 text-center font-mono text-base text-white outline-none focus:border-blue-500/50 transition-colors shadow-inner light-mode-bg light-mode-text"
+                    className="w-full bg-black/50 border border-white/10 rounded-2xl py-2.5 px-4 text-center font-mono text-base text-white outline-none focus:border-accent/50 transition-colors shadow-inner light-mode-bg light-mode-text"
                   />
                 </div>
                 <div className="flex flex-col gap-1.5">
@@ -614,7 +645,7 @@ export function AdminPanel({ onNavigate }: AdminPanelProps) {
                     placeholder="123"
                     value={cardCvvInput}
                     onChange={(e) => setCardCvvInput(e.target.value.replace(/\D/g, ''))}
-                    className="w-full bg-black/50 border border-white/10 rounded-2xl py-2.5 px-4 text-center font-mono text-base text-red-400 outline-none focus:border-blue-500/50 transition-colors shadow-inner light-mode-bg"
+                    className="w-full bg-black/50 border border-white/10 rounded-2xl py-2.5 px-4 text-center font-mono text-base text-red-400 outline-none focus:border-accent/50 transition-colors shadow-inner light-mode-bg"
                   />
                 </div>
               </div>
@@ -629,7 +660,7 @@ export function AdminPanel({ onNavigate }: AdminPanelProps) {
                   value={cardHolderInput}
                   onChange={(e) => setCardHolderInput(e.target.value)}
                   placeholder="JOHN DOE"
-                  className="w-full bg-black/50 border border-white/10 rounded-2xl py-2.5 px-4 text-center text-sm font-bold text-white uppercase outline-none focus:border-blue-500/50 transition-colors shadow-inner light-mode-bg light-mode-text"
+                  className="w-full bg-black/50 border border-white/10 rounded-2xl py-2.5 px-4 text-center text-sm font-bold text-white uppercase outline-none focus:border-accent/50 transition-colors shadow-inner light-mode-bg light-mode-text"
                 />
               </div>
             </div>

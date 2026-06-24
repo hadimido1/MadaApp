@@ -142,9 +142,9 @@ export function Store({ user, onNavigate, onUserUpdate, theme }: StoreProps) {
             <p className="text-[10px] text-gray-500 font-bold tracking-widest uppercase">{lang === 'ar' ? 'الشحن الرقمي الفوري' : 'Instant Digital Delivery'}</p>
           </div>
         </div>
-        <div className="flex items-center gap-2 bg-blue-500/10 px-4 py-2 rounded-full border border-blue-500/20 shadow-sm">
-          <Wallet className="w-4 h-4 text-blue-500" />
-          <span className="text-sm font-black text-blue-500">${user.balance.toFixed(2)}</span>
+        <div className="flex items-center gap-2 bg-accent/10 px-4 py-2 rounded-full border border-accent/20 shadow-sm">
+          <Wallet className="w-4 h-4 text-accent" />
+          <span className="text-sm font-black text-accent">${user.balance.toFixed(2)}</span>
         </div>
       </div>
 
@@ -157,7 +157,7 @@ export function Store({ user, onNavigate, onUserUpdate, theme }: StoreProps) {
             placeholder={lang === 'ar' ? 'ابحث عن بطاقة أو لعبة شحن...' : 'Search for cards or games...'}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-4 outline-none focus:border-blue-500/50 transition-all light-mode-card light-mode-text"
+            className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-4 outline-none focus:border-accent/50 transition-all light-mode-card light-mode-text"
           />
         </div>
 
@@ -172,7 +172,7 @@ export function Store({ user, onNavigate, onUserUpdate, theme }: StoreProps) {
               onClick={() => setSelectedCategory(cat.id as any)}
               className={`px-5 py-2.5 rounded-full font-bold text-xs whitespace-nowrap transition-all border ${
                 selectedCategory === cat.id 
-                  ? 'bg-blue-600 border-blue-500 text-white shadow-[0_4px_14px_rgba(37,99,235,0.4)]' 
+                  ? 'bg-accent border-accent text-white shadow-[0_4px_14px_rgba(37,99,235,0.4)]' 
                   : `bg-white/5 border-white/10 text-gray-400 light-mode-card light-mode-text`
               }`}
             >
@@ -268,7 +268,7 @@ export function Store({ user, onNavigate, onUserUpdate, theme }: StoreProps) {
                   {/* Pack Selector (Selections of Prices) */}
                   <div className="flex flex-col gap-3">
                     <h3 className="font-black text-gray-500 text-xs uppercase tracking-widest flex items-center gap-2">
-                      <Ticket className="w-4 h-4 text-blue-500" />
+                      <Ticket className="w-4 h-4 text-accent" />
                       {lang === 'ar' ? 'اختر فئة الشحن المطلوبة' : 'Select Charging Package'}
                     </h3>
                     
@@ -281,12 +281,12 @@ export function Store({ user, onNavigate, onUserUpdate, theme }: StoreProps) {
                             onClick={() => setSelectedPackage(pack)}
                             className={`w-full p-3.5 rounded-2xl text-left border flex items-center justify-between transition-all ${
                               isSelected 
-                                ? 'bg-blue-600/10 border-blue-500 shadow-[0_0_15px_rgba(37,99,235,0.15)] text-white' 
+                                ? 'bg-accent/10 border-accent shadow-[0_0_15px_rgba(37,99,235,0.15)] text-white' 
                                 : `bg-white/5 border-white/5 text-gray-300 hover:border-white/10 light-mode-card`
                             }`}
                           >
                             <div className="flex flex-col gap-1">
-                              <span className={`font-black text-sm ${isSelected ? 'text-blue-500' : 'light-mode-text'}`}>{pack.name}</span>
+                              <span className={`font-black text-sm ${isSelected ? 'text-accent' : 'light-mode-text'}`}>{pack.name}</span>
                               <div className="flex items-center gap-2">
                                 <span className="text-[10px] text-gray-500 line-through font-bold">${pack.originalPrice.toFixed(2)}</span>
                                 <span className="text-[10px] bg-red-500/10 text-red-500 font-bold px-1.5 rounded-md border border-red-500/10">20% OFF</span>
@@ -294,7 +294,7 @@ export function Store({ user, onNavigate, onUserUpdate, theme }: StoreProps) {
                             </div>
                             <div className="text-right flex flex-col">
                               <span className="text-xs text-gray-400 font-bold">{lang === 'ar' ? 'بالخصم' : 'With Discount'}</span>
-                              <span className="text-lg font-black text-blue-500">${pack.discountedPrice.toFixed(2)}</span>
+                              <span className="text-lg font-black text-accent">${pack.discountedPrice.toFixed(2)}</span>
                             </div>
                           </button>
                         );
@@ -305,17 +305,17 @@ export function Store({ user, onNavigate, onUserUpdate, theme }: StoreProps) {
                   {/* Summary Footer of Detail */}
                   {selectedPackage && (
                     <div className="border-t border-white/5 pt-4 flex flex-col gap-4">
-                      <div className="flex justify-between items-center bg-blue-500/5 p-3 rounded-xl border border-blue-500/10">
+                      <div className="flex justify-between items-center bg-accent/5 p-3 rounded-xl border border-accent/10">
                         <span className="text-xs text-gray-400 font-bold">{lang === 'ar' ? 'سعر الخصم الإجمالي' : 'Total Discounted Price'}</span>
                         <div className="flex items-baseline gap-1.5">
                           <span className="text-[10px] text-gray-500 line-through">${selectedPackage.originalPrice.toFixed(2)}</span>
-                          <span className="text-2xl font-black text-blue-500">${selectedPackage.discountedPrice.toFixed(2)}</span>
+                          <span className="text-2xl font-black text-accent">${selectedPackage.discountedPrice.toFixed(2)}</span>
                         </div>
                       </div>
 
                       <button
                         onClick={() => setPurchaseStep('confirm')}
-                        className="w-full bg-blue-600 hover:bg-blue-500 text-white font-black py-4 rounded-2xl transition-all shadow-[0_10px_35px_rgba(37,99,235,0.4)] flex items-center justify-center gap-3 active:scale-95"
+                        className="w-full bg-accent hover:bg-accent text-white font-black py-4 rounded-2xl transition-all shadow-[0_10px_35px_rgba(37,99,235,0.4)] flex items-center justify-center gap-3 active:scale-95"
                       >
                         <ShoppingBag className="w-5 h-5" />
                         {lang === 'ar' ? 'شراء ومتابعة' : 'Buy & Proceed'}
@@ -328,8 +328,8 @@ export function Store({ user, onNavigate, onUserUpdate, theme }: StoreProps) {
               {purchaseStep === 'confirm' && selectedPackage && (
                 <div className="flex flex-col gap-6 py-2">
                   <div className="text-center flex flex-col gap-2">
-                    <div className="w-16 h-16 bg-blue-500/10 rounded-2xl flex items-center justify-center mx-auto mb-2 border border-blue-500/20">
-                      <ShoppingBag className="w-8 h-8 text-blue-500" />
+                    <div className="w-16 h-16 bg-accent/10 rounded-2xl flex items-center justify-center mx-auto mb-2 border border-accent/20">
+                      <ShoppingBag className="w-8 h-8 text-accent" />
                     </div>
                     <h2 className="text-2xl font-black italic tracking-tighter light-mode-text">{lang === 'ar' ? 'تأكيد الشراء' : 'Confirm Purchase'}</h2>
                     <p className="text-sm text-gray-500">{lang === 'ar' ? 'تأكيد شحن وسحب الرصيد من محفظتك' : 'Payment will be deducted from your wallet balance'}</p>
@@ -354,7 +354,7 @@ export function Store({ user, onNavigate, onUserUpdate, theme }: StoreProps) {
                         <Tag className="w-3.5 h-3.5" />
                         {lang === 'ar' ? 'السعر بعد خصم 20% المعتمد' : 'Price after 20% OFF'}
                       </span>
-                      <span className="text-xl font-black text-blue-500">${selectedPackage.discountedPrice.toFixed(2)}</span>
+                      <span className="text-xl font-black text-accent">${selectedPackage.discountedPrice.toFixed(2)}</span>
                     </div>
                   </div>
 
@@ -362,7 +362,7 @@ export function Store({ user, onNavigate, onUserUpdate, theme }: StoreProps) {
                     <button
                       onClick={handlePurchase}
                       disabled={isPurchasing}
-                      className="w-full bg-blue-600 hover:bg-blue-500 text-white font-black py-4.5 rounded-2xl transition-all shadow-[0_10px_30px_rgba(37,99,235,0.4)] flex items-center justify-center gap-3 disabled:opacity-50"
+                      className="w-full bg-accent hover:bg-accent text-white font-black py-4.5 rounded-2xl transition-all shadow-[0_10px_30px_rgba(37,99,235,0.4)] flex items-center justify-center gap-3 disabled:opacity-50"
                     >
                       {isPurchasing ? (
                         <div className="w-6 h-6 border-2 border-white/20 border-t-white rounded-full animate-spin" />
@@ -470,7 +470,7 @@ export function Store({ user, onNavigate, onUserUpdate, theme }: StoreProps) {
                     </button>
                     <button
                       onClick={() => copyToClipboard(fakeKey)}
-                      className="bg-blue-600 text-white font-black py-4 rounded-xl hover:bg-blue-500 transition-all shadow-lg flex items-center justify-center gap-2 text-xs"
+                      className="bg-accent text-white font-black py-4 rounded-xl hover:bg-accent transition-all shadow-lg flex items-center justify-center gap-2 text-xs"
                     >
                       <ExternalLink className="w-4 h-4" />
                       {lang === 'ar' ? 'نسخ واستخدام الكود' : 'Copy & Redeem'}
