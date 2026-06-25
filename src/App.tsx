@@ -38,10 +38,9 @@ export default function App() {
   
   const [isPc, setIsPc] = useState<boolean>(() => {
     const isMobileAgent = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    return !isMobileAgent && window.screen.width >= 1024;
+    return !isMobileAgent && window.innerWidth >= 1024;
   });
 
-  const [scale, setScale] = useState(1);
   const [isMobileDevice, setIsMobileDevice] = useState(false);
 
   const [showSecretModal, setShowSecretModal] = useState(false);
@@ -55,27 +54,15 @@ export default function App() {
   useEffect(() => {
     const handleResize = () => {
       const isMobileAgent = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-      const isSmallScreen = window.screen.width < 1024;
+      const isSmallScreen = window.innerWidth < 1024;
       const isMobile = isMobileAgent || isSmallScreen;
       
       setIsMobileDevice(isMobile);
-      setIsPc(!isMobileAgent && window.screen.width >= 1024);
+      setIsPc(!isMobileAgent && window.innerWidth >= 1024);
 
-      if (isMobile) {
-        const currentWidth = window.innerWidth;
-        // Use 1366px as the desktop base width for a wider, more spacious zoom out feel
-        const calculatedScale = currentWidth / 1366;
-        setScale(calculatedScale);
-        
-        const viewport = document.querySelector('meta[name="viewport"]');
-        if (viewport) {
-          viewport.setAttribute('content', `width=1366, initial-scale=${calculatedScale}, minimum-scale=${calculatedScale}, maximum-scale=3.0, user-scalable=yes`);
-        }
-      } else {
-        const viewport = document.querySelector('meta[name="viewport"]');
-        if (viewport) {
-          viewport.setAttribute('content', 'width=device-width, initial-scale=1.0');
-        }
+      const viewport = document.querySelector('meta[name="viewport"]');
+      if (viewport) {
+        viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover');
       }
     };
 
@@ -681,22 +668,9 @@ export default function App() {
     );
   };
 
-  const containerStyle = isMobileDevice ? {
-    width: '1366px',
-    height: `${window.innerHeight / scale}px`,
-    transform: `scale(${scale})`,
-    transformOrigin: dir === 'rtl' ? 'top right' : 'top left',
-    position: 'fixed' as const,
-    top: '0px',
-    left: dir === 'rtl' ? undefined : '0px',
-    right: dir === 'rtl' ? '0px' : undefined,
-    overflow: 'hidden',
-  } : undefined;
-
   return (
     <div 
-      className={`fixed inset-0 text-gray-100 font-sans flex items-stretch justify-stretch selection:bg-accent/30 overflow-hidden theme-container ${currentUser?.cardLevel === 15 ? 'theme-rgb-active' : ''} ${lang === 'en' ? 'font-sans' : ''} ${isMobileDevice ? 'pc-simulated' : ''}`} 
-      style={containerStyle}
+      className={`fixed inset-0 text-gray-100 font-sans flex items-stretch justify-stretch selection:bg-accent/30 overflow-hidden theme-container ${currentUser?.cardLevel === 15 ? 'theme-rgb-active' : ''} ${lang === 'en' ? 'font-sans' : ''}`} 
       dir={dir}
     >
       {renderAppContent(false)}
