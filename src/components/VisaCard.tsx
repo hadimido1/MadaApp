@@ -147,14 +147,14 @@ export function VisaCard({ user, theme }: VisaCardProps) {
     : `bg-gradient-to-br ${levelConfig.cardBg}`;
 
   return (
-    <div className="flex flex-col items-center gap-6 w-full max-w-[420px]">
+    <div className="flex flex-col items-center gap-2 sm:gap-6 w-full max-w-[420px]">
       {/* Flip Button Above Card */}
       <button
         onClick={(e) => {
           e.stopPropagation();
           setIsFlipped(!isFlipped);
         }}
-        className="flex items-center gap-2 px-6 py-2.5 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 transition-all active:scale-95 text-white font-bold backdrop-blur-md light-mode-btn flip-btn"
+        className="flex items-center gap-1.5 px-3.5 sm:px-6 py-1.5 sm:py-2.5 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 transition-all active:scale-95 text-white font-bold text-[10px] sm:text-sm backdrop-blur-md light-mode-btn flip-btn cursor-pointer"
       >
         <RotateCcw
           className={`w-4 h-4 transition-transform duration-500 ${isFlipped ? "rotate-180" : ""} light-mode-text`}

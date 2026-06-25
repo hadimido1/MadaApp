@@ -95,7 +95,7 @@ export function CardUpgrade({ user, onNavigate, onUserUpdate, theme }: CardUpgra
   };
 
   return (
-    <div id="card-upgrade-view" className="flex-1 flex flex-col h-full overflow-y-auto pb-24 relative select-none">
+    <div id="card-upgrade-view" className="flex-1 flex flex-col h-full overflow-hidden relative select-none">
       
       {/* Header */}
       <div className="p-4 flex items-center justify-between border-b border-white/10 sticky top-0 bg-black/60 backdrop-blur-md z-30">
@@ -112,11 +112,10 @@ export function CardUpgrade({ user, onNavigate, onUserUpdate, theme }: CardUpgra
       </div>
 
       {/* Main Content Area */}
-      <div className="p-6 w-full max-w-6xl mx-auto flex flex-col items-stretch">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
-          
-          {/* Left Column: Fixed Card live preview and upgrade summaries */}
-          <div className="flex flex-col gap-6 md:sticky md:top-20">
+      <div className="flex-1 overflow-hidden flex flex-row w-full max-w-7xl mx-auto p-2 sm:p-6 gap-2.5 sm:gap-6">
+        
+        {/* Left Column: Fixed Card live preview and upgrade summaries */}
+        <div className="w-[43%] sm:w-[45%] lg:w-[40%] flex flex-col gap-3 sm:gap-4 overflow-y-auto scrollbar-none shrink-0 pr-1 pb-20 sm:pb-6">
              
              {/* Active Card Live Preview Frame */}
              <div className="w-full flex justify-center py-2 relative">
@@ -137,22 +136,22 @@ export function CardUpgrade({ user, onNavigate, onUserUpdate, theme }: CardUpgra
              </div>
 
              {/* Upgrade Summary Dashboard Widget */}
-             <div className="w-full theme-card-bg border rounded-3xl p-5 flex flex-col gap-4 shadow-xl relative overflow-hidden">
+             <div className="w-full theme-card-bg border rounded-2xl sm:rounded-3xl p-3 sm:p-5 flex flex-col gap-2.5 sm:gap-4 shadow-xl relative overflow-hidden">
                <div className="absolute top-0 right-0 w-32 h-32 bg-accent/5 rounded-full blur-2xl pointer-events-none"></div>
                
-               <div className="flex justify-between items-start">
+               <div className="flex justify-between items-start gap-1">
                  <div>
-                   <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">
+                   <p className="text-[8px] sm:text-[10px] text-gray-500 font-bold uppercase tracking-widest">
                      {lang === 'ar' ? 'التصميم المفعل حالياً' : 'Currently Active Design'}
                    </p>
-                   <h3 className="text-xl font-black text-white mt-1">
+                   <h3 className="text-xs sm:text-xl font-black text-white mt-0.5 sm:mt-1">
                      {lang === 'ar' ? currentLvl.nameAr : currentLvl.nameEn}
                    </h3>
-                   <p className="text-xs text-gray-400 mt-1">
+                   <p className="text-[9px] sm:text-xs text-gray-400 mt-0.5 sm:mt-1 leading-normal">
                      {lang === 'ar' ? currentLvl.descriptionAr : currentLvl.descriptionEn}
                    </p>
                  </div>
-                 <div className="bg-accent/10 border border-accent/20 px-3 py-1 rounded-full text-accent text-xs font-black uppercase">
+                 <div className="bg-accent/10 border border-accent/20 px-1.5 sm:px-3 py-0.5 sm:py-1 rounded-md sm:rounded-full text-accent text-[8px] sm:text-xs font-black uppercase shrink-0">
                    LVL {currentLevelNum}
                  </div>
                </div>
@@ -161,33 +160,33 @@ export function CardUpgrade({ user, onNavigate, onUserUpdate, theme }: CardUpgra
                {canUpgrade && maxPossibleLevel ? (
                  <button 
                    onClick={handleAutoUpgrade}
-                   className="w-full py-4 rounded-2xl bg-gradient-to-r from-accent via-indigo-600 to-purple-600 hover:from-accent hover:to-purple-500 text-white font-black text-sm shadow-[0_4px_20px_rgba(59,130,246,0.4)] flex items-center justify-center gap-2 animate-pulse active:scale-[0.98] transition-all"
+                   className="w-full py-2.5 sm:py-4 rounded-xl sm:rounded-2xl bg-gradient-to-r from-accent via-indigo-600 to-purple-600 hover:from-accent hover:to-purple-500 text-white font-black text-[10px] sm:text-sm shadow-[0_4px_20px_rgba(59,130,246,0.4)] flex items-center justify-center gap-1 sm:gap-2 animate-pulse active:scale-[0.98] transition-all cursor-pointer"
                  >
-                   <Sparkles className="w-4 h-4 text-yellow-300" />
+                   <Sparkles className="w-3 sm:w-4 h-3 sm:h-4 text-yellow-300" />
                    <span>
                      {lang === 'ar' 
-                       ? `ترقية تلقائية للمستوى ${maxPossibleLevel.level}`
-                       : `Auto Upgrade to Level ${maxPossibleLevel.level}`}
+                       ? `ترقية للمستوى ${maxPossibleLevel.level}`
+                       : `Upgrade to Level ${maxPossibleLevel.level}`}
                    </span>
                  </button>
                ) : (
-                 <div className="w-full py-3 px-4 rounded-xl bg-white/[0.02] border border-white/5 text-center text-xs text-gray-500 font-semibold flex items-center justify-center gap-2">
-                   <Check className="w-4 h-4 text-emerald-500" />
+                 <div className="w-full py-1.5 px-2 sm:py-3 sm:px-4 rounded-lg sm:rounded-xl bg-white/[0.02] border border-white/5 text-center text-[9px] sm:text-xs text-gray-500 font-semibold flex items-center justify-center gap-1 sm:gap-2">
+                   <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-500 shrink-0" />
                    <span>
                      {lang === 'ar' 
-                       ? 'أنت في أعلى مستوى بطاقة متاح لرصيدك الحالي.'
-                       : 'You have activated the best styling for your current balance.'}
+                       ? 'مستوى بطاقتك ممتاز لرصيدك.'
+                       : 'Activated best card for balance.'}
                    </span>
                  </div>
                )}
 
                {/* Progress Indicator to RGB Millionaire Level */}
-               <div className="mt-2 flex flex-col gap-1.5">
-                 <div className="flex justify-between text-[10px] font-bold text-gray-500 uppercase tracking-wider">
-                   <span>{lang === 'ar' ? 'التقدم نحو مستوى المليونير' : 'Progress towards Millionaire'}</span>
+               <div className="mt-1 sm:mt-2 flex flex-col gap-1 sm:gap-1.5">
+                 <div className="flex justify-between text-[8px] sm:text-[10px] font-bold text-gray-500 uppercase tracking-wider">
+                   <span>{lang === 'ar' ? 'التقدم للمليونير' : 'Progress to Millionaire'}</span>
                    <span>{Math.min(100, Math.floor((user.balance / 1000000) * 100))}%</span>
                  </div>
-                 <div className="w-full h-2 bg-white/5 rounded-full overflow-hidden">
+                 <div className="w-full h-1.5 sm:h-2 bg-white/5 rounded-full overflow-hidden">
                    <div 
                      className="h-full bg-gradient-to-r from-accent via-purple-500 to-pink-500 transition-all duration-1000"
                      style={{ width: `${Math.min(100, (user.balance / 1000000) * 100)}%` }}
@@ -203,10 +202,10 @@ export function CardUpgrade({ user, onNavigate, onUserUpdate, theme }: CardUpgra
                  <span>{errorMsg}</span>
                </div>
              )}
-          </div>
+        </div>
 
-          {/* Right Column: Card Level Catalog / Tier List */}
-          <div className="flex flex-col gap-5">
+        {/* Right Column: Card Level Catalog / Tier List */}
+        <div className="flex-1 flex flex-col gap-4 overflow-y-auto scrollbar-none pb-28 sm:pb-6">
              <div className="w-full text-left px-1">
                <h4 className="text-sm font-black text-white/90 uppercase tracking-widest flex items-center gap-1.5">
                  <Trophy className="w-4 h-4 text-yellow-400" />
@@ -292,9 +291,7 @@ export function CardUpgrade({ user, onNavigate, onUserUpdate, theme }: CardUpgra
         </div>
         
         </div> {/* Closes right column */}
-        </div> {/* Closes main grid layout */}
-
-      </div>
+      </div> {/* Closes main split layout */}
     </div>
   );
 }

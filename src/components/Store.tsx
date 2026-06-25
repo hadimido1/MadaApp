@@ -126,42 +126,42 @@ export function Store({ user, onNavigate, onUserUpdate, theme }: StoreProps) {
   };
 
   return (
-    <div className={`p-6 pb-28 ${theme === 'light' ? 'bg-[#f8f9fa]' : 'bg-transparent'} min-h-screen w-full flex flex-col items-stretch`}>
+    <div className={`p-3 sm:p-6 pb-28 ${theme === 'light' ? 'bg-[#f8f9fa]' : 'bg-transparent'} min-h-screen w-full flex flex-col items-stretch`}>
       <div className="max-w-7xl mx-auto w-full flex flex-col">
         {/* Header */}
-      <div className="flex items-center justify-between mb-6 sticky top-0 bg-transparent pt-2 z-20 backdrop-blur-md">
-        <div className="flex items-center gap-3">
+      <div className="flex items-center justify-between mb-4 sm:mb-6 sticky top-0 bg-transparent pt-2 z-20 backdrop-blur-md">
+        <div className="flex items-center gap-2 sm:bg-transparent">
           <button 
             onClick={() => onNavigate('dashboard')}
-            className={`p-2.5 rounded-xl border transition-all ${theme === 'light' ? 'bg-white border-gray-200' : 'bg-white/5 border-white/10'} active:scale-95`}
+            className={`p-2 rounded-xl border transition-all ${theme === 'light' ? 'bg-white border-gray-200' : 'bg-white/5 border-white/10'} active:scale-95`}
           >
             <ChevronLeft className="w-5 h-5 light-mode-text" />
           </button>
           <div>
-            <h1 className="text-xl font-black italic tracking-tighter light-mode-text">AVBANK Store</h1>
-            <p className="text-[10px] text-gray-500 font-bold tracking-widest uppercase">{lang === 'ar' ? 'الشحن الرقمي الفوري' : 'Instant Digital Delivery'}</p>
+            <h1 className="text-lg sm:text-xl font-black italic tracking-tighter light-mode-text">AVBANK Store</h1>
+            <p className="text-[8px] sm:text-[10px] text-gray-500 font-bold tracking-widest uppercase">{lang === 'ar' ? 'الشحن الرقمي الفوري' : 'Instant Digital Delivery'}</p>
           </div>
         </div>
-        <div className="flex items-center gap-2 bg-accent/10 px-4 py-2 rounded-full border border-accent/20 shadow-sm">
-          <Wallet className="w-4 h-4 text-accent" />
-          <span className="text-sm font-black text-accent">${user.balance.toFixed(2)}</span>
+        <div className="flex items-center gap-1.5 sm:gap-2 bg-accent/10 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full border border-accent/20 shadow-sm">
+          <Wallet className="w-3.5 sm:w-4 h-3.5 sm:h-4 text-accent" />
+          <span className="text-xs sm:text-sm font-black text-accent">${user.balance.toFixed(2)}</span>
         </div>
       </div>
 
       {/* Search & Categories */}
-      <div className="flex flex-col gap-4 mb-8">
+      <div className="flex flex-col gap-3 mb-5 sm:mb-8">
         <div className="relative">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
           <input 
             type="text" 
             placeholder={lang === 'ar' ? 'ابحث عن بطاقة أو لعبة شحن...' : 'Search for cards or games...'}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-4 outline-none focus:border-accent/50 transition-all light-mode-card light-mode-text"
+            className="w-full bg-white/5 border border-white/10 rounded-xl sm:rounded-2xl py-2.5 sm:py-4 pl-10 sm:pl-12 pr-4 text-xs sm:text-sm outline-none focus:border-accent/50 transition-all light-mode-card light-mode-text"
           />
         </div>
 
-        <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-none">
+        <div className="flex gap-1.5 overflow-x-auto pb-1.5 scrollbar-none">
           {[
             { id: 'all', label: lang === 'ar' ? 'الأقسام' : 'All Sections' },
             { id: 'giftcard', label: lang === 'ar' ? 'بطاقات الهدايا' : 'Gift Cards' },
@@ -170,7 +170,7 @@ export function Store({ user, onNavigate, onUserUpdate, theme }: StoreProps) {
             <button
               key={cat.id}
               onClick={() => setSelectedCategory(cat.id as any)}
-              className={`px-5 py-2.5 rounded-full font-bold text-xs whitespace-nowrap transition-all border ${
+              className={`px-3.5 sm:px-5 py-1.5 sm:py-2.5 rounded-full font-bold text-[10px] sm:text-xs whitespace-nowrap transition-all border ${
                 selectedCategory === cat.id 
                   ? 'bg-accent border-accent text-white shadow-[0_4px_14px_rgba(37,99,235,0.4)]' 
                   : `bg-white/5 border-white/10 text-gray-400 light-mode-card light-mode-text`
@@ -182,8 +182,8 @@ export function Store({ user, onNavigate, onUserUpdate, theme }: StoreProps) {
         </div>
       </div>
 
-      {/* Products Grid (No Prices Outside) */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 max-w-7xl mx-auto w-full">
+      {/* Products Grid (Optimized for Mobile/PC to reduce vertical scroll) */}
+      <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2 sm:gap-5 max-w-7xl mx-auto w-full">
         {filteredProducts.map((product) => (
           <motion.div
             key={product.id}
@@ -194,7 +194,7 @@ export function Store({ user, onNavigate, onUserUpdate, theme }: StoreProps) {
               setSelectedPackage(product.packages[0] || null);
               setPurchaseStep('details'); 
             }}
-            className="group relative bg-white/5 border border-white/10 rounded-3xl overflow-hidden cursor-pointer light-mode-card shadow-md flex flex-col justify-between"
+            className="group relative bg-white/5 border border-white/10 rounded-xl sm:rounded-3xl overflow-hidden cursor-pointer light-mode-card shadow-md flex flex-col justify-between"
           >
             <div className="aspect-[1/1] overflow-hidden relative">
               <img 
@@ -202,20 +202,20 @@ export function Store({ user, onNavigate, onUserUpdate, theme }: StoreProps) {
                 alt={product.name} 
                 className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" 
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-transparent to-transparent" />
               
-              {/* Premium Discount Ribbon */}
-              <div className="absolute top-3 right-3 bg-red-500 text-white text-[9px] font-black px-2 py-1 rounded-lg flex items-center gap-1 shadow-lg border border-red-400/30">
-                <Tag className="w-2.5 h-2.5" />
+              {/* Premium Discount Ribbon - beautifully scaled down on mobile */}
+              <div className="absolute top-1.5 right-1.5 sm:top-3 sm:right-3 bg-red-500 text-white text-[7px] sm:text-[9px] font-black px-1 py-0.5 sm:px-2 sm:py-1 rounded-md sm:rounded-lg flex items-center gap-0.5 sm:gap-1 shadow-lg border border-red-400/30">
+                <Tag className="w-2 sm:w-2.5 h-2 sm:h-2.5" />
                 20% OFF
               </div>
             </div>
 
-            <div className="p-4 flex flex-col gap-1.5 bg-black/40 backdrop-blur-sm border-t border-white/5 light-mode-card mt-auto">
-              <h3 className="text-xs font-black tracking-tight line-clamp-1 light-mode-text">{product.name}</h3>
-              <div className="flex items-center justify-between">
-                <span className="text-[10px] text-gray-400 font-bold">{lang === 'ar' ? 'شحن فوري ومعتمد' : 'Instant Delivery'}</span>
-                <span className="text-[9px] font-black text-rose-500 bg-rose-500/10 px-1.5 py-0.5 rounded-md border border-rose-500/10">{lang === 'ar' ? 'خصم مذهل' : 'Discounted'}</span>
+            <div className="p-2 sm:p-4 flex flex-col gap-1 sm:gap-1.5 bg-black/50 backdrop-blur-xs border-t border-white/5 light-mode-card mt-auto">
+              <h3 className="text-[10px] sm:text-xs font-black tracking-tight line-clamp-1 light-mode-text">{product.name}</h3>
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-0.5 sm:gap-0">
+                <span className="text-[8px] sm:text-[10px] text-gray-400 font-bold truncate">{lang === 'ar' ? 'شحن فوري' : 'Instant'}</span>
+                <span className="text-[7px] sm:text-[9px] font-black text-rose-500 bg-rose-500/10 px-1 sm:px-1.5 py-0.5 rounded-md border border-rose-500/10 self-start sm:self-auto">{lang === 'ar' ? 'خصم مميز' : 'Discount'}</span>
               </div>
             </div>
           </motion.div>

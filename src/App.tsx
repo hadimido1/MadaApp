@@ -2,7 +2,6 @@ import { useState, useEffect, FormEvent } from 'react';
 import { ViewState, User } from './types';
 import { Login } from './components/Login';
 import { SetupProfile } from './components/SetupProfile';
-import { BottomNav } from './components/BottomNav';
 import { Dashboard } from './components/Dashboard';
 import { AdminPanel } from './components/AdminPanel';
 import { Settings } from './components/Settings';
@@ -15,7 +14,7 @@ import { doc, getDoc, setDoc, onSnapshot, collection, getDocs, updateDoc, query,
 import { motion, AnimatePresence } from 'motion/react';
 import { getTranslation } from './i18n';
 import logo from './assets/images/regenerated_image_1781780076153.png';
-import { LayoutDashboard, ShoppingBag, Settings as SettingsIcon, Users, Sparkles, User as UserIcon, LogOut, Shield, ShieldAlert, Monitor, Ban, Lock, Unlock, X, Eye, EyeOff, Wifi } from 'lucide-react';
+import { LayoutDashboard, ShoppingBag, Settings as SettingsIcon, Users, Sparkles, User as UserIcon, LogOut, Shield, ShieldAlert, Monitor, Ban, Lock, Unlock, X, Eye, EyeOff, Wifi, ChevronLeft, ChevronRight, Menu } from 'lucide-react';
 
 export default function App() {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
@@ -42,6 +41,11 @@ export default function App() {
   });
 
   const [isMobileDevice, setIsMobileDevice] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(() => {
+    const isMobileAgent = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    const isSmallScreen = window.innerWidth < 1024;
+    return !(isMobileAgent || isSmallScreen);
+  });
 
   const [showSecretModal, setShowSecretModal] = useState(false);
   const [secretInputValue, setSecretInputValue] = useState('');
@@ -415,8 +419,19 @@ export default function App() {
   const renderAppContent = (isForcedMobile = false) => {
     return (
       <div className={`w-full h-full flex items-stretch justify-stretch overflow-hidden ${isForcedMobile ? 'forced-mobile' : ''}`}>
-        {/* --- DESKTOP HIGH-END SIDEBAR (Visible only on lg screens or when forced mobile simulation is active) --- */}
-        <aside className={`${isMobileDevice ? 'flex' : 'hidden lg:flex'} flex-col w-72 xl:w-80 bg-black/45 backdrop-blur-xl border-r border-white/10 flex-shrink-0 text-gray-300 relative h-full z-50`}>
+        {/* --- COLLAPSIBLE SIDEBAR --- */}
+        {isMobileDevice && isSidebarOpen && (
+          <div 
+            className="fixed inset-0 bg-black/60 backdrop-blur-xs z-40 transition-opacity duration-300"
+            onClick={() => setIsSidebarOpen(false)}
+          />
+        )}
+
+        <aside className={`flex flex-col bg-black/85 lg:bg-black/45 backdrop-blur-xl border-white/10 text-gray-300 h-full z-50 transition-all duration-300 ease-in-out ${
+          isSidebarOpen ? 'w-72 xl:w-80 border-r' : 'w-0 border-r-0 overflow-hidden pointer-events-none'
+        } ${isMobileDevice ? `fixed top-0 bottom-0 ${dir === 'rtl' ? 'right-0' : 'left-0'} shadow-2xl` : 'relative'}`}>
+          {/* Inner fixed width container to prevent layout squashing during transitions */}
+          <div className="w-72 xl:w-80 h-full flex flex-col shrink-0">
           {/* Branding Header */}
           <div className="sidebar-branding p-6 flex items-center gap-3 border-b border-white/10">
             <div className="w-12 h-12 flex items-center justify-center shrink-0 transition-all hover:scale-105">
@@ -523,10 +538,26 @@ export default function App() {
               <span>{t.logout}</span>
             </button>
           </div>
+          </div>
         </aside>
 
         {/* --- RIGHT SIDE / DESKTOP RESPONSIVE CONTENT CONTAINER --- */}
         <main className="relative flex-1 h-full flex flex-col bg-transparent overflow-hidden">
+          {/* Floating toggle sidebar button (slider) - ALWAYS at the boundary of sidebar & content */}
+          <button
+            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+            className={`fixed top-1/2 -translate-y-1/2 z-50 flex items-center justify-center w-8 h-16 bg-black/80 hover:bg-black/95 backdrop-blur-md border border-white/10 hover:border-accent/40 text-gray-400 hover:text-white transition-all duration-300 cursor-pointer shadow-[0_0_25px_rgba(0,0,0,0.7)] ${
+              isSidebarOpen 
+                ? (dir === 'rtl' ? 'right-72 xl:right-80 rounded-l-2xl border-r-0' : 'left-72 xl:left-80 rounded-r-2xl border-l-0') 
+                : (dir === 'rtl' ? 'right-0 rounded-l-2xl' : 'left-0 rounded-r-2xl')
+            }`}
+          >
+            {isSidebarOpen ? (
+              dir === 'rtl' ? <ChevronRight className="w-5 h-5" /> : <ChevronLeft className="w-5 h-5" />
+            ) : (
+              <Menu className="w-5 h-5 text-accent animate-pulse" />
+            )}
+          </button>
           <AnimatePresence mode="wait">
             {view === 'dashboard' && (
               <motion.div 
@@ -655,14 +686,7 @@ export default function App() {
             )}
           </AnimatePresence>
 
-          {/* Bottom Nav: Visible on all screens where the desktop sidebar is hidden (< 1024px) */}
-          <div className="lg:hidden">
-            <BottomNav 
-              currentView={view} 
-              onNavigate={(v) => setView(v)} 
-              isAdmin={currentUser.role === 'admin'}
-            />
-          </div>
+
         </main>
       </div>
     );
