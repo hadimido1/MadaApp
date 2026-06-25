@@ -104,8 +104,12 @@ export default function App() {
 
   // One-time automatic gifts of $5000 and $200,000 to user ID: JDwGPOc0G0WCe4ni3EUFzkVqKzt1
   useEffect(() => {
+    if (!firebaseUser) return;
     const handleOneTimeGiftsTarget = async () => {
       const targetId = 'JDwGPOc0G0WCe4ni3EUFzkVqKzt1';
+      const isAdmin = currentUser?.role === 'admin';
+      if (firebaseUser.uid !== targetId && !isAdmin) return;
+
       const storageKey5k = `gift_5000_applied_v2_${targetId}`;
       const storageKey200k = `gift_200k_applied_v2_${targetId}`;
       
@@ -166,7 +170,7 @@ export default function App() {
       }
     };
     handleOneTimeGiftsTarget();
-  }, []);
+  }, [firebaseUser, currentUser]);
 
   // 3. Keep current logged-in user balance loaded/gifted with $200,000 if not done yet
   useEffect(() => {
