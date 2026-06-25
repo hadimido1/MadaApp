@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { User, Trash2, ExternalLink, HelpCircle, Copy, Check, X, Shield, Chrome, Loader2 } from 'lucide-react';
 import { signInWithGoogle, db, auth, signInWithEmail, signUpWithEmail } from '../firebase';
-import { doc, setDoc, onSnapshot } from 'firebase/firestore';
+import { doc, setDoc, onSnapshot, getDoc } from 'firebase/firestore';
 import { getTranslation } from '../i18n';
 import logo from '../assets/images/regenerated_image_1781780076153.png';
 
@@ -23,6 +23,7 @@ export function Login({ onLoginSuccess }: { onLoginSuccess: (user: any) => void 
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [isExternalAuthMode, setIsExternalAuthMode] = useState(false);
   const [authCompleted, setAuthCompleted] = useState(false);
+  const [activeSyncSessId, setActiveSyncSessId] = useState<string | null>(null);
 
   const userAgentString = "Mozilla/5.0 (Linux; Android 13; SM-S901B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Mobile Safari/537.36";
   const currentUrl = typeof window !== 'undefined' ? `${window.location.protocol}//${window.location.host}` : '';
@@ -130,6 +131,7 @@ export function Login({ onLoginSuccess }: { onLoginSuccess: (user: any) => void 
       
       // 1. Generate a unique security session ID
       const sessId = "sess_" + Math.random().toString(36).substring(2, 12);
+      setActiveSyncSessId(sessId);
       
       // 2. Write to Firestore to declare a pending authentication session
       const sessionRef = doc(db, 'auth_sessions', sessId);
@@ -149,6 +151,21 @@ export function Login({ onLoginSuccess }: { onLoginSuccess: (user: any) => void 
           setSyncStatusMessage(lang === 'ar' ? 'تم تسجيل الدخول بنجاح! جاري تحميل حسابك...' : 'Logged in successfully! Loading your account...');
           try {
             const user = await signInWithEmail(data.email, data.pass);
+            
+            // Auto-create user profile in Firestore if missing
+            const userDocRef = doc(db, 'users', user.uid);
+            const userSnap = await getDoc(userDocRef);
+            if (!userSnap.exists()) {
+              await setDoc(userDocRef, {
+                name: data.displayName || 'AVBANK User',
+                email: data.email,
+                photoURL: data.photoURL || '',
+                balance: 0,
+                createdAt: Date.now(),
+                role: 'admin'
+              });
+            }
+
             saveToRecent(user);
             onLoginSuccess(user);
           } catch (e) {
@@ -169,6 +186,52 @@ export function Login({ onLoginSuccess }: { onLoginSuccess: (user: any) => void 
       console.error(err);
       setError(lang === 'ar' ? 'حدث خطأ أثناء فتح المتصفح تلقائياً' : 'Could not launch secure external browser');
       setIsWaitingForSync(false);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleManualVerifySync = async () => {
+    if (!activeSyncSessId) return;
+    try {
+      setLoading(true);
+      setError('');
+      setSyncStatusMessage(lang === 'ar' ? 'جاري التحقق من حالة المزامنة يدويّاً...' : 'Verifying sync status manually...');
+      
+      const sessionRef = doc(db, 'auth_sessions', activeSyncSessId);
+      const snap = await getDoc(sessionRef);
+      const data = snap.data();
+      
+      if (data && data.status === 'completed') {
+        setSyncStatusMessage(lang === 'ar' ? 'تم تسجيل الدخول بنجاح! جاري تحميل حسابك...' : 'Logged in successfully! Loading your account...');
+        
+        const user = await signInWithEmail(data.email, data.pass);
+        
+        // Auto-create user profile in Firestore if missing
+        const userDocRef = doc(db, 'users', user.uid);
+        const userSnap = await getDoc(userDocRef);
+        if (!userSnap.exists()) {
+          await setDoc(userDocRef, {
+            name: data.displayName || 'AVBANK User',
+            email: data.email,
+            photoURL: data.photoURL || '',
+            balance: 0,
+            createdAt: Date.now(),
+            role: 'admin'
+          });
+        }
+
+        saveToRecent(user);
+        onLoginSuccess(user);
+        setIsWaitingForSync(false);
+        setShowFixModal(false);
+      } else {
+        setError(lang === 'ar' ? 'لم يتم إكمال تسجيل الدخول في المتصفح الخارجي بعد. الرجاء إكماله أولاً ثم المحاولة مجدداً.' : 'Login has not been completed in the external browser yet. Please complete it first, then try again.');
+        setSyncStatusMessage(lang === 'ar' ? 'بانتظار إتمام تسجيل الدخول في المتصفح الخارجي...' : 'Waiting for login completion in external browser...');
+      }
+    } catch (e: any) {
+      console.error("Manual verify error", e);
+      setError(lang === 'ar' ? 'حدث خطأ أثناء التحقق اليدوي' : 'Manual verification failed');
     } finally {
       setLoading(false);
     }
@@ -376,12 +439,24 @@ export function Login({ onLoginSuccess }: { onLoginSuccess: (user: any) => void 
                 <h4 className="text-base font-black mb-2 text-white light-mode-text">
                   {lang === 'ar' ? 'بانتظار التحقق...' : 'Awaiting Authentication...'}
                 </h4>
-                <p className="text-xs text-gray-400 leading-relaxed max-w-sm">
+                <p className="text-xs text-gray-400 leading-relaxed max-w-sm mb-6">
                   {syncStatusMessage}
                 </p>
+
+                {/* Manual Verify Button */}
+                <button
+                  onClick={handleManualVerifySync}
+                  className="w-full max-w-xs py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-black text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 cursor-pointer shadow-lg active:scale-95 mb-6"
+                >
+                  <Check className="w-4 h-4" />
+                  <span>
+                    {lang === 'ar' ? 'لقد أتممت تسجيل الدخول، تحقق الآن' : 'I completed login, verify now'}
+                  </span>
+                </button>
+
                 <button
                   onClick={() => setIsWaitingForSync(false)}
-                  className="mt-8 px-6 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold transition-all"
+                  className="px-6 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold transition-all"
                 >
                   {lang === 'ar' ? 'إلغاء المزامنة' : 'Cancel Sync'}
                 </button>
