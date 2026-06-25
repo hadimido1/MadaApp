@@ -112,13 +112,13 @@ export function CardUpgrade({ user, onNavigate, onUserUpdate, theme }: CardUpgra
       </div>
 
       {/* Main Content Area */}
-      <div className="flex-1 overflow-hidden flex flex-row w-full max-w-7xl mx-auto p-2 sm:p-6 gap-2.5 sm:gap-6">
+      <div className="flex-1 min-h-0 overflow-y-auto sm:overflow-y-hidden flex flex-col sm:flex-row w-full max-w-7xl mx-auto p-2 sm:p-6 gap-4 sm:gap-6">
         
         {/* Left Column: Fixed Card live preview and upgrade summaries */}
-        <div className="w-[43%] sm:w-[45%] lg:w-[40%] flex flex-col gap-3 sm:gap-4 overflow-y-auto scrollbar-none shrink-0 pr-1 pb-20 sm:pb-6">
+        <div className="w-full sm:w-[45%] lg:w-[40%] sm:h-full flex flex-col gap-3 sm:gap-4 sm:overflow-y-auto show-scrollbar shrink-0 pr-0 sm:pr-2 pb-4 sm:pb-6">
              
              {/* Active Card Live Preview Frame */}
-             <div className="w-full flex justify-center py-2 relative">
+             <div className="sticky top-[58px] sm:relative sm:top-0 z-20 bg-[#0e0e11]/95 sm:bg-transparent pb-3 sm:pb-2 border-b border-white/5 sm:border-0 w-full flex justify-center py-2 relative">
                {celebrating && (
                  <div className="absolute inset-0 z-20 pointer-events-none flex items-center justify-center">
                    <motion.div 
@@ -205,7 +205,7 @@ export function CardUpgrade({ user, onNavigate, onUserUpdate, theme }: CardUpgra
         </div>
 
         {/* Right Column: Card Level Catalog / Tier List */}
-        <div className="flex-1 flex flex-col gap-4 overflow-y-auto scrollbar-none pb-28 sm:pb-6">
+        <div className="flex-1 flex flex-col gap-4 sm:overflow-y-auto show-scrollbar pb-28 sm:pb-6 pr-0 sm:pr-2">
              <div className="w-full text-left px-1">
                <h4 className="text-sm font-black text-white/90 uppercase tracking-widest flex items-center gap-1.5">
                  <Trophy className="w-4 h-4 text-yellow-400" />

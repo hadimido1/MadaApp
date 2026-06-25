@@ -674,7 +674,7 @@ export default function App() {
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}
-                className="flex-1 overflow-y-auto h-full"
+                className="flex-1 h-full overflow-hidden flex flex-col"
               >
                 <CardUpgrade 
                   user={currentUser} 
