@@ -14,10 +14,10 @@ export function Login({ onLoginSuccess }: { onLoginSuccess: (user: any) => void 
   const [showFixModal, setShowFixModal] = useState(false);
   const [copied, setCopied] = useState(false);
   
+  const [linkCopied, setLinkCopied] = useState(false);
+  
   const userAgentString = "Mozilla/5.0 (Linux; Android 13; SM-S901B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Mobile Safari/537.36";
-  const currentUrlHost = typeof window !== 'undefined' ? window.location.host : '';
-  const currentUrlPath = typeof window !== 'undefined' ? window.location.pathname : '';
-  const androidIntentUrl = `intent://${currentUrlHost}${currentUrlPath}#Intent;scheme=https;action=android.intent.action.VIEW;end`;
+  const currentUrl = typeof window !== 'undefined' ? `${window.location.protocol}//${window.location.host}` : '';
 
   useEffect(() => {
     const saved = localStorage.getItem('recent_users');
@@ -185,28 +185,52 @@ export function Login({ onLoginSuccess }: { onLoginSuccess: (user: any) => void 
               </div>
             </div>
 
-            {/* Option 1: Direct Intent launch browser */}
+            {/* Option 1: Direct link copying & open */}
             <div className="bg-white/[0.02] border border-white/5 rounded-2xl p-4 mb-6 light-mode-bg light-mode-border">
               <span className="bg-accent/10 text-accent text-[9px] font-black tracking-widest px-2.5 py-1 rounded-full uppercase mb-2 inline-block">
-                {lang === 'ar' ? 'الخيار الأول (مستحسن وفوري)' : 'Option 1 (Instant & Recommended)'}
+                {lang === 'ar' ? 'الخيار الأول (الحل الأسرع والآمن)' : 'Option 1 (Fastest & Secure)'}
               </span>
               <h4 className="text-sm font-black mb-1.5">
-                {lang === 'ar' ? 'فتح في المتصفح الآمن الخارجي' : 'Open in External Secure Browser'}
+                {lang === 'ar' ? 'تسجيل الدخول عبر متصفح الهاتف الخارجي' : 'Login via External Device Browser'}
               </h4>
               <p className="text-xs text-gray-400 leading-relaxed mb-4">
-                {lang === 'ar' ? 'سيقوم هذا الزر بإجبار هاتفك على الخروج من تطبيق الـ APK وفتح الموقع مباشرة في متصفح Google Chrome الآمن لتسجيل الدخول بأمان وسهولة.' : 'This button will launch the secure system Google Chrome browser to let you authenticate securely.'}
+                {lang === 'ar' 
+                  ? 'لأن شركة Google تمنع تسجيل الدخول داخل الـ APK مباشرة، انسخ رابط الموقع وافتحه في متصفح Google Chrome على هاتفك لتسجيل الدخول فورا وبأمان.' 
+                  : 'Since Google blocks login inside APK WebViews directly, copy this site link and paste it in Google Chrome on your phone to log in instantly.'}
               </p>
               
-              <a 
-                href={androidIntentUrl}
-                className="w-full py-3.5 bg-gradient-to-r from-accent to-indigo-600 hover:from-accent/90 hover:to-indigo-500 rounded-xl text-white font-black text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 cursor-pointer shadow-lg active:scale-95"
-              >
-                <Chrome className="w-4 h-4" />
-                <span>
-                  {lang === 'ar' ? 'افتح في متصفح Chrome الخارجي' : 'Open in External Chrome'}
-                </span>
-                <ExternalLink className="w-3.5 h-3.5" />
-              </a>
+              <div className="flex flex-col gap-2.5">
+                {/* Copy Link Button */}
+                <button 
+                  onClick={() => {
+                    navigator.clipboard.writeText(currentUrl);
+                    setLinkCopied(true);
+                    setTimeout(() => setLinkCopied(false), 2000);
+                  }}
+                  className="w-full py-3.5 bg-gradient-to-r from-accent to-indigo-600 hover:from-accent/90 hover:to-indigo-500 rounded-xl text-white font-black text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 cursor-pointer shadow-lg active:scale-95"
+                >
+                  {linkCopied ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
+                  <span>
+                    {linkCopied 
+                      ? (lang === 'ar' ? 'تم نسخ الرابط! افتحه في Chrome' : 'Link Copied! Open in Chrome') 
+                      : (lang === 'ar' ? 'نسخ رابط الموقع' : 'Copy Site Link')}
+                  </span>
+                </button>
+
+                {/* Try Auto Open Button */}
+                <button 
+                  onClick={() => {
+                    window.open(currentUrl, '_blank');
+                  }}
+                  className="w-full py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-white font-bold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  <Chrome className="w-3.5 h-3.5 text-accent" />
+                  <span>
+                    {lang === 'ar' ? 'محاولة فتح المتصفح تلقائياً' : 'Try Opening Automatically'}
+                  </span>
+                  <ExternalLink className="w-3 h-3" />
+                </button>
+              </div>
             </div>
 
             {/* Option 2: Radical User Agent code */}
