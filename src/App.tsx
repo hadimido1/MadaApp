@@ -15,7 +15,7 @@ import { doc, getDoc, setDoc, onSnapshot, collection, getDocs, updateDoc, query,
 import { motion, AnimatePresence } from 'motion/react';
 import { getTranslation } from './i18n';
 import logo from './assets/images/regenerated_image_1781780076153.png';
-import { LayoutDashboard, ShoppingBag, Settings as SettingsIcon, Users, Sparkles, User as UserIcon, LogOut, Shield, ShieldAlert, Monitor, Ban, Lock, Unlock, X, Eye, EyeOff } from 'lucide-react';
+import { LayoutDashboard, ShoppingBag, Settings as SettingsIcon, Users, Sparkles, User as UserIcon, LogOut, Shield, ShieldAlert, Monitor, Ban, Lock, Unlock, X, Eye, EyeOff, Wifi } from 'lucide-react';
 
 export default function App() {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
@@ -35,7 +35,15 @@ export default function App() {
   const [isPcBypassed, setIsPcBypassed] = useState<boolean>(() => {
     return localStorage.getItem('is_pc_bypassed') === 'true';
   });
-  const [isPc, setIsPc] = useState(window.innerWidth >= 768);
+  
+  const [isPc, setIsPc] = useState<boolean>(() => {
+    const isMobileAgent = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    return !isMobileAgent && window.screen.width >= 1024;
+  });
+
+  const [scale, setScale] = useState(1);
+  const [isMobileDevice, setIsMobileDevice] = useState(false);
+
   const [showSecretModal, setShowSecretModal] = useState(false);
   const [secretInputValue, setSecretInputValue] = useState('');
   const [secretModalStep, setSecretModalStep] = useState<'code' | 'password'>('code');
@@ -46,10 +54,38 @@ export default function App() {
 
   useEffect(() => {
     const handleResize = () => {
-      setIsPc(window.innerWidth >= 768);
+      const isMobileAgent = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      const isSmallScreen = window.screen.width < 1024;
+      const isMobile = isMobileAgent || isSmallScreen;
+      
+      setIsMobileDevice(isMobile);
+      setIsPc(!isMobileAgent && window.screen.width >= 1024);
+
+      if (isMobile) {
+        const currentWidth = window.innerWidth;
+        // Use 1366px as the desktop base width for a wider, more spacious zoom out feel
+        const calculatedScale = currentWidth / 1366;
+        setScale(calculatedScale);
+        
+        const viewport = document.querySelector('meta[name="viewport"]');
+        if (viewport) {
+          viewport.setAttribute('content', `width=1366, initial-scale=${calculatedScale}, minimum-scale=${calculatedScale}, maximum-scale=3.0, user-scalable=yes`);
+        }
+      } else {
+        const viewport = document.querySelector('meta[name="viewport"]');
+        if (viewport) {
+          viewport.setAttribute('content', 'width=device-width, initial-scale=1.0');
+        }
+      }
     };
+
+    handleResize();
     window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    window.addEventListener('orientationchange', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('orientationchange', handleResize);
+    };
   }, []);
 
   useEffect(() => {
@@ -389,259 +425,281 @@ export default function App() {
 
   const t = getTranslation(lang as 'ar' | 'en');
 
-  return (
-    <div className={`fixed inset-0 w-full h-full text-gray-100 font-sans flex items-stretch justify-stretch selection:bg-accent/30 overflow-hidden theme-container ${currentUser?.cardLevel === 15 ? 'theme-rgb-active' : ''} ${lang === 'en' ? 'font-sans' : ''}`} dir={dir}>
-      
-      {/* --- DESKTOP HIGH-END SIDEBAR (Visible only on md screens and larger, or landscape) --- */}
-      <aside className="hidden md:flex landscape:flex flex-col w-72 xl:w-80 bg-black/45 backdrop-blur-xl border-r border-white/10 flex-shrink-0 text-gray-300 relative h-full z-50">
-        {/* Branding Header */}
-        <div className="p-6 flex items-center gap-3 border-b border-white/10">
-          <div className="w-12 h-12 flex items-center justify-center shrink-0 transition-all hover:scale-105">
-            <img src={logo} alt="AVBANK Logo" className="w-full h-full object-contain" />
-          </div>
-          <div className="flex flex-col">
-            <h1 className="text-xl font-black text-white italic tracking-tighter leading-none">AVBANK</h1>
-            <span className="text-[9px] text-accent font-bold uppercase tracking-[0.2em] mt-1 opacity-60">Status: Secure</span>
-          </div>
-        </div>
-
-        {/* Card Level Status inside Sidebar (No Balance/Amount) */}
-        <div className="m-5 p-5 rounded-3xl bg-white/[0.02] border border-white/10 flex flex-col gap-2 shadow-lg relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-24 h-24 bg-accent/5 rounded-full blur-xl pointer-events-none"></div>
-          <span className="text-[10px] text-gray-500 font-black uppercase tracking-[0.15em]">
-            {lang === 'ar' ? 'مستوى الحساب' : 'Account Level'}
-          </span>
-          <div className="flex items-center gap-2.5 mt-1">
-            <span className="bg-accent/15 border border-accent/30 text-accent px-3 py-1 rounded-full font-black text-xs">
-              LVL {currentUser.cardLevel || 1}
-            </span>
-            <span className="text-xs font-bold text-gray-300">
-              {lang === 'ar' ? 'العضوية المميزة' : 'Premium Club'}
-            </span>
-          </div>
-        </div>
-
-        {/* Vertical Desktop Navigation List */}
-        <nav className="flex-1 px-4 py-4 flex flex-col gap-1.5 overflow-y-auto">
-          {/* Dashboard Button */}
-          <button 
-            onClick={() => setView('dashboard')}
-            className={`w-full flex items-center gap-3.5 px-4 py-3 rounded-2xl font-bold text-sm transition-all ${
-              view === 'dashboard' 
-                ? 'bg-accent/15 text-accent border border-accent/30 shadow-[0_0_15px_rgba(59,130,246,0.1)]' 
-                : 'hover:bg-white/5 text-gray-400 hover:text-white border border-transparent'
-            }`}
-          >
-            <LayoutDashboard className="w-5 h-5 shrink-0" />
-            <span>{t.dashboard}</span>
-          </button>
-
-          {/* Card Upgrades Sparkles Button */}
-          <button 
-            onClick={() => setView('upgrade')}
-            className={`w-full flex items-center gap-3.5 px-4 py-3 rounded-2xl font-bold text-sm transition-all ${
-              view === 'upgrade' 
-                ? 'bg-accent/15 text-accent border border-accent/30 shadow-[0_0_15px_rgba(59,130,246,0.1)]' 
-                : 'hover:bg-white/5 text-gray-400 hover:text-white border border-transparent'
-            }`}
-          >
-            <Sparkles className="w-5 h-5 shrink-0 text-yellow-400 animate-pulse" />
-            <span>{lang === 'ar' ? 'ترقية وتخصيص البطاقة' : 'Card Customization'}</span>
-          </button>
-
-          {/* Card Store Shopping Bag Button */}
-          <button 
-            onClick={() => setView('store')}
-            className={`w-full flex items-center gap-3.5 px-4 py-3 rounded-2xl font-bold text-sm transition-all ${
-              view === 'store' 
-                ? 'bg-accent/15 text-accent border border-accent/30 shadow-[0_0_15px_rgba(59,130,246,0.1)]' 
-                : 'hover:bg-white/5 text-gray-400 hover:text-white border border-transparent'
-            }`}
-          >
-            <ShoppingBag className="w-5 h-5 shrink-0" />
-            <span>{t.store}</span>
-          </button>
-
-          {/* Settings Button */}
-          <button 
-            onClick={() => setView('settings')}
-            className={`w-full flex items-center gap-3.5 px-4 py-3 rounded-2xl font-bold text-sm transition-all ${
-              view === 'settings' 
-                ? 'bg-accent/15 text-accent border border-accent/30 shadow-[0_0_15px_rgba(59,130,246,0.1)]' 
-                : 'hover:bg-white/5 text-gray-400 hover:text-white border border-transparent'
-            }`}
-          >
-            <SettingsIcon className="w-5 h-5 shrink-0" />
-            <span>{t.settings}</span>
-          </button>
-
-        </nav>
-
-        {/* User Profile Badge at the Bottom of Sidebar */}
-        <div className="p-4 border-t border-white/10 flex flex-col gap-3 bg-transparent">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center border border-accent/20 overflow-hidden shrink-0">
-              {currentUser.photoURL ? (
-                <img src={currentUser.photoURL} alt={currentUser.name} referrerPolicy="no-referrer" className="w-full h-full object-cover" />
-              ) : (
-                <UserIcon className="w-5 h-5 text-gray-400" />
-              )}
+  const renderAppContent = (isForcedMobile = false) => {
+    return (
+      <div className={`w-full h-full flex items-stretch justify-stretch overflow-hidden ${isForcedMobile ? 'forced-mobile' : ''}`}>
+        {/* --- DESKTOP HIGH-END SIDEBAR (Visible only on lg screens or when forced mobile simulation is active) --- */}
+        <aside className={`${isMobileDevice ? 'flex' : 'hidden lg:flex'} flex-col w-72 xl:w-80 bg-black/45 backdrop-blur-xl border-r border-white/10 flex-shrink-0 text-gray-300 relative h-full z-50`}>
+          {/* Branding Header */}
+          <div className="sidebar-branding p-6 flex items-center gap-3 border-b border-white/10">
+            <div className="w-12 h-12 flex items-center justify-center shrink-0 transition-all hover:scale-105">
+              <img src={logo} alt="AVBANK Logo" className="w-full h-full object-contain" />
             </div>
-            <div className="flex flex-col min-w-0 flex-1">
-              <span className="text-white font-bold text-xs truncate light-mode-text">{currentUser.name}</span>
-              <span className="text-gray-500 text-[10px] truncate">{currentUser.email}</span>
+            <div className="flex flex-col">
+              <h1 className="text-xl font-black text-white italic tracking-tighter leading-none">AVBANK</h1>
+              <span className="text-[9px] text-accent font-bold uppercase tracking-[0.2em] mt-1 opacity-60">Status: Secure</span>
             </div>
           </div>
-          
-          <button 
-            onClick={handleLogout}
-            className="w-full py-2.5 rounded-xl bg-red-500/10 hover:bg-red-500/20 border border-red-500/25 hover:border-red-500/40 text-red-400 text-xs font-bold transition-all flex items-center justify-center gap-2"
-          >
-            <LogOut className="w-4 h-4" />
-            <span>{t.logout}</span>
-          </button>
-        </div>
-      </aside>
 
-      {/* --- RIGHT SIDE / DESKTOP RESPONSIVE CONTENT CONTAINER --- */}
-      <main className="relative flex-1 h-full flex flex-col bg-transparent overflow-hidden">
-        <AnimatePresence mode="wait">
-          {view === 'dashboard' && (
-            <motion.div 
-              key="dashboard"
-              initial={{ opacity: 0, scale: 0.98 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 1.02 }}
-              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="flex-1 overflow-y-auto h-full"
-            >
-              <Dashboard user={currentUser} onNavigate={setView} onUserUpdate={setCurrentUser} theme={theme} />
-            </motion.div>
-          )}
-          {view === 'admin' && (
-            <motion.div 
-              key="admin"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              className="flex-1 overflow-y-auto h-full"
-            >
-              {isPc && !isPcBypassed ? (
-                <div 
-                  onClick={() => {
-                    setSecretModalStep('code');
-                    setSecretInputValue('');
-                    setSecretError('');
-                    setShowSecretModal(true);
-                  }}
-                  className="flex-1 h-full min-h-screen flex flex-col items-center justify-center p-8 bg-neutral-950 text-center select-none cursor-pointer relative overflow-hidden"
-                >
-                  <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(239,68,68,0.12),rgba(255,255,255,0))]" />
-                  
-                  <div className="relative z-10 max-w-md mx-auto flex flex-col items-center gap-6">
-                    <div className="relative">
-                      <div className="w-24 h-24 rounded-full bg-red-500/10 flex items-center justify-center border border-red-500/20 animate-pulse">
-                        <Monitor className="w-12 h-12 text-red-500" />
-                      </div>
-                      <div className="absolute -bottom-2 -right-2 w-10 h-10 rounded-full bg-black flex items-center justify-center border border-red-500/30">
-                        <Ban className="w-6 h-6 text-red-500 animate-spin" style={{ animationDuration: '6s' }} />
-                      </div>
-                    </div>
+          {/* Card Level Status inside Sidebar (No Balance/Amount) */}
+          <div className="sidebar-card-level-status m-5 p-5 rounded-3xl bg-white/[0.02] border border-white/10 flex flex-col gap-2 shadow-lg relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-24 h-24 bg-accent/5 rounded-full blur-xl pointer-events-none"></div>
+            <span className="text-[10px] text-gray-500 font-black uppercase tracking-[0.15em]">
+              {lang === 'ar' ? 'مستوى الحساب' : 'Account Level'}
+            </span>
+            <div className="flex items-center gap-2.5 mt-1">
+              <span className="bg-accent/15 border border-accent/30 text-accent px-3 py-1 rounded-full font-black text-xs">
+                LVL {currentUser.cardLevel || 1}
+              </span>
+              <span className="text-xs font-bold text-gray-300">
+                {lang === 'ar' ? 'العضوية المميزة' : 'Premium Club'}
+              </span>
+            </div>
+          </div>
 
-                    <div className="flex flex-col gap-2">
-                      <h2 className="text-2xl font-black text-red-500 tracking-tight uppercase flex items-center gap-2 justify-center">
-                        <ShieldAlert className="w-6 h-6 text-red-500" />
-                        <span>{lang === 'ar' ? 'الوصول محظور' : 'Access Restricted'}</span>
-                      </h2>
-                      <p className="text-gray-300 font-extrabold text-sm mt-1 leading-relaxed">
-                        {lang === 'ar' 
-                          ? 'لوحة تحكم المسؤول محمية بالكامل ومحجوبة عن أجهزة الكمبيوتر (PC) لضمان أعلى مستويات الأمان.'
-                          : 'The administration panel is fully protected and blocked on desktop (PC) devices to ensure maximum security.'}
+          {/* Vertical Desktop Navigation List */}
+          <nav className="sidebar-nav flex-1 px-4 py-4 flex flex-col gap-1.5 overflow-y-auto">
+            {/* Dashboard Button */}
+            <button 
+              onClick={() => setView('dashboard')}
+              className={`w-full flex items-center gap-3.5 px-4 py-3 rounded-2xl font-bold text-sm transition-all cursor-pointer ${
+                view === 'dashboard' 
+                  ? 'bg-accent/15 text-accent border border-accent/30 shadow-[0_0_15px_rgba(59,130,246,0.1)]' 
+                  : 'hover:bg-white/5 text-gray-400 hover:text-white border border-transparent'
+              }`}
+            >
+              <LayoutDashboard className="w-5 h-5 shrink-0" />
+              <span>{t.dashboard}</span>
+            </button>
+
+            {/* Card Upgrades Sparkles Button */}
+            <button 
+              onClick={() => setView('upgrade')}
+              className={`w-full flex items-center gap-3.5 px-4 py-3 rounded-2xl font-bold text-sm transition-all cursor-pointer ${
+                view === 'upgrade' 
+                  ? 'bg-accent/15 text-accent border border-accent/30 shadow-[0_0_15px_rgba(59,130,246,0.1)]' 
+                  : 'hover:bg-white/5 text-gray-400 hover:text-white border border-transparent'
+              }`}
+            >
+              <Sparkles className="w-5 h-5 shrink-0 text-yellow-400 animate-pulse" />
+              <span>{lang === 'ar' ? 'ترقية وتخصيص البطاقة' : 'Card Customization'}</span>
+            </button>
+
+            {/* Card Store Shopping Bag Button */}
+            <button 
+              onClick={() => setView('store')}
+              className={`w-full flex items-center gap-3.5 px-4 py-3 rounded-2xl font-bold text-sm transition-all cursor-pointer ${
+                view === 'store' 
+                  ? 'bg-accent/15 text-accent border border-accent/30 shadow-[0_0_15px_rgba(59,130,246,0.1)]' 
+                  : 'hover:bg-white/5 text-gray-400 hover:text-white border border-transparent'
+              }`}
+            >
+              <ShoppingBag className="w-5 h-5 shrink-0" />
+              <span>{t.store}</span>
+            </button>
+
+            {/* Settings Button */}
+            <button 
+              onClick={() => setView('settings')}
+              className={`w-full flex items-center gap-3.5 px-4 py-3 rounded-2xl font-bold text-sm transition-all cursor-pointer ${
+                view === 'settings' 
+                  ? 'bg-accent/15 text-accent border border-accent/30 shadow-[0_0_15px_rgba(59,130,246,0.1)]' 
+                  : 'hover:bg-white/5 text-gray-400 hover:text-white border border-transparent'
+              }`}
+            >
+              <SettingsIcon className="w-5 h-5 shrink-0" />
+              <span>{t.settings}</span>
+            </button>
+          </nav>
+
+          {/* User Profile Badge at the Bottom of Sidebar */}
+          <div className="sidebar-profile-badge p-4 border-t border-white/10 flex flex-col gap-3 bg-transparent">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center border border-accent/20 overflow-hidden shrink-0">
+                {currentUser.photoURL ? (
+                  <img src={currentUser.photoURL} alt={currentUser.name} referrerPolicy="no-referrer" className="w-full h-full object-cover" />
+                ) : (
+                  <UserIcon className="w-5 h-5 text-gray-400" />
+                )}
+              </div>
+              <div className="flex flex-col min-w-0 flex-1">
+                <span className="text-white font-bold text-xs truncate light-mode-text">{currentUser.name}</span>
+                <span className="text-gray-500 text-[10px] truncate">{currentUser.email}</span>
+              </div>
+            </div>
+            
+            <button 
+              onClick={handleLogout}
+              className="w-full py-2.5 rounded-xl bg-red-500/10 hover:bg-red-500/20 border border-red-500/25 hover:border-red-500/40 text-red-400 text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer"
+            >
+              <LogOut className="w-4 h-4" />
+              <span>{t.logout}</span>
+            </button>
+          </div>
+        </aside>
+
+        {/* --- RIGHT SIDE / DESKTOP RESPONSIVE CONTENT CONTAINER --- */}
+        <main className="relative flex-1 h-full flex flex-col bg-transparent overflow-hidden">
+          <AnimatePresence mode="wait">
+            {view === 'dashboard' && (
+              <motion.div 
+                key="dashboard"
+                initial={{ opacity: 0, scale: 0.98 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 1.02 }}
+                transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+                className="flex-1 overflow-y-auto h-full"
+              >
+                <Dashboard user={currentUser} onNavigate={setView} onUserUpdate={setCurrentUser} theme={theme} />
+              </motion.div>
+            )}
+            {view === 'admin' && (
+              <motion.div 
+                key="admin"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                className="flex-1 overflow-y-auto h-full"
+              >
+                {isPc && !isPcBypassed && !isForcedMobile ? (
+                  <div 
+                    onClick={() => {
+                      setSecretModalStep('code');
+                      setSecretInputValue('');
+                      setSecretError('');
+                      setShowSecretModal(true);
+                    }}
+                    className="flex-1 h-full min-h-screen flex flex-col items-center justify-center p-8 bg-neutral-950 text-center select-none cursor-pointer relative overflow-hidden"
+                  >
+                    <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(239,68,68,0.12),rgba(255,255,255,0))]" />
+                    
+                    <div className="relative z-10 max-w-md mx-auto flex flex-col items-center gap-6">
+                      <div className="relative">
+                        <div className="w-24 h-24 rounded-full bg-red-500/10 flex items-center justify-center border border-red-500/20 animate-pulse">
+                          <Monitor className="w-12 h-12 text-red-500" />
+                        </div>
+                        <div className="absolute -bottom-2 -right-2 w-10 h-10 rounded-full bg-black flex items-center justify-center border border-red-500/30">
+                          <Ban className="w-6 h-6 text-red-500 animate-spin" style={{ animationDuration: '6s' }} />
+                        </div>
+                      </div>
+
+                      <div className="flex flex-col gap-2">
+                        <h2 className="text-2xl font-black text-red-500 tracking-tight uppercase flex items-center gap-2 justify-center">
+                          <ShieldAlert className="w-6 h-6 text-red-500" />
+                          <span>{lang === 'ar' ? 'الوصول محظور' : 'Access Restricted'}</span>
+                        </h2>
+                        <p className="text-gray-300 font-extrabold text-sm mt-1 leading-relaxed">
+                          {lang === 'ar' 
+                            ? 'لوحة تحكم المسؤول محمية بالكامل ومحجوبة عن أجهزة الكمبيوتر (PC) لضمان أعلى مستويات الأمان.'
+                            : 'The administration panel is fully protected and blocked on desktop (PC) devices to ensure maximum security.'}
+                        </p>
+                      </div>
+
+                      <div className="p-4 rounded-3xl bg-white/[0.02] border border-white/5 w-full flex flex-col gap-2.5">
+                        <p className="text-xs text-gray-400 leading-normal font-medium">
+                          {lang === 'ar'
+                            ? 'إذا كنت مسؤول النظام المصرح له وترغب في فتح الحظر على هذا الجهاز:'
+                            : 'If you are the authorized system administrator and wish to bypass PC restriction on this browser:'}
+                        </p>
+                        <div className="py-2.5 px-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 font-mono text-xs font-bold uppercase animate-pulse">
+                          {lang === 'ar' ? 'اضغط على الشاشة واكتب الكود السري pcadmin' : 'Click the screen & type code: pcadmin'}
+                        </div>
+                      </div>
+
+                      <p className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">
+                        AVBANK SECURE SYSTEM © 2026
                       </p>
                     </div>
-
-                    <div className="p-4 rounded-3xl bg-white/[0.02] border border-white/5 w-full flex flex-col gap-2.5">
-                      <p className="text-xs text-gray-400 leading-normal font-medium">
-                        {lang === 'ar'
-                          ? 'إذا كنت مسؤول النظام المصرح له وترغب في فتح الحظر على هذا الجهاز:'
-                          : 'If you are the authorized system administrator and wish to bypass PC restriction on this browser:'}
-                      </p>
-                      <div className="py-2.5 px-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 font-mono text-xs font-bold uppercase animate-pulse">
-                        {lang === 'ar' ? 'اضغط على الشاشة واكتب الكود السري pcadmin' : 'Click the screen & type code: pcadmin'}
-                      </div>
-                    </div>
-
-                    <p className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">
-                      AVBANK SECURE SYSTEM © 2026
-                    </p>
                   </div>
-                </div>
-              ) : (
-                <AdminPanel onNavigate={setView} />
-              )}
-            </motion.div>
-          )}
-          {view === 'settings' && (
-            <motion.div 
-              key="settings"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              className="flex-1 overflow-y-auto h-full"
-            >
-              <Settings 
-                user={currentUser} 
-                onLogout={handleLogout} 
-                onNavigate={setView} 
-                onUserUpdate={setCurrentUser}
-                theme={theme}
-                setTheme={setTheme}
-              />
-            </motion.div>
-          )}
-          {view === 'store' && (
-            <motion.div 
-              key="store"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              className="flex-1 overflow-y-auto h-full"
-            >
-              <Store 
-                user={currentUser} 
-                onNavigate={setView} 
-                onUserUpdate={setCurrentUser}
-                theme={theme as any}
-              />
-            </motion.div>
-          )}
-          {view === 'upgrade' && (
-            <motion.div 
-              key="upgrade"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              className="flex-1 overflow-y-auto h-full"
-            >
-              <CardUpgrade 
-                user={currentUser} 
-                onNavigate={setView} 
-                onUserUpdate={setCurrentUser}
-                theme={theme}
-              />
-            </motion.div>
-          )}
-        </AnimatePresence>
+                ) : (
+                  <AdminPanel onNavigate={setView} />
+                )}
+              </motion.div>
+            )}
+            {view === 'settings' && (
+              <motion.div 
+                key="settings"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                className="flex-1 overflow-y-auto h-full"
+              >
+                <Settings 
+                  user={currentUser} 
+                  onLogout={handleLogout} 
+                  onNavigate={setView} 
+                  onUserUpdate={setCurrentUser}
+                  theme={theme}
+                  setTheme={setTheme}
+                />
+              </motion.div>
+            )}
+            {view === 'store' && (
+              <motion.div 
+                key="store"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                className="flex-1 overflow-y-auto h-full"
+              >
+                <Store 
+                  user={currentUser} 
+                  onNavigate={setView} 
+                  onUserUpdate={setCurrentUser}
+                  theme={theme as any}
+                />
+              </motion.div>
+            )}
+            {view === 'upgrade' && (
+              <motion.div 
+                key="upgrade"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                className="flex-1 overflow-y-auto h-full"
+              >
+                <CardUpgrade 
+                  user={currentUser} 
+                  onNavigate={setView} 
+                  onUserUpdate={setCurrentUser}
+                  theme={theme}
+                />
+              </motion.div>
+            )}
+          </AnimatePresence>
 
-        {/* Bottom Nav: Only visible on mobile devices */}
-        <div className="md:hidden landscape:hidden">
-          <BottomNav 
-            currentView={view} 
-            onNavigate={(v) => setView(v)} 
-            isAdmin={currentUser.role === 'admin'}
-          />
-        </div>
-      </main>
+          {/* Bottom Nav: Visible on all screens where the desktop sidebar is hidden (< 1024px) */}
+          <div className="lg:hidden">
+            <BottomNav 
+              currentView={view} 
+              onNavigate={(v) => setView(v)} 
+              isAdmin={currentUser.role === 'admin'}
+            />
+          </div>
+        </main>
+      </div>
+    );
+  };
+
+  const containerStyle = isMobileDevice ? {
+    width: '1366px',
+    height: `${window.innerHeight / scale}px`,
+    transform: `scale(${scale})`,
+    transformOrigin: dir === 'rtl' ? 'top right' : 'top left',
+    position: 'fixed' as const,
+    top: '0px',
+    left: dir === 'rtl' ? undefined : '0px',
+    right: dir === 'rtl' ? '0px' : undefined,
+    overflow: 'hidden',
+  } : undefined;
+
+  return (
+    <div 
+      className={`fixed inset-0 text-gray-100 font-sans flex items-stretch justify-stretch selection:bg-accent/30 overflow-hidden theme-container ${currentUser?.cardLevel === 15 ? 'theme-rgb-active' : ''} ${lang === 'en' ? 'font-sans' : ''} ${isMobileDevice ? 'pc-simulated' : ''}`} 
+      style={containerStyle}
+      dir={dir}
+    >
+      {renderAppContent(false)}
 
       {/* Secret Verification Modal */}
       {showSecretModal && (
@@ -656,7 +714,7 @@ export default function App() {
                 setSecretInputValue('');
                 setSecretError('');
               }}
-              className="absolute top-4 right-4 text-gray-400 hover:text-white p-1 rounded-full hover:bg-white/5 transition-colors"
+              className="absolute top-4 right-4 text-gray-400 hover:text-white p-1 rounded-full hover:bg-white/5 transition-colors cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
@@ -708,7 +766,7 @@ export default function App() {
 
               <button
                 type="submit"
-                className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-accent to-indigo-600 hover:from-accent hover:to-indigo-500 text-white text-xs font-extrabold uppercase tracking-wider transition-all shadow-lg active:scale-95"
+                className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-accent to-indigo-600 hover:from-accent hover:to-indigo-500 text-white text-xs font-extrabold uppercase tracking-wider transition-all shadow-lg active:scale-95 cursor-pointer"
               >
                 {lang === 'ar' ? 'تأكيد وإرسال' : 'Submit & Verify'}
               </button>

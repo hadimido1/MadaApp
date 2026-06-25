@@ -1,4 +1,4 @@
-import { LayoutDashboard, Users, Settings, ShoppingBag } from 'lucide-react';
+import { LayoutDashboard, Settings, ShoppingBag, Sparkles } from 'lucide-react';
 import { ViewState } from '../types';
 import { getTranslation } from '../i18n';
 
@@ -24,14 +24,20 @@ export function BottomNav({ currentView, onNavigate, isAdmin }: BottomNavProps) 
         </button>
 
         <button 
+          onClick={() => onNavigate('upgrade')}
+          className={`flex flex-col items-center gap-1.5 transition-colors ${currentView === 'upgrade' ? 'text-accent' : 'text-gray-500 hover:text-white'}`}
+        >
+          <Sparkles className="w-6 h-6 text-yellow-400 animate-pulse" />
+          <span className="text-[10px] font-bold">{lang === 'ar' ? 'الترقية' : 'Upgrade'}</span>
+        </button>
+
+        <button 
           onClick={() => onNavigate('store')}
           className={`flex flex-col items-center gap-1.5 transition-colors ${currentView === 'store' ? 'text-accent' : 'text-gray-500 hover:text-white'}`}
         >
           <ShoppingBag className="w-6 h-6" />
           <span className="text-[10px] font-bold">{t.store}</span>
         </button>
-        
-
 
         <button 
           onClick={() => onNavigate('settings')}

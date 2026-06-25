@@ -78,6 +78,10 @@ export function Dashboard({
   const lang = (localStorage.getItem("app_lang") as "ar" | "en") || "en";
   const t = getTranslation(lang);
 
+  const isMobileAgent = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  const isSmallScreen = window.screen.width < 1024;
+  const isMobileDevice = isMobileAgent || isSmallScreen;
+
   const [activeModal, setActiveModal] = useState<
     "receive" | "transfer" | "notifications" | null
   >(null);
@@ -436,22 +440,22 @@ export function Dashboard({
       </AnimatePresence>
 
       <div className="relative z-10 w-full max-w-lg md:max-w-6xl 2xl:max-w-[1800px] mx-auto px-5 pt-8 pb-40 md:pb-8 md:px-8 2xl:px-12 min-h-full flex flex-col">
-        {/* Header Dashboard Profile/Notifications */}
-        <div className="flex justify-between items-center w-full mb-6 md:hidden landscape:hidden">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 flex items-center justify-center transition-all hover:scale-110">
+        {/* Header Dashboard Profile/Notifications for screens < 1024px (Mobile/Tablet, both portrait and landscape) */}
+        <div className="flex lg:hidden justify-between items-center w-full mb-6 px-1" dir="ltr">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 flex items-center justify-center transition-all hover:scale-110">
               <img
                 src={logo}
                 alt="AVBANK Logo"
                 className="w-full h-full object-contain light-mode-logo"
               />
             </div>
-            <div className="flex flex-col">
-              <h1 className="text-2xl font-black text-white italic tracking-tighter leading-none light-mode-text">
+            <div className="flex flex-col text-left">
+              <h1 className="text-xl font-black text-white italic tracking-tighter leading-none light-mode-text">
                 AVBANK
               </h1>
-              <p className="text-[9px] text-accent font-bold uppercase tracking-[0.3em] mt-1 opacity-60 leading-none">
-                Status: Secure
+              <p className="text-[10px] text-accent font-black uppercase tracking-[0.15em] mt-1.5 opacity-80 leading-none">
+                {lang === "ar" ? "أحدث العمليات" : "Recent Transactions"}
               </p>
             </div>
           </div>
@@ -539,7 +543,7 @@ export function Dashboard({
 
               <button
                 onClick={() => setActiveModal("notifications")}
-                className={`relative p-2.5 bg-white/5 rounded-full border border-white/10 hidden landscape:flex md:flex ${unreadCount > 0 ? "animate-bell-wiggle" : ""} light-mode-btn`}
+                className={`relative p-2.5 bg-white/5 rounded-full border border-white/10 ${isMobileDevice ? 'flex' : 'hidden landscape:flex md:flex'} ${unreadCount > 0 ? "animate-bell-wiggle" : ""} light-mode-btn`}
               >
                 <Bell className="w-4 h-4 text-white light-mode-text" />
                 {unreadCount > 0 && (

@@ -656,73 +656,6 @@ textarea {
   border-color: var(--theme-accent) !important;
 }
 
-/* Landscape/Rotate Optimization styling */
-@media (orientation: landscape) and (max-height: 600px) {
-  body {
-    overflow-y: auto !important;
-    position: relative !important;
-  }
-  
-  /* Scale the dashboard container slightly but allow it to flow naturally */
-  .max-w-lg.md\:max-w-6xl {
-    max-width: 100% !important;
-    padding-left: 1rem !important;
-    padding-right: 1rem !important;
-  }
-
-  /* Reduce paddings in landscape so it fits better */
-  .pb-40 {
-    padding-bottom: 2rem !important;
-  }
-  .pt-8 {
-    padding-top: 0.5rem !important;
-  }
-
-  .visa-card-container {
-    max-width: 300px !important;
-    margin: 0 auto !important;
-  }
-
-  .dashboard-grid {
-    display: grid !important;
-    grid-template-columns: 1fr 1fr !important;
-    grid-template-areas:
-      "balance card"
-      "actions transactions" !important;
-    gap: 1.5rem !important;
-    align-items: stretch !important;
-  }
-
-  /* Make sidebar icon-only */
-  aside.w-72,
-  aside.xl\:w-80 {
-    display: flex !important;
-    width: 4.5rem !important;
-    z-index: 50;
-  }
-  aside .text-white,
-  aside .text-gray-500,
-  aside .text-gray-300,
-  aside span {
-    display: none !important;
-  }
-  aside img {
-    margin-left: -0.25rem;
-  }
-  aside button {
-    justify-content: center !important;
-    padding-left: 0 !important;
-    padding-right: 0 !important;
-  }
-  aside button svg {
-    margin: 0 !important;
-  }
-  /* Hide the regular bottom nav on landscape to prevent conflicts */
-  .md\:hidden {
-    display: none !important;
-  }
-}
-
 /* --- NEW DASHBOARD GRID ARCHITECTURE --- */
 .dashboard-grid {
   display: flex;
@@ -731,52 +664,165 @@ textarea {
   width: 100%;
 }
 
-.area-balance {
-  grid-area: balance;
-}
-.area-transactions {
-  grid-area: transactions;
-}
 .area-card {
   grid-area: card;
+  order: 1;
+}
+.area-balance {
+  grid-area: balance;
+  order: 2;
 }
 .area-actions {
   grid-area: actions;
+  order: 3;
+}
+.area-transactions {
+  grid-area: transactions;
+  order: 4;
 }
 
 @media (min-width: 768px) {
   .dashboard-grid {
     display: grid;
-    grid-template-columns: 1.2fr 1fr;
+    grid-template-columns: 1fr 1.2fr;
     grid-template-areas:
-      "balance card"
-      "transactions actions";
+      "card transactions"
+      "balance transactions"
+      "actions transactions";
     gap: 2rem;
     align-items: start;
   }
 }
 
-/* 1920x1080 / 16:9 Ultra-Wide Responsive Design */
+/* Apply Zoom out on Desktop and PC Simulation to reduce scroll and fit all elements beautifully */
+@media (min-width: 1024px) {
+  body {
+    zoom: 0.88 !important;
+  }
+}
+
+.pc-simulated {
+  zoom: 0.88 !important;
+}
+
+/* 1920x1080 / 16:9 Ultra-Wide Responsive Design and PC Simulation */
 @media (min-width: 1536px), (min-width: 1100px) and (min-aspect-ratio: 16/9), (width: 1920px) {
   .dashboard-grid {
     display: grid !important;
-    grid-template-columns: 1.1fr 400px 1.1fr !important;
-    grid-template-rows: 1fr 1fr !important;
+    grid-template-columns: 410px 1.2fr !important;
+    grid-template-rows: auto auto auto !important;
     grid-template-areas:
-      "balance card transactions"
-      "actions card transactions" !important;
-    gap: 2rem !important;
-    align-items: stretch !important;
+      "card transactions"
+      "balance transactions"
+      "actions transactions" !important;
+    gap: 1.25rem !important;
+    align-items: start !important;
     min-height: calc(100vh - 120px) !important;
   }
   
   .area-balance, .area-actions, .area-card, .area-transactions {
-    height: 100% !important;
+    height: auto !important;
     min-height: unset !important;
   }
   
   .visa-card-container {
     max-width: 100% !important;
+  }
+}
+
+/* Force PC simulation grid rules on simulated mobile screens */
+.pc-simulated .dashboard-grid {
+  display: grid !important;
+  grid-template-columns: 410px 1.2fr !important;
+  grid-template-rows: auto auto auto !important;
+  grid-template-areas:
+    "card transactions"
+    "balance transactions"
+    "actions transactions" !important;
+  gap: 1rem !important;
+  align-items: start !important;
+  min-height: calc(100vh - 120px) !important;
+}
+
+.pc-simulated .area-balance, 
+.pc-simulated .area-actions, 
+.pc-simulated .area-card, 
+.pc-simulated .area-transactions {
+  height: auto !important;
+  min-height: unset !important;
+}
+
+.pc-simulated .visa-card-container {
+  max-width: 100% !important;
+}
+
+/* Sidebar Landscape/Low-height Screen Optimization */
+@media (max-height: 650px) {
+  /* Apply a beautiful zoom to scale everything down on short heights, allowing everything to fit with very minimal scroll */
+  body {
+    zoom: 0.78 !important;
+  }
+
+  /* Reduce bottom padding on short screens to prevent unnecessary empty space at bottom of scrolling */
+  .relative.z-10.w-full,
+  .pb-40 {
+    padding-top: 1rem !important;
+    padding-bottom: 4rem !important;
+  }
+
+  .dashboard-grid {
+    gap: 0.75rem !important;
+    margin-top: 0.25rem !important;
+  }
+
+  /* Make the branding header much smaller and more compact */
+  .sidebar-branding {
+    padding: 0.75rem 1rem !important;
+  }
+  .sidebar-branding img {
+    width: 2rem !important;
+    height: 2rem !important;
+  }
+  .sidebar-branding h1 {
+    font-size: 1rem !important;
+  }
+  .sidebar-branding span {
+    display: none !important; /* Hide secure status text to save height */
+  }
+
+  /* Completely hide the big Card Level Status box inside sidebar since it's redundant */
+  .sidebar-card-level-status {
+    display: none !important;
+  }
+
+  /* Make navigation items closer and have smaller padding */
+  .sidebar-nav {
+    padding: 0.5rem !important;
+    gap: 0.25rem !important;
+  }
+  .sidebar-nav button {
+    padding: 0.5rem 0.75rem !important;
+    border-radius: 0.75rem !important;
+    font-size: 0.8rem !important;
+  }
+  .sidebar-nav button svg {
+    width: 1.1rem !important;
+    height: 1.1rem !important;
+  }
+
+  /* Make User Profile Badge at bottom super compact */
+  .sidebar-profile-badge {
+    padding: 0.5rem 1rem !important;
+    gap: 0.5rem !important;
+  }
+  .sidebar-profile-badge .w-10 {
+    width: 1.75rem !important;
+    height: 1.75rem !important;
+  }
+  .sidebar-profile-badge button {
+    padding: 0.4rem !important;
+    border-radius: 0.5rem !important;
+    font-size: 0.75rem !important;
   }
 }
 
@@ -814,4 +860,16 @@ textarea,
 .cursor-grabbing {
   cursor: grabbing !important;
 }
+
+/* --- Hide Scrollbars Globally across the entire site --- */
+* {
+  scrollbar-width: none !important; /* Firefox */
+  -ms-overflow-style: none !important;  /* IE and Edge */
+}
+*::-webkit-scrollbar {
+  display: none !important; /* Chrome, Safari and Opera */
+  width: 0 !important;
+  height: 0 !important;
+}
+
 
